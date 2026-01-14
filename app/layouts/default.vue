@@ -5,10 +5,20 @@ const route = useRoute()
 const mobileMenuOpen = ref(false)
 
 // Track which groups are expanded (for auto-expand on active route)
-const expandedGroups = ref<string[]>(['sales', 'catalog', 'configuration'])
+const expandedGroups = ref<string[]>(['catalog', 'configuration'])
 
-// Navigation structure with groups
-const navigation = [
+// Navigation item types
+type NavItem = {
+  id: string
+  type?: 'section' | 'link' | 'group'
+  label: string
+  icon?: string
+  to?: string
+  children?: NavItem[]
+}
+
+// Navigation structure with section headers
+const navigation: NavItem[] = [
   {
     id: 'dashboard',
     label: 'Dashboard',
@@ -16,32 +26,36 @@ const navigation = [
     to: '/',
   },
   {
-    id: 'sales',
+    id: 'sales-section',
+    type: 'section',
     label: 'Sales',
-    icon: 'i-heroicons-briefcase',
-    children: [
-      {
-        id: 'quotes',
-        label: 'Quotes',
-        icon: 'i-heroicons-document-text',
-        to: '/quotes',
-      },
-      {
-        id: 'customers',
-        label: 'Customers',
-        icon: 'i-heroicons-users',
-        to: '/customers',
-      },
-      {
-        id: 'contracts',
-        label: 'Contracts',
-        icon: 'i-heroicons-document-check',
-        to: '/contracts',
-      },
-    ],
+  },
+  {
+    id: 'quotes',
+    label: 'Quotes',
+    icon: 'i-heroicons-document-text',
+    to: '/quotes',
+  },
+  {
+    id: 'customers',
+    label: 'Customers',
+    icon: 'i-heroicons-users',
+    to: '/customers',
+  },
+  {
+    id: 'contracts',
+    label: 'Contracts',
+    icon: 'i-heroicons-document-check',
+    to: '/contracts',
+  },
+  {
+    id: 'admin-section',
+    type: 'section',
+    label: 'Admin',
   },
   {
     id: 'catalog',
+    type: 'group',
     label: 'Catalog',
     icon: 'i-heroicons-squares-2x2',
     children: [
@@ -79,6 +93,7 @@ const navigation = [
   },
   {
     id: 'configuration',
+    type: 'group',
     label: 'Configuration',
     icon: 'i-heroicons-cog-6-tooth',
     children: [
@@ -119,7 +134,7 @@ function isActive(path: string): boolean {
 }
 
 // Check if any child in a group is active
-function isGroupActive(group: typeof navigation[number]): boolean {
+function isGroupActive(group: NavItem): boolean {
   if (!group.children) return false
   return group.children.some(child => child.to && isActive(child.to))
 }
@@ -189,8 +204,18 @@ watch(() => route.path, () => {
         <nav class="flex-1 overflow-y-auto py-4 px-3">
           <ul class="space-y-1">
             <template v-for="item in navigation" :key="item.id">
+              <!-- Section header -->
+              <li v-if="item.type === 'section'" class="pt-4 first:pt-0">
+                <div class="flex items-center gap-2 px-3 pb-2">
+                  <span class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                    {{ item.label }}
+                  </span>
+                  <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                </div>
+              </li>
+
               <!-- Standalone item (no children) -->
-              <li v-if="!item.children">
+              <li v-else-if="!item.children">
                 <NuxtLink
                   :to="item.to!"
                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
@@ -198,7 +223,7 @@ watch(() => route.path, () => {
                     ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
                 >
-                  <UIcon :name="item.icon" class="w-5 h-5 flex-shrink-0" />
+                  <UIcon :name="item.icon!" class="w-5 h-5 flex-shrink-0" />
                   {{ item.label }}
                 </NuxtLink>
               </li>
@@ -214,7 +239,7 @@ watch(() => route.path, () => {
                   @click="toggleGroup(item.id)"
                 >
                   <span class="flex items-center gap-3">
-                    <UIcon :name="item.icon" class="w-5 h-5 flex-shrink-0" />
+                    <UIcon :name="item.icon!" class="w-5 h-5 flex-shrink-0" />
                     {{ item.label }}
                   </span>
                   <UIcon
@@ -237,7 +262,7 @@ watch(() => route.path, () => {
                         ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium'
                         : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'"
                     >
-                      <UIcon :name="child.icon" class="w-4 h-4 flex-shrink-0" />
+                      <UIcon :name="child.icon!" class="w-4 h-4 flex-shrink-0" />
                       {{ child.label }}
                     </NuxtLink>
                   </li>
@@ -279,8 +304,18 @@ watch(() => route.path, () => {
             <nav class="flex-1 overflow-y-auto py-4 px-3">
               <ul class="space-y-1">
                 <template v-for="item in navigation" :key="item.id">
+                  <!-- Section header -->
+                  <li v-if="item.type === 'section'" class="pt-4 first:pt-0">
+                    <div class="flex items-center gap-2 px-3 pb-2">
+                      <span class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                        {{ item.label }}
+                      </span>
+                      <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                    </div>
+                  </li>
+
                   <!-- Standalone item -->
-                  <li v-if="!item.children">
+                  <li v-else-if="!item.children">
                     <NuxtLink
                       :to="item.to!"
                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors"
@@ -288,7 +323,7 @@ watch(() => route.path, () => {
                         ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
                     >
-                      <UIcon :name="item.icon" class="w-5 h-5 flex-shrink-0" />
+                      <UIcon :name="item.icon!" class="w-5 h-5 flex-shrink-0" />
                       {{ item.label }}
                     </NuxtLink>
                   </li>
@@ -304,7 +339,7 @@ watch(() => route.path, () => {
                       @click="toggleGroup(item.id)"
                     >
                       <span class="flex items-center gap-3">
-                        <UIcon :name="item.icon" class="w-5 h-5 flex-shrink-0" />
+                        <UIcon :name="item.icon!" class="w-5 h-5 flex-shrink-0" />
                         {{ item.label }}
                       </span>
                       <UIcon
@@ -326,7 +361,7 @@ watch(() => route.path, () => {
                             ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium'
                             : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'"
                         >
-                          <UIcon :name="child.icon" class="w-4 h-4 flex-shrink-0" />
+                          <UIcon :name="child.icon!" class="w-4 h-4 flex-shrink-0" />
                           {{ child.label }}
                         </NuxtLink>
                       </li>
