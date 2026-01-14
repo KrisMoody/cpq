@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ProductType, BillingFrequency } from '~/generated/prisma'
+import type { ProductType, BillingFrequency } from '~/generated/prisma/client.js'
 
 const router = useRouter()
 const { createProduct, error: productError } = useProducts()

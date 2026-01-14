@@ -1,5 +1,5 @@
 import { usePrisma } from '../../utils/prisma'
-import { ProductType } from '@prisma/client'
+import type { ProductType, BillingFrequency } from '../../../app/generated/prisma/client.js'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
