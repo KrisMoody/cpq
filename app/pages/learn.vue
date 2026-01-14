@@ -4,7 +4,7 @@ interface GlossaryTerm {
   definition: string
   example: string
   relatedTerms: string[]
-  group: 'product' | 'pricing' | 'quote' | 'meta' | 'customer' | 'rules' | 'discount' | 'category'
+  group: 'product' | 'pricing' | 'quote' | 'meta' | 'customer' | 'rules' | 'discount' | 'category' | 'tax' | 'contract' | 'attribute' | 'currency'
   confusedWith?: string
   distinction?: string
 }
@@ -271,6 +271,186 @@ const glossaryTerms: GlossaryTerm[] = [
     confusedWith: 'Discount',
     distinction: 'Applied Discount is the INSTANCE (specific to one quote/line with calculated amount). Discount is the TEMPLATE (the reusable definition).',
   },
+
+  // === TAX GROUP ===
+  {
+    term: 'Tax Rate',
+    group: 'tax',
+    definition:
+      'A tax percentage applied to taxable products based on geographic location (country, state/region) and optionally product category. Tax rates can have effective date ranges and can be linked to specific product categories for specialized taxation.',
+    example: 'Tax Rate "CA State Tax" has rate 7.25% for country "US", state "CA". When a quote ships to California, this tax rate is applied to all taxable products.',
+    relatedTerms: ['Tax Exemption', 'Category', 'Quote'],
+  },
+  {
+    term: 'Tax Exemption',
+    group: 'tax',
+    definition:
+      'A customer-level flag indicating the customer is exempt from taxes. Tax-exempt customers may require a certificate number, reason, and expiration date. When a quote is created for a tax-exempt customer, no tax is calculated.',
+    example: 'Customer "State University" has isTaxExempt=true, reason="Educational Institution", certificate="EDU-2024-12345", expiry=2025-12-31.',
+    relatedTerms: ['Tax Rate', 'Customer', 'Quote'],
+    confusedWith: 'Tax Rate',
+    distinction: 'Tax Rate defines HOW MUCH tax to charge. Tax Exemption defines WHO is exempt from tax entirely.',
+  },
+
+  // === CONTRACT GROUP ===
+  {
+    term: 'Contract',
+    group: 'contract',
+    definition:
+      'A time-bound agreement with a customer that can include negotiated pricing and discount terms. Contracts have a status lifecycle (DRAFT → ACTIVE → EXPIRED) and define a date range during which special pricing applies.',
+    example: 'Contract "Acme Corp 2024" for customer "Acme Corp" runs from Jan 1 to Dec 31, 2024, with status ACTIVE and a 15% discount on all products.',
+    relatedTerms: ['Contract Price Entry', 'Contract Status', 'Customer'],
+  },
+  {
+    term: 'Contract Price Entry',
+    group: 'contract',
+    definition:
+      'A fixed price for a specific product within a contract. Overrides the standard Price Book Entry pricing when the contract is active. Each entry specifies a product and its negotiated fixed price.',
+    example: 'Contract "Acme Corp 2024" has a Contract Price Entry for "Laptop Pro Bundle" with fixedPrice=$1,099 (vs. list price $1,299).',
+    relatedTerms: ['Contract', 'Price Book Entry', 'Product'],
+    confusedWith: 'Price Book Entry',
+    distinction: 'Contract Price Entry is customer-specific negotiated pricing. Price Book Entry is the standard catalog pricing available to all customers.',
+  },
+  {
+    term: 'Contract Status',
+    group: 'contract',
+    definition:
+      'The lifecycle state of a contract: DRAFT (being negotiated, not yet active), ACTIVE (in effect, pricing applies), EXPIRED (past end date, no longer applies). Only ACTIVE contracts affect quote pricing.',
+    example: 'Contract transitions: DRAFT (during negotiation) → ACTIVE (once signed and start date reached) → EXPIRED (after end date passes).',
+    relatedTerms: ['Contract', 'Quote'],
+  },
+
+  // === ATTRIBUTE GROUP ===
+  {
+    term: 'Attribute',
+    group: 'attribute',
+    definition:
+      'A custom field definition for storing additional product information. Attributes have a type (TEXT, NUMBER, BOOLEAN, SELECT, DATE), can be required, and can have constraints. They are organized into Attribute Groups.',
+    example: 'Attribute "Color" (type: SELECT, options: ["Red", "Blue", "Black"]) and Attribute "Weight" (type: NUMBER, constraints: {min: 0, max: 100}).',
+    relatedTerms: ['Attribute Group', 'Product Attribute', 'Attribute Type'],
+  },
+  {
+    term: 'Attribute Group',
+    group: 'attribute',
+    definition:
+      'A named container for organizing related attributes. Groups help categorize attributes for display and management. Each attribute can optionally belong to one group.',
+    example: 'Attribute Group "Physical Specs" contains attributes: "Weight", "Dimensions", "Color". Group "Technical Specs" contains: "Processor", "Memory", "Storage".',
+    relatedTerms: ['Attribute', 'Product Attribute'],
+  },
+  {
+    term: 'Product Attribute',
+    group: 'attribute',
+    definition:
+      'The junction record linking an Attribute to a Product with a specific value. Stores the actual attribute value for that product based on the attribute type (text string, number, boolean, selected option, or date).',
+    example: 'Product "Laptop Pro" has Product Attribute values: Color="Black", Weight=2.5, HasTouchscreen=true.',
+    relatedTerms: ['Attribute', 'Product'],
+    confusedWith: 'Attribute',
+    distinction: 'Attribute is the DEFINITION (the field schema). Product Attribute is the VALUE (the actual data for a specific product).',
+  },
+  {
+    term: 'Attribute Type',
+    group: 'attribute',
+    definition:
+      'The data type of an attribute: TEXT (free-form string), NUMBER (numeric with optional min/max), BOOLEAN (true/false), SELECT (dropdown from predefined options), DATE (calendar date).',
+    example: 'TEXT: "Description". NUMBER: "Weight (kg)". BOOLEAN: "Is Refurbished". SELECT: "Color" with options. DATE: "Manufacture Date".',
+    relatedTerms: ['Attribute', 'Product Attribute'],
+  },
+
+  // === CURRENCY GROUP ===
+  {
+    term: 'Currency',
+    group: 'currency',
+    definition:
+      'A monetary unit identified by ISO 4217 code (USD, EUR, GBP, etc.). Each currency has a code, name, and symbol. One currency is marked as the base currency for reporting. Price books, quotes, and customers can be assigned specific currencies.',
+    example: 'Currency "USD" (code: USD, symbol: $, isBase: true) and Currency "EUR" (code: EUR, symbol: \u20ac, isBase: false).',
+    relatedTerms: ['Exchange Rate', 'Base Currency', 'Price Book'],
+  },
+  {
+    term: 'Exchange Rate',
+    group: 'currency',
+    definition:
+      'The conversion rate between a currency and the base currency at a specific effective date. Allows quotes in foreign currencies to be converted to the base currency for reporting. Multiple rates can exist with different effective dates.',
+    example: 'Exchange Rate for EUR: rate=1.08 (1 EUR = 1.08 USD), effectiveDate=2024-01-01. A new rate of 1.10 becomes effective on 2024-04-01.',
+    relatedTerms: ['Currency', 'Base Currency', 'Quote'],
+  },
+  {
+    term: 'Base Currency',
+    group: 'currency',
+    definition:
+      'The primary currency used for financial reporting and consolidation. All quote totals are converted to the base currency amount for consistent reporting. Only one currency can be the base currency (isBase=true).',
+    example: 'USD is the base currency. A quote in EUR for \u20ac1,000 at exchange rate 1.08 has baseAmount=$1,080 for reporting.',
+    relatedTerms: ['Currency', 'Exchange Rate', 'Quote'],
+    confusedWith: 'Currency',
+    distinction: 'Base Currency is the REPORTING standard. Other Currencies are TRANSACTION currencies that get converted to base.',
+  },
+
+  // === PRODUCT GROUP (continued) - Unit of Measure ===
+  {
+    term: 'Unit of Measure',
+    group: 'product',
+    definition:
+      'A standard unit for quantifying products (e.g., "Each", "Box", "Kg", "License"). Units can have base units and conversion factors for automatic quantity conversion. Products can be assigned a default unit of measure.',
+    example: 'Unit "Box" has baseUnit="Each" with conversionFactor=12 (1 Box = 12 Each). Product "USB Cables" uses unit "Box".',
+    relatedTerms: ['Unit Conversion', 'Product'],
+  },
+  {
+    term: 'Unit Conversion',
+    group: 'product',
+    definition:
+      'The relationship between a derived unit and its base unit, defined by a conversion factor. Enables quantity calculations across different units within the same unit family.',
+    example: 'Unit "Dozen" converts to base unit "Each" with factor 12. Unit "Case" converts to "Box" with factor 4, and "Box" converts to "Each" with factor 12.',
+    relatedTerms: ['Unit of Measure', 'Product'],
+  },
+
+  // === PRICING GROUP (continued) - Subscription/Recurring ===
+  {
+    term: 'Billing Frequency',
+    group: 'pricing',
+    definition:
+      'How often a product is billed: ONE_TIME (single purchase), MONTHLY, QUARTERLY, ANNUAL, or CUSTOM (specify months). Determines recurring revenue calculations and subscription pricing.',
+    example: 'Product "Software License" has billingFrequency=ANNUAL. Product "Support" has billingFrequency=MONTHLY. Product "Laptop" has billingFrequency=ONE_TIME.',
+    relatedTerms: ['MRR', 'ARR', 'Product'],
+  },
+
+  // === QUOTE GROUP (continued) - Recurring Revenue Metrics ===
+  {
+    term: 'MRR',
+    group: 'quote',
+    definition:
+      'Monthly Recurring Revenue - the normalized monthly value of all recurring line items on a quote. Annual subscriptions are divided by 12, quarterly by 3. One-time items are excluded from MRR.',
+    example: 'Quote has: Annual license ($1,200/year = $100 MRR) + Monthly support ($50/month = $50 MRR) + One-time setup ($500 = $0 MRR). Total MRR: $150.',
+    relatedTerms: ['ARR', 'TCV', 'Billing Frequency'],
+    confusedWith: 'ARR',
+    distinction: 'MRR is MONTHLY normalized value. ARR is ANNUAL value (MRR \u00d7 12). Both exclude one-time revenue.',
+  },
+  {
+    term: 'ARR',
+    group: 'quote',
+    definition:
+      'Annual Recurring Revenue - the annualized value of recurring revenue, calculated as MRR \u00d7 12. Represents the yearly run-rate of subscription revenue if all current subscriptions continue.',
+    example: 'Quote has MRR of $150. ARR = $150 \u00d7 12 = $1,800/year. This is the projected annual recurring revenue from this quote.',
+    relatedTerms: ['MRR', 'TCV', 'Billing Frequency'],
+    confusedWith: 'TCV',
+    distinction: 'ARR is the ANNUAL recurring run-rate. TCV includes one-time items and the full contract term value.',
+  },
+  {
+    term: 'TCV',
+    group: 'quote',
+    definition:
+      'Total Contract Value - the complete monetary value of a quote including one-time items plus all recurring items for the full contract term. Represents the total revenue expected from the deal.',
+    example: 'Quote: Setup fee $500 (one-time) + 12-month license $1,200 + 12-month support $600. TCV = $500 + $1,200 + $600 = $2,300.',
+    relatedTerms: ['MRR', 'ARR', 'Quote'],
+    confusedWith: 'ARR',
+    distinction: 'TCV is the TOTAL deal value including one-time items. ARR is just the recurring portion annualized.',
+  },
+  {
+    term: 'Proration',
+    group: 'quote',
+    definition:
+      'Adjusting a subscription price based on a partial billing period. When a subscription starts mid-period, the first charge is prorated based on remaining days. The proratedAmount field stores this adjusted value.',
+    example: 'Monthly subscription ($100/month) starts on Jan 15. Prorated first month: 17 days \u00d7 ($100/31 days) = $54.84 proratedAmount.',
+    relatedTerms: ['Billing Frequency', 'Quote Line Item'],
+  },
 ]
 
 const groupLabels: Record<GlossaryTerm['group'], string> = {
@@ -282,9 +462,13 @@ const groupLabels: Record<GlossaryTerm['group'], string> = {
   customer: 'Customer Terms',
   rules: 'Rules Terms',
   discount: 'Discount Terms',
+  tax: 'Tax Terms',
+  contract: 'Contract Terms',
+  attribute: 'Attribute Terms',
+  currency: 'Currency Terms',
 }
 
-const groupOrder: GlossaryTerm['group'][] = ['meta', 'product', 'category', 'pricing', 'quote', 'customer', 'rules', 'discount']
+const groupOrder: GlossaryTerm['group'][] = ['meta', 'product', 'category', 'attribute', 'pricing', 'currency', 'quote', 'customer', 'contract', 'tax', 'rules', 'discount']
 
 const searchQuery = ref('')
 const compareMode = ref(false)
@@ -313,6 +497,10 @@ const groupedTerms = computed(() => {
     customer: [],
     rules: [],
     discount: [],
+    tax: [],
+    contract: [],
+    attribute: [],
+    currency: [],
   }
   for (const term of filteredTerms.value) {
     groups[term.group].push(term)
@@ -391,11 +579,19 @@ const activeTab = ref('diagram')
             >
               Hierarchy
             </UButton>
+            <UButton
+              :variant="activeTab === 'schema' ? 'solid' : 'ghost'"
+              size="sm"
+              @click="activeTab = 'schema'"
+            >
+              Database Schema
+            </UButton>
           </div>
         </div>
       </template>
       <LearnEntityDiagram v-if="activeTab === 'diagram'" />
-      <LearnEntityHierarchy v-else />
+      <LearnEntityHierarchy v-else-if="activeTab === 'hierarchy'" />
+      <LearnPrismaERD v-else />
     </UCard>
 
     <!-- Glossary -->
@@ -606,6 +802,50 @@ const activeTab = ref('diagram')
             <p class="text-sm text-gray-500">
               Use hierarchical categories to organize your product catalog. Products can belong to
               multiple categories. Category-scoped discounts apply to all products within a category.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <UIcon name="i-heroicons-receipt-percent" class="w-5 h-5 text-cyan-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <p class="font-medium">Tax Configuration</p>
+            <p class="text-sm text-gray-500">
+              Set up tax rates by country and state for automatic tax calculation. Mark customers as
+              tax-exempt when they provide valid exemption certificates. Tax amounts appear separately on quotes.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <UIcon name="i-heroicons-document-text" class="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <p class="font-medium">Contract Pricing</p>
+            <p class="text-sm text-gray-500">
+              Create contracts with customers for negotiated pricing. Contract Price Entries override
+              standard price book prices. Only active contracts (not draft or expired) affect pricing.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <UIcon name="i-heroicons-currency-dollar" class="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <p class="font-medium">Multi-Currency Support</p>
+            <p class="text-sm text-gray-500">
+              Configure currencies with exchange rates for international sales. Quote totals are
+              automatically converted to the base currency for consistent reporting across regions.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <UIcon name="i-heroicons-arrow-path" class="w-5 h-5 text-violet-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <p class="font-medium">Recurring Revenue</p>
+            <p class="text-sm text-gray-500">
+              Products with billing frequencies (monthly, quarterly, annual) automatically calculate
+              MRR, ARR, and TCV metrics on quotes. Use proration for mid-period subscription starts.
             </p>
           </div>
         </div>
