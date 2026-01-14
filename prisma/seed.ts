@@ -9,6 +9,7 @@ import {
   TierType,
   AttributeType,
   ContractStatus,
+  BillingFrequency,
 } from '../app/generated/prisma'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
@@ -497,6 +498,118 @@ async function main() {
   console.log('  ✓ Created standalone products')
 
   // ============================================================================
+  // Subscription Products (Software & Services)
+  // ============================================================================
+
+  const softwareLicenseBasic = await prisma.product.create({
+    data: {
+      name: 'DevTools Pro - Basic',
+      description: 'Basic developer tools license - includes IDE and basic integrations',
+      sku: 'SW-DEVTOOLS-BASIC',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.MONTHLY,
+      defaultTermMonths: 12,
+      unitOfMeasureId: unitSeat.id,
+    },
+  })
+
+  const softwareLicensePro = await prisma.product.create({
+    data: {
+      name: 'DevTools Pro - Professional',
+      description: 'Professional developer tools license - includes advanced debugging and CI/CD integrations',
+      sku: 'SW-DEVTOOLS-PRO',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.MONTHLY,
+      defaultTermMonths: 12,
+      unitOfMeasureId: unitSeat.id,
+    },
+  })
+
+  const softwareLicenseEnterprise = await prisma.product.create({
+    data: {
+      name: 'DevTools Pro - Enterprise',
+      description: 'Enterprise developer tools license - includes SSO, audit logs, and premium support',
+      sku: 'SW-DEVTOOLS-ENT',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.ANNUAL,
+      defaultTermMonths: 36,
+      unitOfMeasureId: unitSeat.id,
+    },
+  })
+
+  const cloudHostingBasic = await prisma.product.create({
+    data: {
+      name: 'Cloud Hosting - Starter',
+      description: '2 vCPU, 4GB RAM, 50GB SSD cloud server',
+      sku: 'CLOUD-STARTER',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.MONTHLY,
+      defaultTermMonths: 12,
+      unitOfMeasureId: unitMonth.id,
+    },
+  })
+
+  const cloudHostingPro = await prisma.product.create({
+    data: {
+      name: 'Cloud Hosting - Professional',
+      description: '4 vCPU, 16GB RAM, 200GB SSD cloud server with auto-scaling',
+      sku: 'CLOUD-PRO',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.MONTHLY,
+      defaultTermMonths: 12,
+      unitOfMeasureId: unitMonth.id,
+    },
+  })
+
+  const supportBasic = await prisma.product.create({
+    data: {
+      name: 'Support Plan - Standard',
+      description: 'Email support with 48-hour response time, business hours only',
+      sku: 'SUPPORT-STD',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.ANNUAL,
+      defaultTermMonths: 12,
+      unitOfMeasureId: unitYear.id,
+    },
+  })
+
+  const supportPremium = await prisma.product.create({
+    data: {
+      name: 'Support Plan - Premium',
+      description: '24/7 phone and email support with 4-hour response time, dedicated account manager',
+      sku: 'SUPPORT-PREM',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.ANNUAL,
+      defaultTermMonths: 12,
+      unitOfMeasureId: unitYear.id,
+    },
+  })
+
+  const implementationService = await prisma.product.create({
+    data: {
+      name: 'Implementation Services',
+      description: 'Professional implementation and onboarding services',
+      sku: 'SVC-IMPL',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.ONE_TIME,
+      unitOfMeasureId: unitHour.id,
+    },
+  })
+
+  const trainingPackage = await prisma.product.create({
+    data: {
+      name: 'Training Package',
+      description: 'Comprehensive training package for development teams',
+      sku: 'SVC-TRAINING',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.ONE_TIME,
+      unitOfMeasureId: unitDay.id,
+    },
+  })
+
+  console.log('  ✓ Created subscription products')
+
+  // ============================================================================
   // Assign Products to Categories
   // ============================================================================
 
@@ -713,6 +826,19 @@ async function main() {
           { productId: usbHub.id, listPrice: 49.00, cost: 25.00 },
           { productId: laptopStand.id, listPrice: 79.00, cost: 40.00 },
           { productId: monitor27.id, listPrice: 299.00, cost: 200.00 },
+          // Subscription Products - Software Licenses (per seat/month)
+          { productId: softwareLicenseBasic.id, listPrice: 29.00, cost: 5.00 },
+          { productId: softwareLicensePro.id, listPrice: 79.00, cost: 12.00 },
+          { productId: softwareLicenseEnterprise.id, listPrice: 1499.00, cost: 200.00 }, // Annual price
+          // Cloud Hosting (per month)
+          { productId: cloudHostingBasic.id, listPrice: 49.00, cost: 20.00 },
+          { productId: cloudHostingPro.id, listPrice: 199.00, cost: 80.00 },
+          // Support Plans (annual)
+          { productId: supportBasic.id, listPrice: 999.00, cost: 200.00 },
+          { productId: supportPremium.id, listPrice: 4999.00, cost: 1000.00 },
+          // One-time Services
+          { productId: implementationService.id, listPrice: 250.00, cost: 150.00 },
+          { productId: trainingPackage.id, listPrice: 2000.00, cost: 800.00 },
         ],
       },
     },
@@ -749,6 +875,19 @@ async function main() {
           { productId: usbHub.id, listPrice: 44.00, cost: 25.00 },
           { productId: laptopStand.id, listPrice: 71.00, cost: 40.00 },
           { productId: monitor27.id, listPrice: 269.00, cost: 200.00 },
+          // Subscription Products - Software Licenses (enterprise discount)
+          { productId: softwareLicenseBasic.id, listPrice: 25.00, cost: 5.00 },
+          { productId: softwareLicensePro.id, listPrice: 69.00, cost: 12.00 },
+          { productId: softwareLicenseEnterprise.id, listPrice: 1299.00, cost: 200.00 },
+          // Cloud Hosting (enterprise discount)
+          { productId: cloudHostingBasic.id, listPrice: 44.00, cost: 20.00 },
+          { productId: cloudHostingPro.id, listPrice: 179.00, cost: 80.00 },
+          // Support Plans (enterprise discount)
+          { productId: supportBasic.id, listPrice: 899.00, cost: 200.00 },
+          { productId: supportPremium.id, listPrice: 4499.00, cost: 1000.00 },
+          // One-time Services (enterprise discount)
+          { productId: implementationService.id, listPrice: 225.00, cost: 150.00 },
+          { productId: trainingPackage.id, listPrice: 1800.00, cost: 800.00 },
         ],
       },
     },
@@ -1254,7 +1393,8 @@ async function main() {
   console.log(`   - 6 tax rates (3 US states, 3 EU countries)`)
   console.log(`   - 3 attribute groups (Physical, Technical, Warranty)`)
   console.log(`   - 7 attributes (color, weight, cores, threads, capacity, warranty, extended warranty)`)
-  console.log(`   - 12 standalone products`)
+  console.log(`   - 12 standalone products (hardware)`)
+  console.log(`   - 9 subscription products (software licenses, cloud hosting, support plans, services)`)
   console.log(`   - 1 bundle product (Developer Laptop Pro)`)
   console.log(`   - 13 product-category assignments`)
   console.log(`   - 34 product-attribute assignments`)

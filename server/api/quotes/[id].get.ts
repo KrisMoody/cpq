@@ -37,6 +37,9 @@ export default defineEventHandler(async (event) => {
               name: true,
               sku: true,
               type: true,
+              billingFrequency: true,
+              customBillingMonths: true,
+              defaultTermMonths: true,
               unitOfMeasure: {
                 select: { id: true, name: true, abbreviation: true },
               },

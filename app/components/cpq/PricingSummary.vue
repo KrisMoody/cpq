@@ -7,6 +7,10 @@ const props = defineProps<{
   taxAmount?: string | number
   taxBreakdown?: TaxBreakdownItem[] | null
   total: string | number
+  oneTimeTotal?: string | number
+  mrr?: string | number
+  arr?: string | number
+  tcv?: string | number
   appliedDiscounts?: Array<{
     id: string
     type: string
@@ -46,6 +50,28 @@ const taxAmountNum = computed(() => {
   if (!props.taxAmount) return 0
   return typeof props.taxAmount === 'string' ? parseFloat(props.taxAmount) : props.taxAmount
 })
+
+const oneTimeTotalNum = computed(() => {
+  if (!props.oneTimeTotal) return 0
+  return typeof props.oneTimeTotal === 'string' ? parseFloat(props.oneTimeTotal) : props.oneTimeTotal
+})
+
+const mrrNum = computed(() => {
+  if (!props.mrr) return 0
+  return typeof props.mrr === 'string' ? parseFloat(props.mrr) : props.mrr
+})
+
+const arrNum = computed(() => {
+  if (!props.arr) return 0
+  return typeof props.arr === 'string' ? parseFloat(props.arr) : props.arr
+})
+
+const tcvNum = computed(() => {
+  if (!props.tcv) return 0
+  return typeof props.tcv === 'string' ? parseFloat(props.tcv) : props.tcv
+})
+
+const hasRecurringItems = computed(() => mrrNum.value > 0)
 
 function formatTaxRate(rate: number): string {
   return `${(rate * 100).toFixed(2)}%`
@@ -148,6 +174,50 @@ function formatTaxRate(rate: number): string {
         </span>
         <span class="font-bold text-primary-600">{{ formatPrice(totalNum) }}</span>
       </div>
+
+      <!-- Recurring Revenue Metrics -->
+      <template v-if="hasRecurringItems">
+        <USeparator />
+
+        <div class="space-y-2 pt-2">
+          <h4 class="text-xs font-medium text-gray-400 uppercase tracking-wide">Recurring Revenue</h4>
+
+          <div v-if="oneTimeTotalNum > 0" class="flex justify-between text-sm">
+            <span class="text-gray-500">One-Time Charges</span>
+            <span class="font-medium">{{ formatPrice(oneTimeTotalNum) }}</span>
+          </div>
+
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500 flex items-center gap-1">
+              MRR
+              <UTooltip text="Monthly Recurring Revenue">
+                <UIcon name="i-heroicons-information-circle" class="w-3 h-3 text-gray-400" />
+              </UTooltip>
+            </span>
+            <span class="font-medium text-blue-600">{{ formatPrice(mrrNum) }}<span class="text-xs text-gray-400">/mo</span></span>
+          </div>
+
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500 flex items-center gap-1">
+              ARR
+              <UTooltip text="Annual Recurring Revenue (MRR × 12)">
+                <UIcon name="i-heroicons-information-circle" class="w-3 h-3 text-gray-400" />
+              </UTooltip>
+            </span>
+            <span class="font-medium text-blue-600">{{ formatPrice(arrNum) }}<span class="text-xs text-gray-400">/yr</span></span>
+          </div>
+
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500 flex items-center gap-1">
+              TCV
+              <UTooltip text="Total Contract Value (MRR × term + one-time)">
+                <UIcon name="i-heroicons-information-circle" class="w-3 h-3 text-gray-400" />
+              </UTooltip>
+            </span>
+            <span class="font-semibold text-green-600">{{ formatPrice(tcvNum) }}</span>
+          </div>
+        </div>
+      </template>
     </div>
   </UCard>
 </template>

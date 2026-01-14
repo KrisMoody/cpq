@@ -63,6 +63,9 @@ export default defineEventHandler(async (event) => {
       listPrice,
       discount,
       netPrice,
+      termMonths: body.termMonths || null,
+      isProrated: body.isProrated || false,
+      proratedAmount: body.proratedAmount || null,
       sortOrder,
     },
     include: {
@@ -72,6 +75,8 @@ export default defineEventHandler(async (event) => {
           name: true,
           sku: true,
           type: true,
+          billingFrequency: true,
+          defaultTermMonths: true,
         },
       },
     },
