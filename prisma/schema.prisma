@@ -7,6 +7,11 @@ generator client {
   moduleFormat = "esm"
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "../public/prisma-erd.svg"
+}
+
 datasource db {
   provider = "postgresql"
 }

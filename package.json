@@ -37,6 +37,7 @@
     "ws": "^8.19.0"
   },
   "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^11.12.0",
     "@nuxt/eslint": "^1.12.1",
     "@types/pg": "^8.16.0",
     "@types/ws": "^8.18.1",
@@ -45,6 +46,8 @@
     "eslint": "^9.39.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
+    "prisma-erd-generator": "^2.4.2",
+    "puppeteer": "^24.35.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.17"
