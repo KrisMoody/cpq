@@ -93,6 +93,11 @@ model Product {
   categories           ProductCategory[]
   attributes           ProductAttribute[]
   contractPriceEntries ContractPriceEntry[]
+  // Guided Selling relations
+  affinitiesAsSource      ProductAffinity[]        @relation("AffinitySource")
+  affinitiesAsTarget      ProductAffinity[]        @relation("AffinityTarget")
+  questionMappings        QuestionProductMapping[]
+  recommendationLogs      RecommendationLog[]
 }
 
 // ============================================================================
@@ -115,6 +120,9 @@ model Category {
   discounts  Discount[]
   attributes CategoryAttribute[]
   taxRates   TaxRate[]
+  // Guided Selling relations
+  affinitiesAsSource ProductAffinity[] @relation("AffinityCategorySource")
+  affinitiesAsTarget ProductAffinity[] @relation("AffinityCategoryTarget")
 }
 
 model ProductCategory {
@@ -389,11 +397,12 @@ model Quote {
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
 
-  customer         Customer?         @relation(fields: [customerId], references: [id])
-  priceBook        PriceBook         @relation(fields: [priceBookId], references: [id])
-  currency         Currency?         @relation(fields: [currencyId], references: [id])
-  lineItems        QuoteLineItem[]
-  appliedDiscounts AppliedDiscount[]
+  customer           Customer?           @relation(fields: [customerId], references: [id])
+  priceBook          PriceBook           @relation(fields: [priceBookId], references: [id])
+  currency           Currency?           @relation(fields: [currencyId], references: [id])
+  lineItems          QuoteLineItem[]
+  appliedDiscounts   AppliedDiscount[]
+  recommendationLogs RecommendationLog[]
 }
 
 enum QuoteStatus {
@@ -550,4 +559,123 @@ model TaxRate {
 
   @@index([country, state])
   @@index([isActive])
+}
+
+// ============================================================================
+// Guided Selling & Recommendations
+// ============================================================================
+
+enum AffinityType {
+  CROSS_SELL
+  UPSELL
+  ACCESSORY
+  REQUIRED
+  FREQUENTLY_BOUGHT
+  SUBSCRIPTION_ADDON
+}
+
+model ProductAffinity {
+  id                     String            @id @default(cuid())
+  sourceProductId        String?           // If null, uses sourceCategory
+  targetProductId        String?           // If null, uses targetCategory
+  sourceCategoryId       String?           // Category-level affinity source
+  targetCategoryId       String?           // Category-level affinity target
+  type                   AffinityType
+  priority               Int               @default(100) // Lower = higher priority
+  conditions             Json?             // Optional conditions (e.g., { minQuantity: 5 })
+  sourceBillingFrequency BillingFrequency? // Filter by billing frequency
+  targetBillingFrequency BillingFrequency? // Filter by billing frequency
+  isActive               Boolean           @default(true)
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+
+  sourceProduct  Product?  @relation("AffinitySource", fields: [sourceProductId], references: [id], onDelete: Cascade)
+  targetProduct  Product?  @relation("AffinityTarget", fields: [targetProductId], references: [id], onDelete: Cascade)
+  sourceCategory Category? @relation("AffinityCategorySource", fields: [sourceCategoryId], references: [id], onDelete: Cascade)
+  targetCategory Category? @relation("AffinityCategoryTarget", fields: [targetCategoryId], references: [id], onDelete: Cascade)
+
+  @@index([sourceProductId])
+  @@index([targetProductId])
+  @@index([sourceCategoryId])
+  @@index([targetCategoryId])
+  @@index([type])
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+  RANGE
+  YES_NO
+}
+
+model Questionnaire {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  questions Question[]
+}
+
+model Question {
+  id              String       @id @default(cuid())
+  questionnaireId String
+  text            String
+  type            QuestionType
+  options         Json?        // For choice types: [{ label: string, value: string }]
+  sortOrder       Int          @default(0)
+  branchLogic     Json?        // { answerValue: nextQuestionId } for branching
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  questionnaire   Questionnaire            @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+  productMappings QuestionProductMapping[]
+
+  @@index([questionnaireId])
+}
+
+model QuestionProductMapping {
+  id          String @id @default(cuid())
+  questionId  String
+  answerValue String // The answer that triggers this mapping
+  productId   String
+  score       Int    @default(100) // Higher = more relevant
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+  @@index([productId])
+}
+
+enum RecommendationSource {
+  RULE_BASED
+  AI_GENERATED
+  QUESTIONNAIRE
+  MANUAL
+}
+
+enum RecommendationAction {
+  SHOWN
+  ACCEPTED
+  DISMISSED
+}
+
+model RecommendationLog {
+  id        String               @id @default(cuid())
+  quoteId   String
+  productId String
+  source    RecommendationSource
+  action    RecommendationAction
+  metadata  Json?                // Additional context (e.g., affinityId, confidence)
+  createdAt DateTime             @default(now())
+
+  quote   Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId])
+  @@index([productId])
+  @@index([createdAt])
 }
