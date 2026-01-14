@@ -1,4 +1,4 @@
-import type { Rule, RuleTrigger, RuleType, Prisma } from '../../app/generated/prisma'
+import type { Rule, RuleTrigger, RuleType, Prisma } from '../../app/generated/prisma/client.js'
 
 type JsonValue = Prisma.JsonValue
 

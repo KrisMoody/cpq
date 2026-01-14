@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { RuleType } from '~/generated/prisma'
+import type { RuleType } from '~/generated/prisma/client.js'
 
 const { rules, loading, error, fetchRules, deleteRule } = useRules()
 

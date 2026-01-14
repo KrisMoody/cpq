@@ -1,4 +1,4 @@
-import type { ProductType } from '../generated/prisma'
+import type { ProductType, BillingFrequency } from '../generated/prisma/client.js'
 import type { UnitOfMeasure } from './useUnits'
 
 export interface ProductCategory {
@@ -12,6 +12,9 @@ export interface Product {
   description: string | null
   sku: string
   type: ProductType
+  billingFrequency: BillingFrequency
+  customBillingMonths?: number | null
+  defaultTermMonths?: number | null
   isActive: boolean
   createdAt: string
   unitOfMeasureId?: string | null
@@ -94,6 +97,9 @@ export function useProducts() {
     description?: string
     sku: string
     type?: ProductType
+    billingFrequency?: BillingFrequency
+    customBillingMonths?: number
+    defaultTermMonths?: number
     unitOfMeasureId?: string
   }): Promise<Product | null> {
     try {
@@ -116,6 +122,9 @@ export function useProducts() {
       description?: string | null
       sku?: string
       type?: ProductType
+      billingFrequency?: BillingFrequency
+      customBillingMonths?: number | null
+      defaultTermMonths?: number | null
       isActive?: boolean
       unitOfMeasureId?: string | null
     }

@@ -1,4 +1,4 @@
-import type { QuoteStatus } from '../generated/prisma'
+import type { QuoteStatus } from '../generated/prisma/client.js'
 import type { TaxBreakdownItem } from './useTaxRates'
 
 export interface AppliedDiscount {

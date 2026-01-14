@@ -1,4 +1,4 @@
-import type { RuleType, RuleTrigger } from '../generated/prisma'
+import type { RuleType, RuleTrigger } from '../generated/prisma/client.js'
 
 export interface Rule {
   id: string

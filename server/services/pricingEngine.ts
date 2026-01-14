@@ -1,7 +1,7 @@
 import { usePrisma } from '../utils/prisma'
 import { calculateQuoteTax, type TaxBreakdownItem } from './taxEngine'
 import { lookupPrice, calculateTotalPrice, type PriceLookupResult } from './priceLookup'
-import type { TierType, BillingFrequency } from '../../app/generated/prisma'
+import type { TierType, BillingFrequency } from '../../app/generated/prisma/client.js'
 
 /**
  * Result of line price calculation with tier information

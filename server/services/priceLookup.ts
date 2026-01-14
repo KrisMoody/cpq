@@ -1,4 +1,4 @@
-import type { PriceBookEntry, PriceTier, TierType, Contract, ContractPriceEntry } from '../../app/generated/prisma'
+import type { PriceBookEntry, PriceTier, TierType, Contract, ContractPriceEntry } from '../../app/generated/prisma/client.js'
 
 export interface PriceBookEntryWithTiers extends PriceBookEntry {
   priceTiers: PriceTier[]
