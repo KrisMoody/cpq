@@ -10,6 +10,8 @@ import {
   AttributeType,
   ContractStatus,
   BillingFrequency,
+  AffinityType,
+  QuestionType,
 } from '../app/generated/prisma/client.js'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
@@ -30,6 +32,11 @@ async function main() {
   console.log('🌱 Seeding database...')
 
   // Clean existing data (order matters due to foreign keys)
+  await prisma.recommendationLog.deleteMany()
+  await prisma.questionProductMapping.deleteMany()
+  await prisma.question.deleteMany()
+  await prisma.questionnaire.deleteMany()
+  await prisma.productAffinity.deleteMany()
   await prisma.appliedDiscount.deleteMany()
   await prisma.discountTier.deleteMany()
   await prisma.discount.deleteMany()
@@ -1489,6 +1496,297 @@ async function main() {
 
   console.log('  ✓ Created sample contracts')
 
+  // ============================================================================
+  // Product Affinities (Guided Selling Recommendations)
+  // ============================================================================
+
+  // Cross-sell: When buying software license, suggest cloud hosting
+  await prisma.productAffinity.create({
+    data: {
+      sourceProductId: softwareLicensePro.id,
+      targetProductId: cloudHostingPro.id,
+      type: AffinityType.CROSS_SELL,
+      priority: 10,
+      sourceBillingFrequency: BillingFrequency.MONTHLY,
+      targetBillingFrequency: BillingFrequency.MONTHLY,
+      isActive: true,
+    },
+  })
+
+  // Cross-sell: Software basic → suggest Pro upgrade
+  await prisma.productAffinity.create({
+    data: {
+      sourceProductId: softwareLicenseBasic.id,
+      targetProductId: softwareLicensePro.id,
+      type: AffinityType.UPSELL,
+      priority: 5,
+      isActive: true,
+    },
+  })
+
+  // Cross-sell: Cloud hosting → suggest support plan
+  await prisma.productAffinity.create({
+    data: {
+      sourceProductId: cloudHostingPro.id,
+      targetProductId: supportPremium.id,
+      type: AffinityType.CROSS_SELL,
+      priority: 15,
+      isActive: true,
+    },
+  })
+
+  // Required: Enterprise software requires implementation service
+  await prisma.productAffinity.create({
+    data: {
+      sourceProductId: softwareLicenseEnterprise.id,
+      targetProductId: implementationService.id,
+      type: AffinityType.REQUIRED,
+      priority: 1,
+      isActive: true,
+    },
+  })
+
+  // Accessory: Monitor suggests laptop stand
+  await prisma.productAffinity.create({
+    data: {
+      sourceProductId: monitor27.id,
+      targetProductId: laptopStand.id,
+      type: AffinityType.ACCESSORY,
+      priority: 50,
+      isActive: true,
+    },
+  })
+
+  // Accessory: Laptop suggests USB hub
+  await prisma.productAffinity.create({
+    data: {
+      sourceProductId: developerLaptop.id,
+      targetProductId: usbHub.id,
+      type: AffinityType.ACCESSORY,
+      priority: 40,
+      isActive: true,
+    },
+  })
+
+  // Subscription add-on: Cloud hosting suggests training
+  await prisma.productAffinity.create({
+    data: {
+      sourceProductId: cloudHostingPro.id,
+      targetProductId: trainingPackage.id,
+      type: AffinityType.SUBSCRIPTION_ADDON,
+      priority: 30,
+      targetBillingFrequency: BillingFrequency.ONE_TIME,
+      isActive: true,
+    },
+  })
+
+  // Category-based affinity: Hardware category → Accessories category
+  await prisma.productAffinity.create({
+    data: {
+      sourceCategoryId: hardwareCategory.id,
+      targetCategoryId: accessoriesCategory.id,
+      type: AffinityType.CROSS_SELL,
+      priority: 100,
+      isActive: true,
+    },
+  })
+
+  console.log('  ✓ Created product affinities')
+
+  // ============================================================================
+  // Guided Selling Questionnaire
+  // ============================================================================
+
+  const devToolsQuestionnaire = await prisma.questionnaire.create({
+    data: {
+      name: 'Developer Tools Finder',
+      description: 'Help find the right developer tools package based on team size and requirements',
+      isActive: true,
+    },
+  })
+
+  // Question 1: Team size
+  const teamSizeQuestion = await prisma.question.create({
+    data: {
+      questionnaireId: devToolsQuestionnaire.id,
+      text: 'How large is your development team?',
+      type: QuestionType.SINGLE_CHOICE,
+      options: [
+        { label: '1-5 developers', value: 'small' },
+        { label: '6-20 developers', value: 'medium' },
+        { label: '21-50 developers', value: 'large' },
+        { label: '50+ developers', value: 'enterprise' },
+      ],
+      sortOrder: 0,
+    },
+  })
+
+  // Question 2: Hosting needs
+  const hostingQuestion = await prisma.question.create({
+    data: {
+      questionnaireId: devToolsQuestionnaire.id,
+      text: 'Do you need cloud hosting for your applications?',
+      type: QuestionType.YES_NO,
+      sortOrder: 1,
+    },
+  })
+
+  // Question 3: Support level
+  const supportQuestion = await prisma.question.create({
+    data: {
+      questionnaireId: devToolsQuestionnaire.id,
+      text: 'What level of support do you require?',
+      type: QuestionType.SINGLE_CHOICE,
+      options: [
+        { label: 'Community/Self-service', value: 'none' },
+        { label: 'Business hours email support', value: 'basic' },
+        { label: '24/7 dedicated support', value: 'premium' },
+      ],
+      sortOrder: 2,
+    },
+  })
+
+  // Question 4: Training needs
+  const trainingQuestion = await prisma.question.create({
+    data: {
+      questionnaireId: devToolsQuestionnaire.id,
+      text: 'Does your team need training?',
+      type: QuestionType.YES_NO,
+      sortOrder: 3,
+    },
+  })
+
+  // Product mappings for team size question
+  await prisma.questionProductMapping.createMany({
+    data: [
+      // Small team → Basic tools
+      { questionId: teamSizeQuestion.id, productId: softwareLicenseBasic.id, answerValue: 'small', score: 20 },
+      { questionId: teamSizeQuestion.id, productId: cloudHostingBasic.id, answerValue: 'small', score: 15 },
+      // Medium team → Pro tools
+      { questionId: teamSizeQuestion.id, productId: softwareLicensePro.id, answerValue: 'medium', score: 25 },
+      { questionId: teamSizeQuestion.id, productId: cloudHostingPro.id, answerValue: 'medium', score: 20 },
+      // Large team → Pro tools with higher score
+      { questionId: teamSizeQuestion.id, productId: softwareLicensePro.id, answerValue: 'large', score: 30 },
+      { questionId: teamSizeQuestion.id, productId: cloudHostingPro.id, answerValue: 'large', score: 25 },
+      // Enterprise → Enterprise tools
+      { questionId: teamSizeQuestion.id, productId: softwareLicenseEnterprise.id, answerValue: 'enterprise', score: 40 },
+      { questionId: teamSizeQuestion.id, productId: cloudHostingPro.id, answerValue: 'enterprise', score: 30 },
+      { questionId: teamSizeQuestion.id, productId: implementationService.id, answerValue: 'enterprise', score: 25 },
+    ],
+  })
+
+  // Product mappings for hosting question
+  await prisma.questionProductMapping.createMany({
+    data: [
+      { questionId: hostingQuestion.id, productId: cloudHostingBasic.id, answerValue: 'yes', score: 20 },
+      { questionId: hostingQuestion.id, productId: cloudHostingPro.id, answerValue: 'yes', score: 15 },
+    ],
+  })
+
+  // Product mappings for support question
+  await prisma.questionProductMapping.createMany({
+    data: [
+      { questionId: supportQuestion.id, productId: supportBasic.id, answerValue: 'basic', score: 25 },
+      { questionId: supportQuestion.id, productId: supportPremium.id, answerValue: 'premium', score: 30 },
+    ],
+  })
+
+  // Product mappings for training question
+  await prisma.questionProductMapping.createMany({
+    data: [
+      { questionId: trainingQuestion.id, productId: trainingPackage.id, answerValue: 'yes', score: 25 },
+    ],
+  })
+
+  console.log('  ✓ Created guided selling questionnaire')
+
+  // ============================================================================
+  // Hardware Selection Questionnaire
+  // ============================================================================
+
+  const hardwareQuestionnaire = await prisma.questionnaire.create({
+    data: {
+      name: 'Hardware Configuration Helper',
+      description: 'Find the right hardware configuration for your needs',
+      isActive: true,
+    },
+  })
+
+  // Question 1: Primary use case
+  const useCaseQuestion = await prisma.question.create({
+    data: {
+      questionnaireId: hardwareQuestionnaire.id,
+      text: 'What is your primary use case?',
+      type: QuestionType.SINGLE_CHOICE,
+      options: [
+        { label: 'Web development', value: 'web' },
+        { label: 'Data science / ML', value: 'data' },
+        { label: 'Video editing / Creative', value: 'creative' },
+        { label: 'General office work', value: 'office' },
+      ],
+      sortOrder: 0,
+    },
+  })
+
+  // Question 2: Budget
+  const budgetQuestion = await prisma.question.create({
+    data: {
+      questionnaireId: hardwareQuestionnaire.id,
+      text: 'What is your budget range?',
+      type: QuestionType.SINGLE_CHOICE,
+      options: [
+        { label: 'Under $1,500', value: 'low' },
+        { label: '$1,500 - $2,500', value: 'medium' },
+        { label: 'Over $2,500', value: 'high' },
+      ],
+      sortOrder: 1,
+    },
+  })
+
+  // Product mappings for use case question
+  await prisma.questionProductMapping.createMany({
+    data: [
+      // Web development - mid-range
+      { questionId: useCaseQuestion.id, productId: i5.id, answerValue: 'web', score: 15 },
+      { questionId: useCaseQuestion.id, productId: ram16.id, answerValue: 'web', score: 15 },
+      { questionId: useCaseQuestion.id, productId: ssd512.id, answerValue: 'web', score: 10 },
+      // Data science - high performance
+      { questionId: useCaseQuestion.id, productId: i9.id, answerValue: 'data', score: 25 },
+      { questionId: useCaseQuestion.id, productId: ram64.id, answerValue: 'data', score: 25 },
+      { questionId: useCaseQuestion.id, productId: ssd2tb.id, answerValue: 'data', score: 20 },
+      // Creative - balanced high-end
+      { questionId: useCaseQuestion.id, productId: i7.id, answerValue: 'creative', score: 20 },
+      { questionId: useCaseQuestion.id, productId: ram32.id, answerValue: 'creative', score: 20 },
+      { questionId: useCaseQuestion.id, productId: ssd1tb.id, answerValue: 'creative', score: 15 },
+      { questionId: useCaseQuestion.id, productId: monitor27.id, answerValue: 'creative', score: 20 },
+      // Office - basic
+      { questionId: useCaseQuestion.id, productId: i5.id, answerValue: 'office', score: 20 },
+      { questionId: useCaseQuestion.id, productId: ram16.id, answerValue: 'office', score: 20 },
+      { questionId: useCaseQuestion.id, productId: ssd512.id, answerValue: 'office', score: 15 },
+    ],
+  })
+
+  // Product mappings for budget question
+  await prisma.questionProductMapping.createMany({
+    data: [
+      // Low budget - basic options
+      { questionId: budgetQuestion.id, productId: i5.id, answerValue: 'low', score: 20 },
+      { questionId: budgetQuestion.id, productId: ram16.id, answerValue: 'low', score: 20 },
+      { questionId: budgetQuestion.id, productId: ssd512.id, answerValue: 'low', score: 15 },
+      // Medium budget - mid-range
+      { questionId: budgetQuestion.id, productId: i7.id, answerValue: 'medium', score: 20 },
+      { questionId: budgetQuestion.id, productId: ram32.id, answerValue: 'medium', score: 20 },
+      { questionId: budgetQuestion.id, productId: ssd1tb.id, answerValue: 'medium', score: 15 },
+      // High budget - premium
+      { questionId: budgetQuestion.id, productId: i9.id, answerValue: 'high', score: 25 },
+      { questionId: budgetQuestion.id, productId: ram64.id, answerValue: 'high', score: 25 },
+      { questionId: budgetQuestion.id, productId: ssd2tb.id, answerValue: 'high', score: 20 },
+      { questionId: budgetQuestion.id, productId: monitor27.id, answerValue: 'high', score: 15 },
+    ],
+  })
+
+  console.log('  ✓ Created hardware questionnaire')
+
   console.log('\n✅ Database seeded successfully!')
   console.log(`   - 5 currencies (USD base, EUR, GBP, CAD, AUD)`)
   console.log(`   - 4 exchange rates`)
@@ -1509,6 +1807,8 @@ async function main() {
   console.log(`   - 5 discounts (including 1 with tiers)`)
   console.log(`   - 1 example quote with 6 line items`)
   console.log(`   - 3 contracts (1 active, 1 draft, 1 expired)`)
+  console.log(`   - 8 product affinities (cross-sell, upsell, required, accessory)`)
+  console.log(`   - 2 questionnaires (Developer Tools Finder, Hardware Configuration Helper)`)
 }
 
 main()

@@ -121,6 +121,18 @@ const navigation: NavItem[] = [
         icon: 'i-heroicons-currency-dollar',
         to: '/currencies',
       },
+      {
+        id: 'affinities',
+        label: 'Affinities',
+        icon: 'i-heroicons-link',
+        to: '/affinities',
+      },
+      {
+        id: 'questionnaires',
+        label: 'Questionnaires',
+        icon: 'i-heroicons-clipboard-document-list',
+        to: '/questionnaires',
+      },
     ],
   },
   {
