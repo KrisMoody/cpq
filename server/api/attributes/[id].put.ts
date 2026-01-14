@@ -1,5 +1,5 @@
 import { usePrisma } from '../../utils/prisma'
-import type { AttributeType } from '../../../app/generated/prisma'
+import type { AttributeType } from '../../../app/generated/prisma/client.js'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()

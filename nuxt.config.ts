@@ -21,12 +21,7 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    alias: {
-      '@prisma/client': resolve(__dirname, 'app/generated/prisma')
-    }
-  },
-
-  alias: {
-    '@prisma/client': resolve(__dirname, 'app/generated/prisma')
+    // Note: @prisma/client alias removed - imports use generated client directly
+    // The new prisma-client generator requires @prisma/client/runtime to remain unaliased
   }
 })

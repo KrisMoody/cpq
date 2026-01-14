@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DiscountType, DiscountScope } from '~/generated/prisma'
+import type { DiscountType, DiscountScope } from '~/generated/prisma/client.js'
 
 const router = useRouter()
 const { createDiscount } = useDiscounts()

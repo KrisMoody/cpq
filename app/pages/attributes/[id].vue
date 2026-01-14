@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AttributeType } from '~/generated/prisma'
+import type { AttributeType } from '~/generated/prisma/client.js'
 import type { Attribute } from '~/composables/useAttributes'
 
 const route = useRoute()

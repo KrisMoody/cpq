@@ -10,7 +10,7 @@ import {
   AttributeType,
   ContractStatus,
   BillingFrequency,
-} from '../app/generated/prisma'
+} from '../app/generated/prisma/client.js'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
 

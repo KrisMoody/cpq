@@ -7,7 +7,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "nuxt prepare && prisma generate",
     "typecheck": "nuxt typecheck",
     "db:push": "prisma db push",
     "db:seed": "tsx --env-file=.env prisma/seed.ts",

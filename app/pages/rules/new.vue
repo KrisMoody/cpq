@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { RuleType, RuleTrigger } from '~/generated/prisma'
+import type { RuleType, RuleTrigger } from '~/generated/prisma/client.js'
 
 const router = useRouter()
 const { createRule } = useRules()

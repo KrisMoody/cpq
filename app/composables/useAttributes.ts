@@ -1,4 +1,4 @@
-import type { AttributeType } from '../generated/prisma'
+import type { AttributeType } from '../generated/prisma/client.js'
 
 export interface AttributeGroup {
   id: string

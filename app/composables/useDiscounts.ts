@@ -1,4 +1,4 @@
-import type { DiscountType, DiscountScope } from '../generated/prisma'
+import type { DiscountType, DiscountScope } from '../generated/prisma/client.js'
 
 export interface DiscountTier {
   id: string

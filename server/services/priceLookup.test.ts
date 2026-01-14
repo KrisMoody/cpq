@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { lookupPrice, calculateTotalPrice, type PriceBookEntryWithTiers } from './priceLookup'
-import type { Decimal } from '../../app/generated/prisma/runtime/index-browser'
+import type { Decimal } from '@prisma/client/runtime/client'
 
 /**
  * Tests for tier-based pricing calculations

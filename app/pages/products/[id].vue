@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ProductWithDetails, ProductFeature } from '~/composables/useProducts'
-import type { ProductType, BillingFrequency } from '~/generated/prisma'
+import type { ProductType, BillingFrequency } from '~/generated/prisma/client.js'
 import type { Attribute } from '~/composables/useAttributes'
 
 const route = useRoute()
