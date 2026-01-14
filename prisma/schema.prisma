@@ -679,3 +679,23 @@ model RecommendationLog {
   @@index([productId])
   @@index([createdAt])
 }
+
+// ============================================================================
+// Quote Layouts
+// ============================================================================
+
+model QuoteLayout {
+  id            String   @id @default(cuid())
+  entityId      String   @default("default") // For multi-tenancy support
+  name          String
+  description   String?
+  isTemplate    Boolean  @default(false) // Reusable template vs one-off
+  sections      Json     // Array of QuoteLayoutSection
+  summaryConfig Json     // SummaryConfig object
+  theme         Json     // QuoteTheme object
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([entityId])
+  @@index([isTemplate])
+}

@@ -37,6 +37,12 @@ const navigation: NavItem[] = [
     to: '/quotes',
   },
   {
+    id: 'quote-layouts',
+    label: 'Quote Layouts',
+    icon: 'i-heroicons-squares-2x2',
+    to: '/quote-layouts',
+  },
+  {
     id: 'customers',
     label: 'Customers',
     icon: 'i-heroicons-users',

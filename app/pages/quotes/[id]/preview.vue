@@ -1,17 +1,52 @@
 <script setup lang="ts">
 import type { QuoteWithLineItems } from '~/composables/useQuotes'
+import type { QuoteLayout } from '~/types/quote-layout'
 
 definePageMeta({
   layout: 'blank',
 })
 
 const route = useRoute()
+const { fetchLayouts, templateLayouts } = useQuoteLayouts()
 
 const { data: quote, status, error } = await useFetch<QuoteWithLineItems>(
   `/api/quotes/${route.params.id}`
 )
 
 const loading = computed(() => status.value === 'pending')
+
+// Layout selection
+const selectedLayoutId = ref<string>('')
+const selectedLayout = ref<QuoteLayout | null>(null)
+
+// Fetch layouts on mount
+onMounted(async () => {
+  await fetchLayouts({ template: true })
+})
+
+// Update selected layout when selection changes
+watch(selectedLayoutId, async (newId) => {
+  if (!newId) {
+    selectedLayout.value = null
+    return
+  }
+
+  const layout = templateLayouts.value.find((l) => l.id === newId)
+  if (layout) {
+    selectedLayout.value = layout
+  }
+})
+
+// Layout options for dropdown
+const layoutOptions = computed(() => {
+  return [
+    { label: 'Default Layout', value: '' },
+    ...templateLayouts.value.map((l) => ({
+      label: l.name,
+      value: l.id,
+    })),
+  ]
+})
 
 function handlePrint() {
   window.print()
@@ -31,7 +66,19 @@ function handlePrint() {
           Back to Editor
         </UButton>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-3">
+          <!-- Layout Selector -->
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-500">Layout:</span>
+            <USelectMenu
+              v-model="selectedLayoutId"
+              :items="layoutOptions"
+              placeholder="Select layout"
+              class="w-40"
+              value-key="value"
+            />
+          </div>
+
           <UButton
             variant="soft"
             icon="i-heroicons-printer"
@@ -56,10 +103,10 @@ function handlePrint() {
       </UAlert>
     </div>
 
-    <!-- Quote Preview -->
+    <!-- Quote Preview with Layout -->
     <div v-else-if="quote" class="py-8 print:py-0">
       <div class="shadow-lg print:shadow-none">
-        <CpqQuotePreview :quote="quote" />
+        <CpqQuoteRenderer :quote="quote" :layout="selectedLayout" />
       </div>
     </div>
   </div>

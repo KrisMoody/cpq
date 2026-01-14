@@ -32,6 +32,7 @@ async function main() {
   console.log('🌱 Seeding database...')
 
   // Clean existing data (order matters due to foreign keys)
+  await prisma.quoteLayout.deleteMany()
   await prisma.recommendationLog.deleteMany()
   await prisma.questionProductMapping.deleteMany()
   await prisma.question.deleteMany()
@@ -1787,6 +1788,147 @@ async function main() {
 
   console.log('  ✓ Created hardware questionnaire')
 
+  // ============================================================================
+  // Quote Layouts
+  // ============================================================================
+
+  // Simple layout - single section with basic columns
+  await prisma.quoteLayout.create({
+    data: {
+      name: 'Simple',
+      entityId: 'default',
+      description: 'A clean, simple layout with basic columns',
+      isTemplate: true,
+      sections: [
+        {
+          id: 'main',
+          name: 'Products',
+          columns: [
+            { field: 'productName', label: 'Product', align: 'left' },
+            { field: 'quantity', label: 'Qty', align: 'center', width: '80px' },
+            { field: 'unitPrice', label: 'Unit Price', align: 'right', width: '120px' },
+            { field: 'netPrice', label: 'Total', align: 'right', width: '120px' },
+          ],
+          showSubtotal: false,
+          sortOrder: 0,
+        },
+      ],
+      summaryConfig: {
+        showSubtotal: true,
+        showDiscounts: true,
+        showTaxes: true,
+        showTotal: true,
+      },
+      theme: {
+        primaryColor: '#1a56db',
+        secondaryColor: '#6b7280',
+        fontFamily: 'system-ui, sans-serif',
+        headerStyle: 'simple',
+        tableBorders: true,
+        alternateRowColors: false,
+      },
+    },
+  })
+
+  // Detailed layout - single section with all columns including descriptions
+  await prisma.quoteLayout.create({
+    data: {
+      name: 'Detailed',
+      entityId: 'default',
+      description: 'A comprehensive layout showing all product details',
+      isTemplate: true,
+      sections: [
+        {
+          id: 'main',
+          name: 'Products & Services',
+          columns: [
+            { field: 'productName', label: 'Item', align: 'left' },
+            { field: 'sku', label: 'SKU', align: 'left', width: '100px' },
+            { field: 'quantity', label: 'Qty', align: 'center', width: '60px' },
+            { field: 'unit', label: 'Unit', align: 'center', width: '60px' },
+            { field: 'unitPrice', label: 'Unit Price', align: 'right', width: '100px' },
+            { field: 'discount', label: 'Discount', align: 'right', width: '100px' },
+            { field: 'netPrice', label: 'Net Price', align: 'right', width: '100px' },
+          ],
+          showSubtotal: true,
+          sortOrder: 0,
+        },
+      ],
+      summaryConfig: {
+        showSubtotal: true,
+        showDiscounts: true,
+        showTaxes: true,
+        showTotal: true,
+      },
+      theme: {
+        primaryColor: '#059669',
+        secondaryColor: '#6b7280',
+        fontFamily: 'system-ui, sans-serif',
+        headerStyle: 'branded',
+        tableBorders: true,
+        alternateRowColors: true,
+      },
+    },
+  })
+
+  // Sectioned layout - multiple sections splitting by product type
+  await prisma.quoteLayout.create({
+    data: {
+      name: 'Sectioned',
+      entityId: 'default',
+      description: 'Products organized by type into separate sections',
+      isTemplate: true,
+      sections: [
+        {
+          id: 'bundles',
+          name: 'Bundles',
+          description: 'Configured product bundles',
+          columns: [
+            { field: 'productName', label: 'Bundle', align: 'left' },
+            { field: 'quantity', label: 'Qty', align: 'center', width: '80px' },
+            { field: 'unitPrice', label: 'Base Price', align: 'right', width: '120px' },
+            { field: 'netPrice', label: 'Total', align: 'right', width: '120px' },
+          ],
+          filter: { type: 'productType', productTypes: ['BUNDLE'] },
+          showSubtotal: true,
+          sortOrder: 0,
+        },
+        {
+          id: 'standalone',
+          name: 'Products',
+          description: 'Individual products and components',
+          columns: [
+            { field: 'productName', label: 'Product', align: 'left' },
+            { field: 'sku', label: 'SKU', align: 'left', width: '100px' },
+            { field: 'quantity', label: 'Qty', align: 'center', width: '60px' },
+            { field: 'unitPrice', label: 'Price', align: 'right', width: '100px' },
+            { field: 'discount', label: 'Discount', align: 'right', width: '100px' },
+            { field: 'netPrice', label: 'Net', align: 'right', width: '100px' },
+          ],
+          filter: { type: 'productType', productTypes: ['STANDALONE'] },
+          showSubtotal: true,
+          sortOrder: 1,
+        },
+      ],
+      summaryConfig: {
+        showSubtotal: true,
+        showDiscounts: true,
+        showTaxes: true,
+        showTotal: true,
+      },
+      theme: {
+        primaryColor: '#7c3aed',
+        secondaryColor: '#a78bfa',
+        fontFamily: 'system-ui, sans-serif',
+        headerStyle: 'simple',
+        tableBorders: true,
+        alternateRowColors: true,
+      },
+    },
+  })
+
+  console.log('  ✓ Created quote layout templates')
+
   console.log('\n✅ Database seeded successfully!')
   console.log(`   - 5 currencies (USD base, EUR, GBP, CAD, AUD)`)
   console.log(`   - 4 exchange rates`)
@@ -1809,6 +1951,7 @@ async function main() {
   console.log(`   - 3 contracts (1 active, 1 draft, 1 expired)`)
   console.log(`   - 8 product affinities (cross-sell, upsell, required, accessory)`)
   console.log(`   - 2 questionnaires (Developer Tools Finder, Hardware Configuration Helper)`)
+  console.log(`   - 3 quote layout templates (Simple, Detailed, Sectioned)`)
 }
 
 main()
