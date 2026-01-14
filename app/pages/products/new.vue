@@ -13,7 +13,7 @@ const initialFormState = {
   billingFrequency: 'ONE_TIME' as BillingFrequency,
   customBillingMonths: null as number | null,
   defaultTermMonths: null as number | null,
-  unitOfMeasureId: '' as string,
+  unitOfMeasureId: null as string | null,
 }
 
 const form = ref({ ...initialFormState })
@@ -47,7 +47,7 @@ const isRecurring = computed(() => form.value.billingFrequency !== 'ONE_TIME')
 const isCustomFrequency = computed(() => form.value.billingFrequency === 'CUSTOM')
 
 const unitOptions = computed(() => [
-  { label: 'No unit selected', value: '' },
+  { label: 'No unit selected', value: null },
   ...units.value.map((u) => ({ label: `${u.name} (${u.abbreviation})`, value: u.id })),
 ])
 
@@ -152,6 +152,7 @@ async function handleSubmit() {
             <USelect
               v-model="form.type"
               :items="productTypes"
+              value-key="value"
             />
           </UFormField>
 
@@ -170,6 +171,7 @@ async function handleSubmit() {
             <USelect
               v-model="form.billingFrequency"
               :items="billingFrequencies"
+              value-key="value"
             />
           </UFormField>
 
@@ -201,6 +203,7 @@ async function handleSubmit() {
             <USelect
               v-model="form.unitOfMeasureId"
               :items="unitOptions"
+              value-key="value"
             />
           </UFormField>
         </div>

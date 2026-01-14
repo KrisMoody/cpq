@@ -75,10 +75,9 @@ const typeOptions = [
   { label: 'Date', value: 'DATE' },
 ]
 
-const groupOptions = computed(() => [
-  { label: 'No Group', value: '' },
-  ...groups.value.map((g) => ({ label: g.name, value: g.id })),
-])
+const groupOptions = computed(() =>
+  groups.value.map((g) => ({ label: g.name, value: g.id }))
+)
 
 const hasValues = computed(() => {
   return (attribute.value?._count?.productAttributes ?? 0) > 0
@@ -319,6 +318,7 @@ async function handleDelete() {
                 v-model="form.type"
                 :items="typeOptions"
                 :disabled="hasValues"
+                value-key="value"
               />
               <template v-if="hasValues" #hint>
                 <span class="text-warning-500">Cannot change type when values exist</span>
@@ -326,7 +326,7 @@ async function handleDelete() {
             </UFormField>
 
             <UFormField label="Group">
-              <USelect :model-value="form.groupId ?? undefined" :items="groupOptions" @update:model-value="form.groupId = $event || null" />
+              <USelect :model-value="form.groupId ?? undefined" :items="groupOptions" value-key="value" placeholder="No Group" @update:model-value="form.groupId = $event || null" />
             </UFormField>
           </div>
 

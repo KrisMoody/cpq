@@ -15,7 +15,7 @@ const error = ref<string | null>(null)
 const form = ref({
   name: '',
   abbreviation: '',
-  baseUnitId: '' as string,
+  baseUnitId: null as string | null,
   conversionFactor: 1,
   isActive: true,
 })
@@ -36,7 +36,7 @@ async function loadUnit() {
     form.value = {
       name: unit.value.name,
       abbreviation: unit.value.abbreviation,
-      baseUnitId: unit.value.baseUnitId || '',
+      baseUnitId: unit.value.baseUnitId || null,
       conversionFactor: typeof unit.value.conversionFactor === 'string'
         ? parseFloat(unit.value.conversionFactor)
         : unit.value.conversionFactor,
@@ -53,7 +53,7 @@ async function loadUnit() {
 const baseUnitOptions = computed(() => {
   const derivedIds = new Set(unit.value?.derived?.map(d => d.id) || [])
   return [
-    { label: 'None (base unit)', value: '' },
+    { label: 'None (base unit)', value: null },
     ...units.value
       .filter((u) => u.id !== unitId && !derivedIds.has(u.id))
       .map((u) => ({ label: `${u.name} (${u.abbreviation})`, value: u.id })),
@@ -186,6 +186,7 @@ async function handleDeactivate() {
             <USelect
               v-model="form.baseUnitId"
               :items="baseUnitOptions"
+              value-key="value"
             />
           </UFormField>
 

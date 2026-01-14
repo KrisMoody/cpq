@@ -49,8 +49,8 @@ const editQuestionForm = ref({
 // Product mapping state
 const showAddMapping = ref<string | null>(null)
 const newMapping = ref({
-  answerValue: '',
-  productId: '',
+  answerValue: undefined as string | undefined,
+  productId: undefined as string | undefined,
   score: 10,
 })
 
@@ -202,7 +202,7 @@ async function handleAddMapping(questionId: string) {
     })
     await loadQuestionnaire(questionnaire.value.id)
     showAddMapping.value = null
-    newMapping.value = { answerValue: '', productId: '', score: 10 }
+    newMapping.value = { answerValue: undefined, productId: undefined, score: 10 }
     toast.add({ title: 'Product mapping added', color: 'success' })
   } catch {
     toast.add({ title: 'Failed to add mapping', color: 'error' })

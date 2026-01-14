@@ -14,8 +14,8 @@ const initialFormState = {
   state: '',
   postalCode: '',
   country: '',
-  priceBookId: '',
-  currencyId: '',
+  priceBookId: undefined as string | undefined,
+  currencyId: undefined as string | undefined,
 }
 
 const form = ref({ ...initialFormState })
@@ -172,7 +172,8 @@ async function handleSubmit() {
           <UFormField label="Currency" hint="Default currency for quotes">
             <USelect
               v-model="form.currencyId"
-              :items="[{ label: 'Use default currency', value: '' }, ...currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))]"
+              :items="currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))"
+              value-key="value"
               placeholder="Select currency (optional)"
             />
           </UFormField>
@@ -180,7 +181,8 @@ async function handleSubmit() {
           <UFormField label="Price Book" hint="Quotes for this customer will use this price book by default">
             <USelect
               v-model="form.priceBookId"
-              :items="[{ label: 'Use default price book', value: '' }, ...priceBooks.map(pb => ({ label: pb.name, value: pb.id }))]"
+              :items="priceBooks.map(pb => ({ label: pb.name, value: pb.id }))"
+              value-key="value"
               placeholder="Select price book (optional)"
             />
           </UFormField>

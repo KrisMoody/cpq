@@ -5,7 +5,7 @@ const { currencies, fetchCurrencies } = useCurrencies()
 
 const initialFormState = {
   name: '',
-  currencyId: '',
+  currencyId: undefined as string | undefined,
   isDefault: false,
   isActive: true,
   validFrom: '',
@@ -92,8 +92,9 @@ async function handleSubmit() {
         <UFormField label="Currency" hint="Prices in this book will be in this currency">
           <USelect
             v-model="form.currencyId"
-            :items="[{ label: 'Use default currency', value: '' }, ...currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))]"
+            :items="currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))"
             placeholder="Select currency"
+            value-key="value"
           />
         </UFormField>
 
