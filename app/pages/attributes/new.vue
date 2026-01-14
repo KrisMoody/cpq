@@ -46,10 +46,9 @@ const typeOptions = [
   { label: 'Date', value: 'DATE' },
 ]
 
-const groupOptions = computed(() => [
-  { label: 'No Group', value: '' },
-  ...groups.value.map((g) => ({ label: g.name, value: g.id })),
-])
+const groupOptions = computed(() =>
+  groups.value.map((g) => ({ label: g.name, value: g.id }))
+)
 
 // Auto-generate code from name
 watch(
@@ -181,7 +180,7 @@ async function handleSubmit() {
           </UFormField>
 
           <UFormField label="Group">
-            <USelect :model-value="form.groupId ?? undefined" :items="groupOptions" value-key="value" @update:model-value="form.groupId = $event || null" />
+            <USelect :model-value="form.groupId ?? undefined" :items="groupOptions" value-key="value" placeholder="No Group" @update:model-value="form.groupId = $event || null" />
           </UFormField>
         </div>
 

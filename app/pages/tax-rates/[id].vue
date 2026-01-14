@@ -15,7 +15,7 @@ const form = ref({
   ratePercent: '',
   country: '',
   state: '',
-  categoryId: '',
+  categoryId: undefined as string | undefined,
   validFrom: '',
   validTo: '',
   isActive: true,
@@ -36,7 +36,7 @@ async function loadTaxRate() {
         ratePercent: ratePercent.toFixed(2),
         country: taxRate.value.country,
         state: taxRate.value.state ?? '',
-        categoryId: taxRate.value.categoryId ?? '',
+        categoryId: taxRate.value.categoryId ?? undefined,
         validFrom: taxRate.value.validFrom?.split('T')[0] ?? '',
         validTo: taxRate.value.validTo?.split('T')[0] ?? '',
         isActive: taxRate.value.isActive,
@@ -101,10 +101,9 @@ function cancelEdit() {
   }
 }
 
-const categoryOptions = computed(() => [
-  { label: 'All Products', value: '' },
-  ...categories.value.map((c) => ({ label: c.name, value: c.id })),
-])
+const categoryOptions = computed(() =>
+  categories.value.map((c) => ({ label: c.name, value: c.id }))
+)
 </script>
 
 <template>
@@ -186,7 +185,7 @@ const categoryOptions = computed(() => [
         </div>
 
         <UFormField label="Product Category">
-          <USelect v-model="form.categoryId" :items="categoryOptions" value-key="value" />
+          <USelect v-model="form.categoryId" :items="categoryOptions" value-key="value" placeholder="All Products" />
         </UFormField>
 
         <div class="grid grid-cols-2 gap-4">

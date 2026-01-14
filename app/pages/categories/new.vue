@@ -5,7 +5,7 @@ const { createCategory, fetchCategories, categories, flattenCategories } = useCa
 const initialFormState = {
   name: '',
   description: '',
-  parentId: '',
+  parentId: undefined as string | undefined,
   sortOrder: 0,
 }
 
@@ -29,13 +29,10 @@ function handleCancel() {
 
 const parentOptions = computed(() => {
   const flat = flattenCategories(categories.value)
-  return [
-    { label: 'None (root category)', value: '' },
-    ...flat.map((c) => ({
-      label: '\u00A0'.repeat(c.depth * 4) + c.name,
-      value: c.id,
-    })),
-  ]
+  return flat.map((c) => ({
+    label: '\u00A0'.repeat(c.depth * 4) + c.name,
+    value: c.id,
+  }))
 })
 
 async function handleSubmit() {
@@ -107,7 +104,7 @@ async function handleSubmit() {
           <USelect
             v-model="form.parentId"
             :items="parentOptions"
-            placeholder="Select parent category"
+            placeholder="None (root category)"
             value-key="value"
           />
         </UFormField>

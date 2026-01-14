@@ -29,7 +29,7 @@ const isEditing = ref(false)
 const form = ref({
   name: '',
   description: '',
-  parentId: '',
+  parentId: undefined as string | undefined,
   sortOrder: 0,
   isActive: true,
 })
@@ -54,7 +54,7 @@ async function loadCategory() {
       form.value = {
         name: category.value.name,
         description: category.value.description || '',
-        parentId: category.value.parentId || '',
+        parentId: category.value.parentId || undefined,
         sortOrder: category.value.sortOrder,
         isActive: category.value.isActive,
       }
@@ -68,13 +68,10 @@ async function loadCategory() {
 
 const parentOptions = computed(() => {
   const flat = flattenCategories(categories.value).filter((c) => c.id !== categoryId.value)
-  return [
-    { label: 'None (root category)', value: '' },
-    ...flat.map((c) => ({
-      label: '\u00A0'.repeat(c.depth * 4) + c.name,
-      value: c.id,
-    })),
-  ]
+  return flat.map((c) => ({
+    label: '\u00A0'.repeat(c.depth * 4) + c.name,
+    value: c.id,
+  }))
 })
 
 const availableProducts = computed(() => {
@@ -271,7 +268,7 @@ function getAttributeTypeLabel(type: string): string {
           </UFormField>
 
           <UFormField label="Parent Category">
-            <USelect v-model="form.parentId" :items="parentOptions" value-key="value" />
+            <USelect v-model="form.parentId" :items="parentOptions" value-key="value" placeholder="None (root category)" />
           </UFormField>
 
           <div class="grid grid-cols-2 gap-4">
