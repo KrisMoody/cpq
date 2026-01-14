@@ -4,7 +4,7 @@ interface GlossaryTerm {
   definition: string
   example: string
   relatedTerms: string[]
-  group: 'product' | 'pricing' | 'quote' | 'meta' | 'customer' | 'rules' | 'discount' | 'category' | 'tax' | 'contract' | 'attribute' | 'currency'
+  group: 'product' | 'pricing' | 'quote' | 'meta' | 'customer' | 'rules' | 'discount' | 'category' | 'tax' | 'contract' | 'attribute' | 'currency' | 'guided-selling'
   confusedWith?: string
   distinction?: string
 }
@@ -70,6 +70,22 @@ const glossaryTerms: GlossaryTerm[] = [
     relatedTerms: ['Feature', 'Price Adjustment', 'Configuration'],
     confusedWith: 'Feature',
     distinction: 'Option is the ANSWER ("32GB"). Feature is the QUESTION ("Which RAM?"). Options live inside Features.',
+  },
+  {
+    term: 'Unit of Measure',
+    group: 'product',
+    definition:
+      'A standard unit for quantifying products (e.g., "Each", "Box", "Kg", "License"). Units can have base units and conversion factors for automatic quantity conversion. Products can be assigned a default unit of measure.',
+    example: 'Unit "Box" has baseUnit="Each" with conversionFactor=12 (1 Box = 12 Each). Product "USB Cables" uses unit "Box".',
+    relatedTerms: ['Unit Conversion', 'Product'],
+  },
+  {
+    term: 'Unit Conversion',
+    group: 'product',
+    definition:
+      'The relationship between a derived unit and its base unit, defined by a conversion factor. Enables quantity calculations across different units within the same unit family.',
+    example: 'Unit "Dozen" converts to base unit "Each" with factor 12. Unit "Case" converts to "Box" with factor 4, and "Box" converts to "Each" with factor 12.',
+    relatedTerms: ['Unit of Measure', 'Product'],
   },
 
   // === CATEGORY GROUP ===
@@ -139,13 +155,39 @@ const glossaryTerms: GlossaryTerm[] = [
     example: 'List Price: $1,299. Select "32GB RAM": +$200 adjustment. Select "1TB Storage": +$250 adjustment. Final configured price: $1,749.',
     relatedTerms: ['Option', 'List Price'],
   },
+  {
+    term: 'Price Tier',
+    group: 'pricing',
+    definition:
+      'A quantity-based price break within a Price Book Entry. Price Tiers enable volume pricing where unit cost decreases as quantity increases. Each tier specifies a quantity range and the price for that range.',
+    example: 'PriceBookEntry for "USB-C Cable" in "Retail 2024" has tiers: $12/unit (1-9 qty), $10/unit (10-49 qty), $8/unit (50+ qty). Buying 25 cables uses the $10 tier.',
+    relatedTerms: ['Price Book Entry', 'List Price'],
+    confusedWith: 'Discount Tier',
+    distinction: 'Price Tier sets the BASE PRICE at different quantities. Discount Tier applies a REDUCTION to that price. Price Tiers are in Price Book Entries; Discount Tiers are in Discounts.',
+  },
+  {
+    term: 'Tier Type',
+    group: 'pricing',
+    definition:
+      'How a price tier is calculated: UNIT_PRICE (price per unit at this tier level) or FLAT_PRICE (flat price for the entire quantity range regardless of units).',
+    example: 'UNIT_PRICE: Qty 10+ at $8/unit means 15 units = $120. FLAT_PRICE: Qty 10+ at $100 flat means 15 units = $100 total.',
+    relatedTerms: ['Price Tier', 'Price Book Entry'],
+  },
+  {
+    term: 'Billing Frequency',
+    group: 'pricing',
+    definition:
+      'How often a product is billed: ONE_TIME (single purchase), MONTHLY, QUARTERLY, ANNUAL, or CUSTOM (specify months). Determines recurring revenue calculations and subscription pricing.',
+    example: 'Product "Software License" has billingFrequency=ANNUAL. Product "Support" has billingFrequency=MONTHLY. Product "Laptop" has billingFrequency=ONE_TIME.',
+    relatedTerms: ['MRR', 'ARR', 'Product'],
+  },
 
   // === QUOTE GROUP ===
   {
     term: 'Quote',
     group: 'quote',
     definition:
-      'The sales document sent to a customer listing what they\'re buying and the total price. Contains Quote Line Items (the rows). Has a lifecycle: Draft → Pending → Approved/Rejected. Uses one Price Book for all pricing.',
+      'The sales document sent to a customer listing what they\'re buying and the total price. Contains Quote Line Items (the rows). Has a lifecycle: Draft → Pending → Approved/Rejected → Accepted → Finalized (or Cancelled). Uses one Price Book for all pricing.',
     example: 'Quote #Q-2024-0042 for "Acme Corp" using "Retail 2024" price book. Contains 2 line items. Total: $1,559. Status: Draft.',
     relatedTerms: ['Quote Line Item', 'Price Book'],
     confusedWith: 'Quote Line Item',
@@ -171,6 +213,44 @@ const glossaryTerms: GlossaryTerm[] = [
     confusedWith: 'Quote Line Item',
     distinction: 'Configuration is the OPTIONS DATA (the JSON of choices). Quote Line Item is the ROW that contains the configuration plus qty, price, etc.',
   },
+  {
+    term: 'MRR',
+    group: 'quote',
+    definition:
+      'Monthly Recurring Revenue - the normalized monthly value of all recurring line items on a quote. Annual subscriptions are divided by 12, quarterly by 3. One-time items are excluded from MRR.',
+    example: 'Quote has: Annual license ($1,200/year = $100 MRR) + Monthly support ($50/month = $50 MRR) + One-time setup ($500 = $0 MRR). Total MRR: $150.',
+    relatedTerms: ['ARR', 'TCV', 'Billing Frequency'],
+    confusedWith: 'ARR',
+    distinction: 'MRR is MONTHLY normalized value. ARR is ANNUAL value (MRR × 12). Both exclude one-time revenue.',
+  },
+  {
+    term: 'ARR',
+    group: 'quote',
+    definition:
+      'Annual Recurring Revenue - the annualized value of recurring revenue, calculated as MRR × 12. Represents the yearly run-rate of subscription revenue if all current subscriptions continue.',
+    example: 'Quote has MRR of $150. ARR = $150 × 12 = $1,800/year. This is the projected annual recurring revenue from this quote.',
+    relatedTerms: ['MRR', 'TCV', 'Billing Frequency'],
+    confusedWith: 'TCV',
+    distinction: 'ARR is the ANNUAL recurring run-rate. TCV includes one-time items and the full contract term value.',
+  },
+  {
+    term: 'TCV',
+    group: 'quote',
+    definition:
+      'Total Contract Value - the complete monetary value of a quote including one-time items plus all recurring items for the full contract term. Represents the total revenue expected from the deal.',
+    example: 'Quote: Setup fee $500 (one-time) + 12-month license $1,200 + 12-month support $600. TCV = $500 + $1,200 + $600 = $2,300.',
+    relatedTerms: ['MRR', 'ARR', 'Quote'],
+    confusedWith: 'ARR',
+    distinction: 'TCV is the TOTAL deal value including one-time items. ARR is just the recurring portion annualized.',
+  },
+  {
+    term: 'Proration',
+    group: 'quote',
+    definition:
+      'Adjusting a subscription price based on a partial billing period. When a subscription starts mid-period, the first charge is prorated based on remaining days. The proratedAmount field stores this adjusted value.',
+    example: 'Monthly subscription ($100/month) starts on Jan 15. Prorated first month: 17 days × ($100/31 days) = $54.84 proratedAmount.',
+    relatedTerms: ['Billing Frequency', 'Quote Line Item'],
+  },
 
   // === CUSTOMER GROUP ===
   {
@@ -180,18 +260,6 @@ const glossaryTerms: GlossaryTerm[] = [
       'A record representing a buyer with contact information (name, email, phone), optional company details, and an assigned Price Book for customer-specific pricing. Customers are linked to Quotes for tracking and reporting.',
     example: '"Acme Corp" (customer) has email sales@acme.com, is assigned to "Partner" price book (20% discount), and has 3 quotes totaling $45,000.',
     relatedTerms: ['Quote', 'Price Book'],
-  },
-
-  // === PRICING GROUP (continued) ===
-  {
-    term: 'Price Tier',
-    group: 'pricing',
-    definition:
-      'A quantity-based price break within a Price Book Entry. Price Tiers enable volume pricing where unit cost decreases as quantity increases. Each tier specifies a quantity range and the price for that range.',
-    example: 'PriceBookEntry for "USB-C Cable" in "Retail 2024" has tiers: $12/unit (1-9 qty), $10/unit (10-49 qty), $8/unit (50+ qty). Buying 25 cables uses the $10 tier.',
-    relatedTerms: ['Price Book Entry', 'List Price'],
-    confusedWith: 'Discount Tier',
-    distinction: 'Price Tier sets the BASE PRICE at different quantities. Discount Tier applies a REDUCTION to that price. Price Tiers are in Price Book Entries; Discount Tiers are in Discounts.',
   },
 
   // === RULES GROUP ===
@@ -327,7 +395,7 @@ const glossaryTerms: GlossaryTerm[] = [
     definition:
       'A custom field definition for storing additional product information. Attributes have a type (TEXT, NUMBER, BOOLEAN, SELECT, DATE), can be required, and can have constraints. They are organized into Attribute Groups.',
     example: 'Attribute "Color" (type: SELECT, options: ["Red", "Blue", "Black"]) and Attribute "Weight" (type: NUMBER, constraints: {min: 0, max: 100}).',
-    relatedTerms: ['Attribute Group', 'Product Attribute', 'Attribute Type'],
+    relatedTerms: ['Attribute Group', 'Product Attribute', 'Attribute Type', 'Category Attribute'],
   },
   {
     term: 'Attribute Group',
@@ -348,6 +416,14 @@ const glossaryTerms: GlossaryTerm[] = [
     distinction: 'Attribute is the DEFINITION (the field schema). Product Attribute is the VALUE (the actual data for a specific product).',
   },
   {
+    term: 'Category Attribute',
+    group: 'attribute',
+    definition:
+      'The junction record linking an Attribute to a Category. When an attribute is assigned to a category, all products in that category inherit the attribute definition, suggesting what values should be provided.',
+    example: 'Category "Laptops" has CategoryAttribute for "Screen Size" and "Battery Life". All products in the Laptops category should have these attributes.',
+    relatedTerms: ['Attribute', 'Category', 'Product Attribute'],
+  },
+  {
     term: 'Attribute Type',
     group: 'attribute',
     definition:
@@ -362,7 +438,7 @@ const glossaryTerms: GlossaryTerm[] = [
     group: 'currency',
     definition:
       'A monetary unit identified by ISO 4217 code (USD, EUR, GBP, etc.). Each currency has a code, name, and symbol. One currency is marked as the base currency for reporting. Price books, quotes, and customers can be assigned specific currencies.',
-    example: 'Currency "USD" (code: USD, symbol: $, isBase: true) and Currency "EUR" (code: EUR, symbol: \u20ac, isBase: false).',
+    example: 'Currency "USD" (code: USD, symbol: $, isBase: true) and Currency "EUR" (code: EUR, symbol: €, isBase: false).',
     relatedTerms: ['Exchange Rate', 'Base Currency', 'Price Book'],
   },
   {
@@ -378,98 +454,185 @@ const glossaryTerms: GlossaryTerm[] = [
     group: 'currency',
     definition:
       'The primary currency used for financial reporting and consolidation. All quote totals are converted to the base currency amount for consistent reporting. Only one currency can be the base currency (isBase=true).',
-    example: 'USD is the base currency. A quote in EUR for \u20ac1,000 at exchange rate 1.08 has baseAmount=$1,080 for reporting.',
+    example: 'USD is the base currency. A quote in EUR for €1,000 at exchange rate 1.08 has baseAmount=$1,080 for reporting.',
     relatedTerms: ['Currency', 'Exchange Rate', 'Quote'],
     confusedWith: 'Currency',
     distinction: 'Base Currency is the REPORTING standard. Other Currencies are TRANSACTION currencies that get converted to base.',
   },
 
-  // === PRODUCT GROUP (continued) - Unit of Measure ===
+  // === GUIDED SELLING GROUP ===
   {
-    term: 'Unit of Measure',
-    group: 'product',
+    term: 'Product Affinity',
+    group: 'guided-selling',
     definition:
-      'A standard unit for quantifying products (e.g., "Each", "Box", "Kg", "License"). Units can have base units and conversion factors for automatic quantity conversion. Products can be assigned a default unit of measure.',
-    example: 'Unit "Box" has baseUnit="Each" with conversionFactor=12 (1 Box = 12 Each). Product "USB Cables" uses unit "Box".',
-    relatedTerms: ['Unit Conversion', 'Product'],
+      'A directional relationship between products (source → target) that triggers recommendations based on affinity type. When a source product is added to a quote, the system recommends target products. Affinities have a priority for ordering and can have conditions.',
+    example: 'ProductAffinity: source="Laptop Pro" → target="Laptop Bag", type=ACCESSORY, priority=50. When Laptop Pro is added, system recommends Laptop Bag.',
+    relatedTerms: ['Affinity Type', 'Recommendation Log', 'Questionnaire'],
+    confusedWith: 'Questionnaire',
+    distinction: 'Affinity is rule-based (triggered by product selection). Questionnaire is needs-based (triggered by user answering questions).',
   },
   {
-    term: 'Unit Conversion',
-    group: 'product',
+    term: 'Affinity Type',
+    group: 'guided-selling',
     definition:
-      'The relationship between a derived unit and its base unit, defined by a conversion factor. Enables quantity calculations across different units within the same unit family.',
-    example: 'Unit "Dozen" converts to base unit "Each" with factor 12. Unit "Case" converts to "Box" with factor 4, and "Box" converts to "Each" with factor 12.',
-    relatedTerms: ['Unit of Measure', 'Product'],
-  },
-
-  // === PRICING GROUP (continued) - Subscription/Recurring ===
-  {
-    term: 'Billing Frequency',
-    group: 'pricing',
-    definition:
-      'How often a product is billed: ONE_TIME (single purchase), MONTHLY, QUARTERLY, ANNUAL, or CUSTOM (specify months). Determines recurring revenue calculations and subscription pricing.',
-    example: 'Product "Software License" has billingFrequency=ANNUAL. Product "Support" has billingFrequency=MONTHLY. Product "Laptop" has billingFrequency=ONE_TIME.',
-    relatedTerms: ['MRR', 'ARR', 'Product'],
-  },
-
-  // === QUOTE GROUP (continued) - Recurring Revenue Metrics ===
-  {
-    term: 'MRR',
-    group: 'quote',
-    definition:
-      'Monthly Recurring Revenue - the normalized monthly value of all recurring line items on a quote. Annual subscriptions are divided by 12, quarterly by 3. One-time items are excluded from MRR.',
-    example: 'Quote has: Annual license ($1,200/year = $100 MRR) + Monthly support ($50/month = $50 MRR) + One-time setup ($500 = $0 MRR). Total MRR: $150.',
-    relatedTerms: ['ARR', 'TCV', 'Billing Frequency'],
-    confusedWith: 'ARR',
-    distinction: 'MRR is MONTHLY normalized value. ARR is ANNUAL value (MRR \u00d7 12). Both exclude one-time revenue.',
+      'The category of product relationship: CROSS_SELL (complementary product), UPSELL (premium alternative), ACCESSORY (add-on item), REQUIRED (mandatory companion), FREQUENTLY_BOUGHT (popular combination), SUBSCRIPTION_ADDON (recurring add-on).',
+    example: 'CROSS_SELL: "Also consider..." UPSELL: "Upgrade to..." ACCESSORY: "Don\'t forget..." REQUIRED: "You\'ll also need..."',
+    relatedTerms: ['Product Affinity'],
   },
   {
-    term: 'ARR',
-    group: 'quote',
+    term: 'Questionnaire',
+    group: 'guided-selling',
     definition:
-      'Annual Recurring Revenue - the annualized value of recurring revenue, calculated as MRR \u00d7 12. Represents the yearly run-rate of subscription revenue if all current subscriptions continue.',
-    example: 'Quote has MRR of $150. ARR = $150 \u00d7 12 = $1,800/year. This is the projected annual recurring revenue from this quote.',
-    relatedTerms: ['MRR', 'TCV', 'Billing Frequency'],
-    confusedWith: 'TCV',
-    distinction: 'ARR is the ANNUAL recurring run-rate. TCV includes one-time items and the full contract term value.',
+      'A needs-assessment survey that guides users to appropriate products based on their answers. Contains ordered questions with branching logic that maps answers to product recommendations with relevance scores.',
+    example: 'Questionnaire "Find Your Laptop": Question 1 "Primary use?" → "Gaming" maps to gaming laptops with score 100, "Business" maps to business laptops.',
+    relatedTerms: ['Question', 'Question Product Mapping', 'Product Affinity'],
+    confusedWith: 'Product Affinity',
+    distinction: 'Questionnaire asks questions to discover needs. Affinity is rule-based on existing selections.',
   },
   {
-    term: 'TCV',
-    group: 'quote',
+    term: 'Question',
+    group: 'guided-selling',
     definition:
-      'Total Contract Value - the complete monetary value of a quote including one-time items plus all recurring items for the full contract term. Represents the total revenue expected from the deal.',
-    example: 'Quote: Setup fee $500 (one-time) + 12-month license $1,200 + 12-month support $600. TCV = $500 + $1,200 + $600 = $2,300.',
-    relatedTerms: ['MRR', 'ARR', 'Quote'],
-    confusedWith: 'ARR',
-    distinction: 'TCV is the TOTAL deal value including one-time items. ARR is just the recurring portion annualized.',
+      'A single question within a questionnaire. Has a type (SINGLE_CHOICE, MULTIPLE_CHOICE, RANGE, YES_NO), display text, answer options, and optional branching logic to control flow based on answers.',
+    example: 'Question: "What\'s your budget?" type=RANGE, options=[{label:"Under $500"}, {label:"$500-$1000"}, {label:"Over $1000"}]',
+    relatedTerms: ['Questionnaire', 'Question Type', 'Question Product Mapping'],
   },
   {
-    term: 'Proration',
-    group: 'quote',
+    term: 'Question Type',
+    group: 'guided-selling',
     definition:
-      'Adjusting a subscription price based on a partial billing period. When a subscription starts mid-period, the first charge is prorated based on remaining days. The proratedAmount field stores this adjusted value.',
-    example: 'Monthly subscription ($100/month) starts on Jan 15. Prorated first month: 17 days \u00d7 ($100/31 days) = $54.84 proratedAmount.',
-    relatedTerms: ['Billing Frequency', 'Quote Line Item'],
+      'The answer format for a question: SINGLE_CHOICE (pick one), MULTIPLE_CHOICE (pick many), RANGE (select from range), YES_NO (binary).',
+    example: 'SINGLE_CHOICE: "Primary use?" MULTIPLE_CHOICE: "Which features matter?" RANGE: "Budget range?" YES_NO: "Need warranty?"',
+    relatedTerms: ['Question'],
+  },
+  {
+    term: 'Question Product Mapping',
+    group: 'guided-selling',
+    definition:
+      'The junction record linking a question\'s answer to a recommended product with a relevance score. Higher scores indicate stronger matches. Multiple products can map to the same answer.',
+    example: 'Question "Primary use?" answer "Gaming" maps to: "Gaming Laptop Pro" (score: 100), "Gaming Mouse" (score: 80).',
+    relatedTerms: ['Question', 'Product'],
+  },
+  {
+    term: 'Recommendation Log',
+    group: 'guided-selling',
+    definition:
+      'A tracking record for recommendation effectiveness. Logs when a recommendation was SHOWN to user, ACCEPTED (added to quote), or DISMISSED. Includes source (RULE_BASED, AI_GENERATED, QUESTIONNAIRE, MANUAL).',
+    example: 'RecommendationLog: quote="Q-2024-001", product="Laptop Bag", source=RULE_BASED, action=ACCEPTED.',
+    relatedTerms: ['Product Affinity', 'Recommendation Source', 'Recommendation Action'],
+  },
+  {
+    term: 'Recommendation Source',
+    group: 'guided-selling',
+    definition:
+      'How a recommendation was generated: RULE_BASED (from affinity rules), AI_GENERATED (from ML model), QUESTIONNAIRE (from needs assessment), MANUAL (sales rep entered).',
+    example: 'RULE_BASED: triggered by affinity rule. QUESTIONNAIRE: from needs assessment. MANUAL: sales rep suggested.',
+    relatedTerms: ['Recommendation Log'],
+  },
+  {
+    term: 'Recommendation Action',
+    group: 'guided-selling',
+    definition:
+      'The user\'s response to a recommendation: SHOWN (displayed to user), ACCEPTED (user added product to quote), DISMISSED (user declined recommendation).',
+    example: 'Track conversion: 100 SHOWN → 45 ACCEPTED, 55 DISMISSED = 45% acceptance rate.',
+    relatedTerms: ['Recommendation Log'],
   },
 ]
 
 const groupLabels: Record<GlossaryTerm['group'], string> = {
-  meta: 'Overview',
-  product: 'Product Terms',
-  category: 'Category Terms',
-  pricing: 'Pricing Terms',
-  quote: 'Quote Terms',
-  customer: 'Customer Terms',
-  rules: 'Rules Terms',
-  discount: 'Discount Terms',
-  tax: 'Tax Terms',
-  contract: 'Contract Terms',
-  attribute: 'Attribute Terms',
-  currency: 'Currency Terms',
+  'meta': 'Overview',
+  'product': 'Product Terms',
+  'category': 'Category Terms',
+  'pricing': 'Pricing Terms',
+  'quote': 'Quote Terms',
+  'customer': 'Customer Terms',
+  'rules': 'Rules Terms',
+  'discount': 'Discount Terms',
+  'tax': 'Tax Terms',
+  'contract': 'Contract Terms',
+  'attribute': 'Attribute Terms',
+  'currency': 'Currency Terms',
+  'guided-selling': 'Guided Selling Terms',
 }
 
-const groupOrder: GlossaryTerm['group'][] = ['meta', 'product', 'category', 'attribute', 'pricing', 'currency', 'quote', 'customer', 'contract', 'tax', 'rules', 'discount']
+const groupOrder: GlossaryTerm['group'][] = ['meta', 'product', 'category', 'attribute', 'pricing', 'currency', 'quote', 'customer', 'contract', 'tax', 'rules', 'discount', 'guided-selling']
 
+// Section management
+interface TocSection {
+  id: string
+  label: string
+  icon: string
+}
+
+const sections: TocSection[] = [
+  { id: 'workflow', label: 'Workflow', icon: 'i-heroicons-arrow-path' },
+  { id: 'data-model', label: 'Data Model', icon: 'i-heroicons-circle-stack' },
+  { id: 'business-logic', label: 'Business Logic', icon: 'i-heroicons-cog-6-tooth' },
+  { id: 'formulas', label: 'Formulas', icon: 'i-heroicons-calculator' },
+  { id: 'example', label: 'Example', icon: 'i-heroicons-play-circle' },
+  { id: 'glossary', label: 'Glossary', icon: 'i-heroicons-book-open' },
+  { id: 'enums', label: 'Enums', icon: 'i-heroicons-list-bullet' },
+  { id: 'relationships', label: 'Relationships', icon: 'i-heroicons-arrows-right-left' },
+  { id: 'tips', label: 'Tips', icon: 'i-heroicons-light-bulb' },
+]
+
+const sectionStates = ref<Record<string, boolean>>({
+  'workflow': true,
+  'data-model': true,
+  'business-logic': true,
+  'formulas': true,
+  'example': true,
+  'glossary': true,
+  'enums': true,
+  'relationships': true,
+  'tips': true,
+})
+
+const activeSection = ref('workflow')
+
+function navigateToSection(sectionId: string) {
+  const element = document.getElementById(sectionId)
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    // Ensure section is expanded
+    sectionStates.value[sectionId] = true
+  }
+}
+
+function expandAll() {
+  for (const key of Object.keys(sectionStates.value)) {
+    sectionStates.value[key] = true
+  }
+}
+
+function collapseAll() {
+  for (const key of Object.keys(sectionStates.value)) {
+    sectionStates.value[key] = false
+  }
+}
+
+// Intersection observer for active section tracking
+onMounted(() => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          activeSection.value = entry.target.id
+        }
+      }
+    },
+    { rootMargin: '-20% 0px -60% 0px' },
+  )
+
+  for (const section of sections) {
+    const el = document.getElementById(section.id)
+    if (el) observer.observe(el)
+  }
+
+  onUnmounted(() => observer.disconnect())
+})
+
+// Glossary state
 const searchQuery = ref('')
 const compareMode = ref(false)
 const selectedTerms = ref<string[]>([])
@@ -479,28 +642,29 @@ const filteredTerms = computed(() => {
   if (!searchQuery.value.trim()) return glossaryTerms
   const query = searchQuery.value.toLowerCase()
   return glossaryTerms.filter(
-    (t) =>
-      t.term.toLowerCase().includes(query) ||
-      t.definition.toLowerCase().includes(query) ||
-      t.example.toLowerCase().includes(query) ||
-      t.relatedTerms.some((rt) => rt.toLowerCase().includes(query))
+    t =>
+      t.term.toLowerCase().includes(query)
+      || t.definition.toLowerCase().includes(query)
+      || t.example.toLowerCase().includes(query)
+      || t.relatedTerms.some(rt => rt.toLowerCase().includes(query)),
   )
 })
 
 const groupedTerms = computed(() => {
   const groups: Record<GlossaryTerm['group'], GlossaryTerm[]> = {
-    meta: [],
-    product: [],
-    category: [],
-    pricing: [],
-    quote: [],
-    customer: [],
-    rules: [],
-    discount: [],
-    tax: [],
-    contract: [],
-    attribute: [],
-    currency: [],
+    'meta': [],
+    'product': [],
+    'category': [],
+    'pricing': [],
+    'quote': [],
+    'customer': [],
+    'rules': [],
+    'discount': [],
+    'tax': [],
+    'contract': [],
+    'attribute': [],
+    'currency': [],
+    'guided-selling': [],
   }
   for (const term of filteredTerms.value) {
     groups[term.group].push(term)
@@ -509,7 +673,7 @@ const groupedTerms = computed(() => {
 })
 
 const selectedTermsData = computed(() => {
-  return glossaryTerms.filter((t) => selectedTerms.value.includes(t.term))
+  return glossaryTerms.filter(t => selectedTerms.value.includes(t.term))
 })
 
 function toggleTermSelection(term: string) {
@@ -518,7 +682,8 @@ function toggleTermSelection(term: string) {
     if (selectedTerms.value.length < 3) {
       selectedTerms.value.push(term)
     }
-  } else {
+  }
+  else {
     selectedTerms.value.splice(index, 1)
   }
 }
@@ -539,38 +704,64 @@ function scrollToTerm(term: string) {
   }
 }
 
-const activeTab = ref('diagram')
+const activeTab = ref('interactive')
 </script>
 
 <template>
-  <div class="space-y-8">
-    <div>
-      <h1 class="text-2xl font-bold">Learn CPQ</h1>
-      <p class="text-gray-500">
-        Interactive glossary and concepts for Configure, Price, Quote systems
-      </p>
-    </div>
+  <div class="relative">
+    <!-- Table of Contents -->
+    <LearnTableOfContents
+      :sections="sections"
+      :active-section="activeSection"
+      @navigate="navigateToSection"
+    />
 
-    <!-- CPQ Flow Diagram -->
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">CPQ Workflow Overview</h2>
-      </template>
-      <LearnCPQFlowDiagram />
-    </UCard>
+    <!-- Main Content (with left margin for desktop TOC) -->
+    <div class="xl:ml-64 space-y-6">
+      <div>
+        <h1 class="text-2xl font-bold">Learn CPQ</h1>
+        <p class="text-gray-500 dark:text-gray-400">
+          Interactive glossary and concepts for Configure, Price, Quote systems
+        </p>
+      </div>
 
-    <!-- Entity Relationship Visualizations -->
-    <UCard>
-      <template #header>
-        <div class="flex items-center justify-between">
-          <h2 class="font-semibold">Data Model</h2>
+      <!-- Expand/Collapse All -->
+      <div class="flex gap-2">
+        <UButton size="sm" variant="ghost" @click="expandAll">
+          <UIcon name="i-heroicons-arrows-pointing-out" class="w-4 h-4 mr-1" />
+          Expand All
+        </UButton>
+        <UButton size="sm" variant="ghost" @click="collapseAll">
+          <UIcon name="i-heroicons-arrows-pointing-in" class="w-4 h-4 mr-1" />
+          Collapse All
+        </UButton>
+      </div>
+
+      <!-- CPQ Flow Diagram -->
+      <LearnCollapsibleSection
+        id="workflow"
+        v-model="sectionStates['workflow']"
+        title="CPQ Workflow Overview"
+        icon="i-heroicons-arrow-path"
+      >
+        <LearnCPQFlowDiagram />
+      </LearnCollapsibleSection>
+
+      <!-- Entity Relationship Visualizations -->
+      <LearnCollapsibleSection
+        id="data-model"
+        v-model="sectionStates['data-model']"
+        title="Data Model"
+        icon="i-heroicons-circle-stack"
+      >
+        <div class="space-y-4">
           <div class="flex gap-2">
             <UButton
-              :variant="activeTab === 'diagram' ? 'solid' : 'ghost'"
+              :variant="activeTab === 'interactive' ? 'solid' : 'ghost'"
               size="sm"
-              @click="activeTab = 'diagram'"
+              @click="activeTab = 'interactive'"
             >
-              ER Diagram
+              Interactive ER
             </UButton>
             <UButton
               :variant="activeTab === 'hierarchy' ? 'solid' : 'ghost'"
@@ -587,269 +778,272 @@ const activeTab = ref('diagram')
               Database Schema
             </UButton>
           </div>
+          <ClientOnly>
+            <LearnERDiagram v-if="activeTab === 'interactive'" />
+          </ClientOnly>
+          <LearnEntityHierarchy v-if="activeTab === 'hierarchy'" />
+          <LearnPrismaERD v-if="activeTab === 'schema'" />
         </div>
-      </template>
-      <LearnEntityDiagram v-if="activeTab === 'diagram'" />
-      <LearnEntityHierarchy v-else-if="activeTab === 'hierarchy'" />
-      <LearnPrismaERD v-else />
-    </UCard>
+      </LearnCollapsibleSection>
 
-    <!-- Glossary -->
-    <div>
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-semibold">Glossary</h2>
-        <div class="flex items-center gap-3">
-          <UButton
-            v-if="!compareMode"
-            variant="outline"
-            size="sm"
-            icon="i-heroicons-arrows-right-left"
-            @click="compareMode = true"
-          >
-            Compare Terms
-          </UButton>
-          <UButton
-            v-else
-            variant="soft"
-            color="error"
-            size="sm"
-            icon="i-heroicons-x-mark"
-            @click="exitCompareMode"
-          >
-            Exit Compare
-          </UButton>
-          <UInput
-            v-model="searchQuery"
-            placeholder="Search terms..."
-            icon="i-heroicons-magnifying-glass"
-            class="w-64"
-          />
-        </div>
-      </div>
+      <!-- Business Logic -->
+      <LearnCollapsibleSection
+        id="business-logic"
+        v-model="sectionStates['business-logic']"
+        title="Business Logic"
+        icon="i-heroicons-cog-6-tooth"
+      >
+        <LearnBusinessLogic />
+      </LearnCollapsibleSection>
 
-      <!-- Compare mode hint -->
-      <div v-if="compareMode && selectedTerms.length < 2" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm text-blue-700 dark:text-blue-300">
-        Select 2-3 terms to compare them side-by-side. Click on the cards below to select.
-        <span v-if="selectedTerms.length === 1" class="font-medium">({{ selectedTerms.length }}/3 selected)</span>
-      </div>
+      <!-- Formula Reference -->
+      <LearnCollapsibleSection
+        id="formulas"
+        v-model="sectionStates['formulas']"
+        title="Formula Reference"
+        icon="i-heroicons-calculator"
+      >
+        <LearnFormulaReference />
+      </LearnCollapsibleSection>
 
-      <!-- Comparison view -->
-      <LearnGlossaryComparison
-        v-if="compareMode && selectedTerms.length >= 2"
-        :terms="selectedTermsData"
-        @close="exitCompareMode"
-      />
+      <!-- Worked Example -->
+      <LearnCollapsibleSection
+        id="example"
+        v-model="sectionStates['example']"
+        title="Worked Example"
+        icon="i-heroicons-play-circle"
+      >
+        <LearnWorkedExample />
+      </LearnCollapsibleSection>
 
-      <div v-if="filteredTerms.length === 0" class="text-center py-8 text-gray-500">
-        No terms found matching "{{ searchQuery }}"
-      </div>
-
-      <!-- Grouped glossary terms -->
-      <div v-else class="space-y-8">
-        <div
-          v-for="group in groupOrder"
-          :key="group"
-        >
-          <template v-if="groupedTerms[group].length > 0">
-            <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
-              {{ groupLabels[group] }}
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <LearnGlossaryTerm
-                v-for="item in groupedTerms[group]"
-                :id="`glossary-term-${item.term.toLowerCase().replace(/\s+/g, '-')}`"
-                :key="item.term"
-                :term="item.term"
-                :definition="item.definition"
-                :example="item.example"
-                :related-terms="item.relatedTerms"
-                :confused-with="item.confusedWith"
-                :distinction="item.distinction"
-                :compare-mode="compareMode"
-                :selected="selectedTerms.includes(item.term)"
-                :highlighted="highlightedTerm === item.term"
-                @toggle-select="toggleTermSelection(item.term)"
-                @navigate-to-term="scrollToTerm"
+      <!-- Glossary -->
+      <LearnCollapsibleSection
+        id="glossary"
+        v-model="sectionStates['glossary']"
+        title="Glossary"
+        icon="i-heroicons-book-open"
+      >
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <UButton
+                v-if="!compareMode"
+                variant="outline"
+                size="sm"
+                icon="i-heroicons-arrows-right-left"
+                @click="compareMode = true"
+              >
+                Compare Terms
+              </UButton>
+              <UButton
+                v-else
+                variant="soft"
+                color="error"
+                size="sm"
+                icon="i-heroicons-x-mark"
+                @click="exitCompareMode"
+              >
+                Exit Compare
+              </UButton>
+              <UInput
+                v-model="searchQuery"
+                placeholder="Search terms..."
+                icon="i-heroicons-magnifying-glass"
+                class="w-64"
               />
             </div>
-          </template>
+          </div>
+
+          <!-- Compare mode hint -->
+          <div v-if="compareMode && selectedTerms.length < 2" class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm text-blue-700 dark:text-blue-300">
+            Select 2-3 terms to compare them side-by-side. Click on the cards below to select.
+            <span v-if="selectedTerms.length === 1" class="font-medium">({{ selectedTerms.length }}/3 selected)</span>
+          </div>
+
+          <!-- Comparison view -->
+          <LearnGlossaryComparison
+            v-if="compareMode && selectedTerms.length >= 2"
+            :terms="selectedTermsData"
+            @close="exitCompareMode"
+          />
+
+          <div v-if="filteredTerms.length === 0" class="text-center py-8 text-gray-500">
+            No terms found matching "{{ searchQuery }}"
+          </div>
+
+          <!-- Grouped glossary terms -->
+          <div v-else class="space-y-8">
+            <div
+              v-for="group in groupOrder"
+              :key="group"
+            >
+              <template v-if="groupedTerms[group].length > 0">
+                <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                  {{ groupLabels[group] }}
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <LearnGlossaryTerm
+                    v-for="item in groupedTerms[group]"
+                    :id="`glossary-term-${item.term.toLowerCase().replace(/\s+/g, '-')}`"
+                    :key="item.term"
+                    :term="item.term"
+                    :definition="item.definition"
+                    :example="item.example"
+                    :related-terms="item.relatedTerms"
+                    :confused-with="item.confusedWith"
+                    :distinction="item.distinction"
+                    :compare-mode="compareMode"
+                    :selected="selectedTerms.includes(item.term)"
+                    :highlighted="highlightedTerm === item.term"
+                    @toggle-select="toggleTermSelection(item.term)"
+                    @navigate-to-term="scrollToTerm"
+                  />
+                </div>
+              </template>
+            </div>
+          </div>
         </div>
-      </div>
+      </LearnCollapsibleSection>
+
+      <!-- Enum Reference -->
+      <LearnCollapsibleSection
+        id="enums"
+        v-model="sectionStates['enums']"
+        title="Enum Reference"
+        icon="i-heroicons-list-bullet"
+      >
+        <LearnEnumReference />
+      </LearnCollapsibleSection>
+
+      <!-- Relationship Cards -->
+      <LearnCollapsibleSection
+        id="relationships"
+        v-model="sectionStates['relationships']"
+        title="Relationship Cards"
+        icon="i-heroicons-arrows-right-left"
+      >
+        <LearnRelationshipCards />
+      </LearnCollapsibleSection>
+
+      <!-- Quick Tips -->
+      <LearnCollapsibleSection
+        id="tips"
+        v-model="sectionStates['tips']"
+        title="Quick Tips"
+        icon="i-heroicons-light-bulb"
+      >
+        <div class="space-y-4">
+          <div class="flex gap-3">
+            <UIcon name="i-heroicons-light-bulb" class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p class="font-medium">Start with Products</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                Browse the product catalog to understand what's available. Pay attention to the
+                difference between standalone products and configurable bundles.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <UIcon name="i-heroicons-light-bulb" class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p class="font-medium">Configure Bundles Carefully</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                When adding a bundle to a quote, review each feature and its options. Some options
+                have price adjustments that affect the final price.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <UIcon name="i-heroicons-sparkles" class="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p class="font-medium">Use Guided Selling</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                Set up product affinities for cross-sell and upsell opportunities. Use REQUIRED affinity
+                type for mandatory companion products. Questionnaires help discover customer needs.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <UIcon name="i-heroicons-clipboard-document-list" class="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p class="font-medium">Design Effective Questionnaires</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                Use branching logic to skip irrelevant questions. Set relevance scores to rank product
+                recommendations. Track acceptance rates to improve suggestions over time.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <UIcon name="i-heroicons-user-group" class="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p class="font-medium">Assign Customers to Quotes</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                Link quotes to customer records for tracking and reporting. Customers can have assigned
+                price books for automatic customer-specific pricing.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <UIcon name="i-heroicons-cog-6-tooth" class="w-5 h-5 text-pink-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p class="font-medium">Configuration Rules</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                Rules can enforce product dependencies (e.g., "32GB RAM requires SSD") and validate
+                configurations automatically when products are added or changed.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <UIcon name="i-heroicons-receipt-percent" class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p class="font-medium">Discount Stacking</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                Check if discounts are stackable before applying multiple. Non-stackable discounts are
+                exclusive; stackable discounts combine. Priority determines application order.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <UIcon name="i-heroicons-document-text" class="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p class="font-medium">Contract Pricing</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                Create contracts with customers for negotiated pricing. Contract Price Entries override
+                standard price book prices. Only active contracts (not draft or expired) affect pricing.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <UIcon name="i-heroicons-currency-dollar" class="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p class="font-medium">Multi-Currency Support</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                Configure currencies with exchange rates for international sales. Quote totals are
+                automatically converted to the base currency for consistent reporting across regions.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <UIcon name="i-heroicons-arrow-path" class="w-5 h-5 text-violet-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p class="font-medium">Recurring Revenue</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                Products with billing frequencies (monthly, quarterly, annual) automatically calculate
+                MRR, ARR, and TCV metrics on quotes. Use proration for mid-period subscription starts.
+              </p>
+            </div>
+          </div>
+        </div>
+      </LearnCollapsibleSection>
     </div>
-
-    <!-- Quick Tips -->
-    <UCard>
-      <template #header>
-        <h2 class="font-semibold">Quick Tips</h2>
-      </template>
-
-      <div class="space-y-4">
-        <div class="flex gap-3">
-          <UIcon name="i-heroicons-light-bulb" class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium">Start with Products</p>
-            <p class="text-sm text-gray-500">
-              Browse the product catalog to understand what's available. Pay attention to the
-              difference between standalone products and configurable bundles.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <UIcon name="i-heroicons-light-bulb" class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium">Configure Bundles Carefully</p>
-            <p class="text-sm text-gray-500">
-              When adding a bundle to a quote, review each feature and its options. Some options
-              have price adjustments that affect the final price.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <UIcon name="i-heroicons-light-bulb" class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium">Recalculate After Changes</p>
-            <p class="text-sm text-gray-500">
-              After adding or removing line items, use the "Recalculate Pricing" button to update
-              the quote totals with the latest prices from the price book.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <UIcon name="i-heroicons-light-bulb" class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium">Quote Lifecycle</p>
-            <p class="text-sm text-gray-500">
-              Quotes start as Draft, can be submitted for approval (Pending), and then either
-              Approved or Rejected. Only draft quotes can be edited.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <UIcon name="i-heroicons-user-group" class="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium">Assign Customers to Quotes</p>
-            <p class="text-sm text-gray-500">
-              Link quotes to customer records for tracking and reporting. Customers can have assigned
-              price books for automatic customer-specific pricing.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <UIcon name="i-heroicons-cog-6-tooth" class="w-5 h-5 text-pink-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium">Configuration Rules</p>
-            <p class="text-sm text-gray-500">
-              Rules can enforce product dependencies (e.g., "32GB RAM requires SSD") and validate
-              configurations automatically when products are added or changed.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <UIcon name="i-heroicons-clipboard-document-check" class="w-5 h-5 text-pink-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium">Pricing Rules & Approvals</p>
-            <p class="text-sm text-gray-500">
-              Pricing rules can trigger approval workflows (e.g., orders over $10,000 require manager
-              approval) or apply automatic adjustments based on conditions.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <UIcon name="i-heroicons-receipt-percent" class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium">Discount Types</p>
-            <p class="text-sm text-gray-500">
-              Use percentage discounts for proportional savings that scale with price, or fixed-amount
-              discounts for consistent dollar-off promotions regardless of order size.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <UIcon name="i-heroicons-squares-plus" class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium">Discount Stacking</p>
-            <p class="text-sm text-gray-500">
-              Check if discounts are stackable before applying multiple. Non-stackable discounts are
-              exclusive; stackable discounts combine. Priority determines application order.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <UIcon name="i-heroicons-code-bracket" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium">Naming Conventions</p>
-            <p class="text-sm text-gray-500">
-              Prisma enums use SCREAMING_CASE (e.g., QUOTE, LINE_ITEM, PERCENTAGE). JavaScript
-              field names use camelCase (e.g., quoteTotal, lineTotal). UI labels may be the same
-              (like "Quote Total") even when underlying values differ.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <UIcon name="i-heroicons-folder" class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium">Organize with Categories</p>
-            <p class="text-sm text-gray-500">
-              Use hierarchical categories to organize your product catalog. Products can belong to
-              multiple categories. Category-scoped discounts apply to all products within a category.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <UIcon name="i-heroicons-receipt-percent" class="w-5 h-5 text-cyan-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium">Tax Configuration</p>
-            <p class="text-sm text-gray-500">
-              Set up tax rates by country and state for automatic tax calculation. Mark customers as
-              tax-exempt when they provide valid exemption certificates. Tax amounts appear separately on quotes.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <UIcon name="i-heroicons-document-text" class="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium">Contract Pricing</p>
-            <p class="text-sm text-gray-500">
-              Create contracts with customers for negotiated pricing. Contract Price Entries override
-              standard price book prices. Only active contracts (not draft or expired) affect pricing.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <UIcon name="i-heroicons-currency-dollar" class="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium">Multi-Currency Support</p>
-            <p class="text-sm text-gray-500">
-              Configure currencies with exchange rates for international sales. Quote totals are
-              automatically converted to the base currency for consistent reporting across regions.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <UIcon name="i-heroicons-arrow-path" class="w-5 h-5 text-violet-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium">Recurring Revenue</p>
-            <p class="text-sm text-gray-500">
-              Products with billing frequencies (monthly, quarterly, annual) automatically calculate
-              MRR, ARR, and TCV metrics on quotes. Use proration for mid-period subscription starts.
-            </p>
-          </div>
-        </div>
-      </div>
-    </UCard>
   </div>
 </template>
