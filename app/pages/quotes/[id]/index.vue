@@ -233,6 +233,24 @@ const availableProducts = computed(() => {
 const quoteSubtotal = computed(() => {
   return quote.value ? parseFloat(String(quote.value.subtotal)) : 0
 })
+
+// Recommendations
+const recommendationsRef = ref<{ refresh: () => void } | null>(null)
+
+async function handleAddRecommendedProduct(productId: string) {
+  if (!quote.value) return
+  try {
+    await addLineItem(quote.value.id, {
+      productId,
+      quantity: 1,
+    })
+    await loadQuote()
+    // Refresh recommendations after adding a product
+    recommendationsRef.value?.refresh()
+  } catch (e: any) {
+    error.value = e.message || 'Failed to add product'
+  }
+}
 </script>
 
 <template>
@@ -410,6 +428,14 @@ const quoteSubtotal = computed(() => {
           >
             Recalculate Pricing
           </UButton>
+
+          <!-- Recommendations Panel -->
+          <CpqRecommendations
+            v-if="isEditable"
+            ref="recommendationsRef"
+            :quote-id="quote.id"
+            @add-product="handleAddRecommendedProduct"
+          />
         </div>
       </div>
     </div>

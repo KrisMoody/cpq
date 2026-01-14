@@ -115,6 +115,18 @@ const navigation: NavItem[] = [
         icon: 'i-heroicons-receipt-percent',
         to: '/tax-rates',
       },
+      {
+        id: 'affinities',
+        label: 'Affinities',
+        icon: 'i-heroicons-link',
+        to: '/affinities',
+      },
+      {
+        id: 'questionnaires',
+        label: 'Questionnaires',
+        icon: 'i-heroicons-clipboard-document-list',
+        to: '/questionnaires',
+      },
     ],
   },
   {

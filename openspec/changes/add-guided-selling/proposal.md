@@ -23,11 +23,29 @@ Sales reps often need guidance on which products to recommend based on customer 
 
 ### Dependencies
 - **Requires**: None - this is a standalone new capability
+- **Benefits from**: `subscriptions` (merged), `contract-pricing` (merged), `multi-currency` (merged)
 - **Modifies**: Creates new `guided-selling` spec only
 
+### Integration with Merged Features
+
+**Subscriptions Integration** (merged):
+- Recommendations can suggest one-time products to complement recurring subscriptions
+- Affinity rules can filter by billing frequency (e.g., recommend monthly add-ons for annual plans)
+- Recommendation cards show billing frequency badges for recurring products
+
+**Contract Pricing Integration** (merged):
+- Recommendations prioritize products covered by customer's active contract
+- Recommendation pricing respects contract prices when applicable
+- Contract indicator shown on recommendations with negotiated pricing
+
+**Multi-Currency Integration** (merged):
+- Recommendation prices displayed in quote's currency
+- Uses existing `usePricing()` composable for consistent currency formatting
+- No additional work needed - automatic via shared formatting utilities
+
 ### Coordination Points
-- **Quote editor page**: Adds recommendation display panel. Minor UI addition that shouldn't conflict with other proposals.
-- **prisma/schema.prisma**: Adds new Recommendation models. No overlap with other proposals' schema changes.
+- **Quote editor page** ([quotes/[id]/index.vue](app/pages/quotes/[id]/index.vue)): Adds recommendation panel to right column below `CpqPricingSummary`. Uses existing `usePricing()` composable for currency formatting.
+- **prisma/schema.prisma**: Adds new Recommendation models. Currency model already exists for price display.
 
 ### Suggested Order
 - **Implement before**: None - independent of other proposals
@@ -36,10 +54,5 @@ Sales reps often need guidance on which products to recommend based on customer 
 ### Parallel Development Notes
 This is the **safest proposal for parallel development**. It creates entirely new functionality with no overlap on existing code paths.
 
-Safe to implement in parallel with **any other proposal**:
+Safe to implement in parallel with:
 - `add-product-management` - no overlap
-- `add-contract-pricing` - no overlap
-- `add-subscriptions` - no overlap
-- `add-multi-currency` - no overlap (recommendations don't display prices)
-
-**Recommended pairing**: If two developers are working in parallel, one should take this proposal while the other works on pricing-related proposals (`add-contract-pricing` or `add-subscriptions`).

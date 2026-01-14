@@ -13,6 +13,27 @@ The system SHALL suggest relevant products based on quote context.
 - **THEN** system may suggest higher-tier alternatives
 - **AND** shows price difference and value proposition
 
+#### Scenario: Subscription cross-sell recommendations
+- **WHEN** recurring product is added to quote
+- **THEN** system suggests complementary one-time products (e.g., implementation, training)
+- **AND** suggestions consider the subscription term for relevance
+
+#### Scenario: One-time to subscription upsell
+- **WHEN** one-time product is added
+- **AND** a subscription alternative exists
+- **THEN** system may suggest the subscription option
+- **AND** shows MRR comparison and total cost over time
+
+#### Scenario: Contract-aware recommendations
+- **WHEN** quote has a customer with an active contract
+- **THEN** recommendations prioritize products covered by the contract
+- **AND** contract pricing is indicated when applicable
+
+#### Scenario: Recommendations pricing display
+- **WHEN** displaying recommendation with price
+- **THEN** price reflects quote's price book and any applicable contract pricing
+- **AND** price is formatted in quote's currency
+
 #### Scenario: Recommendations display
 - **WHEN** recommendations are available
 - **THEN** they appear in a non-intrusive panel on quote editor
@@ -35,6 +56,11 @@ The system SHALL support defining relationships between products for recommendat
 #### Scenario: Affinity conditions
 - **WHEN** affinity has conditions (e.g., quantity > 5)
 - **THEN** recommendation only appears when conditions are met
+
+#### Scenario: Billing frequency affinity
+- **WHEN** defining affinity for recurring products
+- **THEN** can specify source/target billing frequencies
+- **AND** e.g., recommend monthly add-ons for annual subscriptions
 
 ### Requirement: Guided Selling Questionnaire
 The system SHALL support needs-based product discovery through questionnaires.
