@@ -52,14 +52,14 @@
 - [x] 7.1 Create feature editor modal for adding/editing features
 - [x] 7.2 Add "Add Feature" button to bundle product edit mode
 - [x] 7.3 Add edit/delete actions to each feature card
-- [ ] 7.4 Implement drag-and-drop reordering for features (deferred)
+- [x] 7.4 Implement drag-and-drop reordering for features
 
 ## 8. Bundle Option Management UI
 
 - [x] 8.1 Create option editor modal for adding/editing options
 - [x] 8.2 Add product selector dropdown for option's referenced product
 - [x] 8.3 Add edit/delete actions to each option row
-- [ ] 8.4 Implement drag-and-drop reordering for options (deferred)
+- [x] 8.4 Implement drag-and-drop reordering for options
 
 ## 9. Testing
 
