@@ -17,17 +17,19 @@ const selectedOptions = ref<Record<string, Set<string>>>({})
 // Initialize with default options
 onMounted(() => {
   props.product.features.forEach((feature) => {
-    selectedOptions.value[feature.id] = new Set()
+    const featureSet = new Set<string>()
     feature.options.forEach((option) => {
       if (option.isDefault) {
-        selectedOptions.value[feature.id].add(option.id)
+        featureSet.add(option.id)
       }
     })
+    selectedOptions.value[feature.id] = featureSet
   })
 })
 
 function toggleOption(featureId: string, optionId: string, maxOptions: number) {
   const current = selectedOptions.value[featureId]
+  if (!current) return
 
   if (current.has(optionId)) {
     current.delete(optionId)

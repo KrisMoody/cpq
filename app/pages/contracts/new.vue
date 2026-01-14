@@ -27,7 +27,7 @@ onMounted(async () => {
   // Set default end date to 1 year from now
   const endDate = new Date()
   endDate.setFullYear(endDate.getFullYear() + 1)
-  form.value.endDate = endDate.toISOString().split('T')[0]
+  form.value.endDate = endDate.toISOString().split('T')[0] ?? ''
   initialValues.value.endDate = form.value.endDate
 })
 

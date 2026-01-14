@@ -1,9 +1,14 @@
 <script setup lang="ts">
+import type { ApexOptions } from 'apexcharts'
+
 const ApexChart = defineAsyncComponent(() =>
   import('vue3-apexcharts').then((m) => m.default)
 )
 
-const chartOptions = ref({
+// Chart type - vue3-apexcharts types are incomplete, but treemap is a valid ApexCharts type
+const chartType = 'treemap' as const
+
+const chartOptions = ref<ApexOptions>({
   chart: {
     type: 'treemap',
     toolbar: { show: false },
@@ -110,7 +115,7 @@ const series = ref([
   <div class="w-full">
     <ClientOnly>
       <ApexChart
-        type="treemap"
+        :type="(chartType as any)"
         height="450"
         :options="chartOptions"
         :series="series"

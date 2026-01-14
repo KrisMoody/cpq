@@ -139,7 +139,7 @@ export function usePricing() {
     loading.value = true
     error.value = null
     try {
-      await $fetch(`/api/price-books/${id}`, {
+      await $fetch(`/api/price-books/${id}` as string, {
         method: 'DELETE',
       })
       await fetchPriceBooks()

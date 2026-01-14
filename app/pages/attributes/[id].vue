@@ -326,7 +326,7 @@ async function handleDelete() {
             </UFormField>
 
             <UFormField label="Group">
-              <USelect v-model="form.groupId" :items="groupOptions" />
+              <USelect :model-value="form.groupId ?? undefined" :items="groupOptions" @update:model-value="form.groupId = $event || null" />
             </UFormField>
           </div>
 

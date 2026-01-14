@@ -29,7 +29,7 @@ export interface CategoryAttribute {
   }
 }
 
-export interface CategoryWithProducts extends Category {
+export interface CategoryWithProducts extends Omit<Category, 'children'> {
   products: {
     id: string
     name: string

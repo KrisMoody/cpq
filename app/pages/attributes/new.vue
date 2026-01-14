@@ -75,7 +75,7 @@ function removeOption(index: number) {
 // Auto-generate option value from label
 function onOptionLabelChange(index: number) {
   const option = form.value.options[index]
-  if (option.label && !option.value) {
+  if (option && option.label && !option.value) {
     option.value = option.label
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '_')
@@ -181,7 +181,7 @@ async function handleSubmit() {
           </UFormField>
 
           <UFormField label="Group">
-            <USelect v-model="form.groupId" :items="groupOptions" />
+            <USelect :model-value="form.groupId ?? undefined" :items="groupOptions" @update:model-value="form.groupId = $event || null" />
           </UFormField>
         </div>
 

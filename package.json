@@ -8,9 +8,11 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck",
     "db:push": "prisma db push",
     "db:seed": "tsx --env-file=.env prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "prepare": "husky"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -37,6 +39,8 @@
     "@types/ws": "^8.18.1",
     "@vitest/coverage-v8": "^4.0.17",
     "dotenv": "^17.2.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "tsx": "^4.21.0",
     "vitest": "^4.0.17"
   }
