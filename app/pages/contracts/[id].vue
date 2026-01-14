@@ -279,7 +279,7 @@ function formatDate(date: string) {
             {{ contract.customer.company || contract.customer.name }}
           </p>
           <div class="flex gap-2 mt-2">
-            <UBadge :color="getStatusColor(contract.status) as any" variant="subtle">
+            <UBadge :color="getStatusColor(contract.status)" variant="subtle">
               {{ contract.status }}
             </UBadge>
             <UBadge v-if="isContractActive(contract)" color="success" variant="outline">

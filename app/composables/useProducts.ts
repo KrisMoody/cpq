@@ -51,6 +51,21 @@ export interface ProductFeature {
   options: ProductOption[]
 }
 
+export interface ProductAttribute {
+  id: string
+  productId: string
+  attributeId: string
+  value: string | number | boolean | null
+  attribute: {
+    id: string
+    name: string
+    code: string
+    type: string
+    groupId: string | null
+    group?: { id: string; name: string } | null
+  }
+}
+
 export interface ProductWithFeatures extends Product {
   features: ProductFeature[]
   priceBookEntries: Array<{
@@ -61,6 +76,7 @@ export interface ProductWithFeatures extends Product {
       isDefault: boolean
     }
   }>
+  attributes?: ProductAttribute[]
 }
 
 export type ProductWithDetails = ProductWithFeatures
@@ -199,7 +215,8 @@ export function useProducts() {
 
   async function deleteFeature(productId: string, featureId: string): Promise<boolean> {
     try {
-      await ($fetch as any)(`/api/products/${productId}/features/${featureId}`, {
+      // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+      await $fetch<void>(`/api/products/${productId}/features/${featureId}`, {
         method: 'DELETE',
       })
       return true
@@ -269,7 +286,8 @@ export function useProducts() {
     optionId: string
   ): Promise<boolean> {
     try {
-      await ($fetch as any)(`/api/products/${productId}/features/${featureId}/options/${optionId}`, {
+      // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+      await $fetch<void>(`/api/products/${productId}/features/${featureId}/options/${optionId}`, {
         method: 'DELETE',
       })
       return true

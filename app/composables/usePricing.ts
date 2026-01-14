@@ -15,6 +15,15 @@ export interface PriceBook {
   }
 }
 
+export interface PriceTier {
+  id: string
+  entryId: string
+  minQuantity: number
+  maxQuantity: number | null
+  tierPrice: string
+  tierType: string
+}
+
 export interface PriceBookEntry {
   id: string
   priceBookId: string
@@ -27,6 +36,7 @@ export interface PriceBookEntry {
     sku: string
     type: string
   }
+  priceTiers?: PriceTier[]
 }
 
 export interface PriceBookWithEntries extends PriceBook {

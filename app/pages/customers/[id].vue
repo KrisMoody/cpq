@@ -456,7 +456,7 @@ function cancelEdit() {
                 </p>
               </div>
               <div class="text-right">
-                <UBadge :color="getStatusColor(contract.status) as any" variant="subtle">
+                <UBadge :color="getStatusColor(contract.status)" variant="subtle">
                   {{ contract.status }}
                 </UBadge>
                 <p v-if="contract.discountPercent" class="text-sm text-gray-500 mt-1">

@@ -1,3 +1,4 @@
+import type { Prisma } from '../../../app/generated/prisma/client.js'
 import { usePrisma } from '../../utils/prisma'
 
 export default defineEventHandler(async (event) => {
@@ -6,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const groupId = query.groupId as string | undefined
   const includeGroup = query.includeGroup === 'true'
 
-  const where: any = {}
+  const where: Prisma.AttributeWhereInput = {}
   if (groupId) {
     where.groupId = groupId
   }
