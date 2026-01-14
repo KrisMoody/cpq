@@ -40,9 +40,14 @@ const statusOptions = computed(() => [
         <p class="text-gray-500">Manage sales quotes</p>
       </div>
 
-      <UButton to="/quotes/new" icon="i-heroicons-plus">
-        New Quote
-      </UButton>
+      <div class="flex items-center gap-2">
+        <UButton to="/quote-layouts" variant="ghost" icon="i-heroicons-squares-2x2">
+          Manage Layouts
+        </UButton>
+        <UButton to="/quotes/new" icon="i-heroicons-plus">
+          New Quote
+        </UButton>
+      </div>
     </div>
 
     <!-- Filters -->
