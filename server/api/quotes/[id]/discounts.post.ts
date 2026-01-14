@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
   let discountType: 'PERCENTAGE' | 'FIXED_AMOUNT'
   let discountValue: number
   let discountId: string | null = null
-  let reason: string | null = body.reason || null
+  const reason: string | null = body.reason || null
 
   // Check if applying a predefined discount or manual discount
   if (body.discountId) {

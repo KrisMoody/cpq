@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { QuoteLineItem } from '~/composables/useQuotes'
 
-const props = defineProps<{
+defineProps<{
   lineItems: QuoteLineItem[]
 }>()
 
@@ -20,7 +20,7 @@ const { formatPrice } = usePricing()
         <span class="w-16 text-center">Qty</span>
         <span class="w-24 text-right">Unit Price</span>
         <span class="w-24 text-right">Net Price</span>
-        <span class="w-12"></span>
+        <span class="w-12"/>
       </div>
     </div>
 
@@ -77,7 +77,7 @@ const { formatPrice } = usePricing()
             <span class="w-16 text-center text-sm">{{ child.quantity }}</span>
             <span class="w-24 text-right text-sm">{{ formatPrice(child.listPrice) }}</span>
             <span class="w-24 text-right text-sm">{{ formatPrice(child.netPrice) }}</span>
-            <span class="w-12"></span>
+            <span class="w-12"/>
           </div>
         </template>
       </template>

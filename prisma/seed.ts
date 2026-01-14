@@ -199,7 +199,7 @@ async function main() {
     },
   })
 
-  const unitLicense = await prisma.unitOfMeasure.create({
+  const _unitLicense = await prisma.unitOfMeasure.create({
     data: {
       name: 'License',
       abbreviation: 'lic',
@@ -213,7 +213,7 @@ async function main() {
     },
   })
 
-  const unitBox = await prisma.unitOfMeasure.create({
+  const _unitBox = await prisma.unitOfMeasure.create({
     data: {
       name: 'Box',
       abbreviation: 'box',
@@ -222,7 +222,7 @@ async function main() {
     },
   })
 
-  const unitUnit = await prisma.unitOfMeasure.create({
+  const _unitUnit = await prisma.unitOfMeasure.create({
     data: {
       name: 'Unit',
       abbreviation: 'unit',
@@ -1076,7 +1076,7 @@ async function main() {
     },
   })
 
-  const startupXyz = await prisma.customer.create({
+  const _startupXyz = await prisma.customer.create({
     data: {
       name: 'StartupXYZ',
       email: 'founder@startupxyz.io',
@@ -1239,7 +1239,7 @@ async function main() {
   // ============================================================================
 
   // Volume discount with tiers
-  const volumeDiscount = await prisma.discount.create({
+  const _volumeDiscount = await prisma.discount.create({
     data: {
       name: 'Volume Purchase Discount',
       description: 'Tiered discount based on order quantity',
@@ -1262,7 +1262,7 @@ async function main() {
   })
 
   // New customer welcome discount
-  const welcomeDiscount = await prisma.discount.create({
+  const _welcomeDiscount = await prisma.discount.create({
     data: {
       name: 'New Customer Welcome',
       description: '10% off first order for new customers',
@@ -1276,7 +1276,7 @@ async function main() {
   })
 
   // Fixed amount discount
-  const freeShipping = await prisma.discount.create({
+  const _freeShipping = await prisma.discount.create({
     data: {
       name: 'Free Shipping',
       description: '$50 off shipping for orders over $500',
@@ -1291,7 +1291,7 @@ async function main() {
   })
 
   // Seasonal promotion
-  const seasonalPromo = await prisma.discount.create({
+  const _seasonalPromo = await prisma.discount.create({
     data: {
       name: 'Q1 Promotion',
       description: '15% off during Q1 2024',
@@ -1307,7 +1307,7 @@ async function main() {
   })
 
   // Enterprise-only discount
-  const enterpriseDiscount = await prisma.discount.create({
+  const _enterpriseDiscount = await prisma.discount.create({
     data: {
       name: 'Enterprise Exclusive',
       description: 'Additional 5% for enterprise customers',
@@ -1438,7 +1438,7 @@ async function main() {
   // ============================================================================
 
   // Active contract for TechGiant with special pricing
-  const techGiantContract = await prisma.contract.create({
+  const _techGiantContract = await prisma.contract.create({
     data: {
       name: 'TechGiant 2024 Enterprise Agreement',
       customerId: techGiant.id,
@@ -1458,7 +1458,7 @@ async function main() {
   })
 
   // Draft contract for Acme Corp (pending approval)
-  const acmeContract = await prisma.contract.create({
+  const _acmeContract = await prisma.contract.create({
     data: {
       name: 'Acme Corp 2024 Agreement',
       customerId: acmeCorp.id,
@@ -1470,7 +1470,7 @@ async function main() {
   })
 
   // Expired contract for Global Enterprises
-  const globalContract = await prisma.contract.create({
+  const _globalContract = await prisma.contract.create({
     data: {
       name: 'Global Enterprises 2023 Agreement',
       customerId: globalEnterprises.id,

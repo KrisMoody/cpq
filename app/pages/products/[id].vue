@@ -20,7 +20,7 @@ const {
   error: productError,
 } = useProducts()
 const { products } = useProducts()
-const { formatPrice } = usePricing()
+const { formatPrice: _formatPrice } = usePricing()
 const { createQuote, addLineItem } = useQuotes()
 const { attributes, groups, fetchAttributes, fetchGroups, setProductAttributes } = useAttributes()
 const { units, fetchUnits } = useUnits()

@@ -140,7 +140,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Perform upserts for all attributes
-  const results = await prisma.$transaction(
+  await prisma.$transaction(
     body.attributes.map(({ attributeId, value }: { attributeId: string; value: any }) => {
       // Skip null/empty values by deleting any existing value
       if (value === null || value === undefined || value === '') {

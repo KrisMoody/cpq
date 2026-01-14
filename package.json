@@ -9,6 +9,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare && prisma generate",
     "typecheck": "nuxt typecheck",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "db:push": "prisma db push",
     "db:seed": "tsx --env-file=.env prisma/seed.ts",
     "db:studio": "prisma studio",
@@ -35,13 +37,21 @@
     "ws": "^8.19.0"
   },
   "devDependencies": {
+    "@nuxt/eslint": "^1.12.1",
     "@types/pg": "^8.16.0",
     "@types/ws": "^8.18.1",
     "@vitest/coverage-v8": "^4.0.17",
     "dotenv": "^17.2.3",
+    "eslint": "^9.39.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
     "vitest": "^4.0.17"
+  },
+  "lint-staged": {
+    "*.{ts,vue}": [
+      "eslint --fix"
+    ]
   }
 }

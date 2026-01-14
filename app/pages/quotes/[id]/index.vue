@@ -19,7 +19,7 @@ const {
   deleteQuote,
 } = useQuotes()
 const { products, fetchProducts } = useProducts()
-const { formatPrice } = usePricing()
+const { formatPrice: _formatPrice } = usePricing()
 
 const quote = ref<QuoteWithLineItems | null>(null)
 const evaluation = ref<EvaluationSummary | null>(null)
@@ -175,7 +175,7 @@ async function handleApprove() {
   }
 }
 
-async function handleReject(reason: string) {
+async function handleReject(_reason: string) {
   if (!quote.value) return
   try {
     await rejectQuote(quote.value.id)

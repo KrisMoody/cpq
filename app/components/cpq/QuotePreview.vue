@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { QuoteWithLineItems, QuoteLineItem, AppliedDiscount } from '~/composables/useQuotes'
+import type { QuoteWithLineItems, QuoteLineItem, AppliedDiscount as _AppliedDiscount } from '~/composables/useQuotes'
 import type { TaxBreakdownItem } from '~/composables/useTaxRates'
 
 const props = defineProps<{
@@ -102,7 +102,7 @@ function formatTaxRate(rate: number): string {
   return `${(rate * 100).toFixed(2)}%`
 }
 
-function formatBillingFrequency(frequency: string): string {
+function _formatBillingFrequency(frequency: string): string {
   const map: Record<string, string> = {
     'ONE_TIME': 'One-Time',
     'MONTHLY': 'Monthly',
@@ -208,7 +208,7 @@ function formatBillingFrequency(frequency: string): string {
             </thead>
             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
               <tr
-                v-for="(item, index) in displayLineItems"
+                v-for="item in displayLineItems"
                 :key="item.id"
                 :class="[
                   'print:break-inside-avoid',

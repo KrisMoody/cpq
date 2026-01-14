@@ -3,7 +3,7 @@ import { usePrisma } from '../../../utils/prisma'
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
   const id = getRouterParam(event, 'id')
-  const body = await readBody(event)
+  const _body = await readBody(event)
 
   if (!id) {
     throw createError({

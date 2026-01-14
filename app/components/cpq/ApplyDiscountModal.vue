@@ -16,7 +16,7 @@ const emit = defineEmits<{
 const { discounts, fetchDiscounts } = useDiscounts()
 const { formatPrice } = usePricing()
 
-const loading = ref(false)
+const _loading = ref(false)
 const applying = ref(false)
 const error = ref<string | null>(null)
 const search = ref('')

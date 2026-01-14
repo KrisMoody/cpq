@@ -28,3 +28,14 @@ The project SHALL pass all lint checks with zero errors.
 #### Scenario: No lint errors
 - **WHEN** `yarn lint` is executed
 - **THEN** the command exits with code 0 and reports no errors
+
+### Requirement: Pre-commit Lint Integration
+The project SHALL run lint checks on staged files before commits.
+
+#### Scenario: Lint-staged runs on commit
+- **WHEN** a developer commits staged `.ts` or `.vue` files
+- **THEN** lint-staged runs ESLint and typecheck on those files
+
+#### Scenario: Commit blocked on lint failure
+- **WHEN** staged files have lint errors
+- **THEN** the commit is blocked until errors are fixed

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Customer } from '~/composables/useCustomers'
+import type { Customer as _Customer } from '~/composables/useCustomers'
 
-const props = defineProps<{
+defineProps<{
   customer: {
     id: string
     name: string

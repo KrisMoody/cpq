@@ -24,7 +24,7 @@ function toggleExpand(id: string) {
   expandedIds.value = new Set(expandedIds.value) // trigger reactivity
 }
 
-function isExpanded(id: string) {
+function _isExpanded(id: string) {
   return expandedIds.value.has(id)
 }
 

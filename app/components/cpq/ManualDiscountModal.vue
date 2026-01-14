@@ -10,7 +10,7 @@ const emit = defineEmits<{
   'applied': []
 }>()
 
-const { formatPrice } = usePricing()
+const { formatPrice: _formatPrice } = usePricing()
 
 const applying = ref(false)
 const error = ref<string | null>(null)

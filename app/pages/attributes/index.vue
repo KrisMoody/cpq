@@ -49,7 +49,7 @@ const sortedGroups = computed(() => {
   return [...groups.value].sort((a, b) => a.sortOrder - b.sortOrder)
 })
 
-function getGroupName(groupId: string | null): string {
+function _getGroupName(groupId: string | null): string {
   if (!groupId) return 'Ungrouped'
   const group = groups.value.find((g) => g.id === groupId)
   return group?.name || 'Unknown Group'

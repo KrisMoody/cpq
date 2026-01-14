@@ -114,7 +114,7 @@ export default defineEventHandler(async (event) => {
         activeContract
       )
 
-      let listPrice = priceResult.unitPrice
+      const listPrice = priceResult.unitPrice
 
       // Track contract pricing info for this line item
       if (priceResult.contractApplied && priceResult.contractInfo) {
