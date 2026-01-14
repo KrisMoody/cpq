@@ -4,6 +4,7 @@ const router = useRouter()
 const { fetchCustomer, updateCustomer, deleteCustomer } = useCustomers()
 const { priceBooks, fetchPriceBooks, formatPrice } = usePricing()
 const { contracts, fetchContracts, getStatusColor, isContractActive: _isContractActive } = useContracts()
+const { currencies, fetchCurrencies } = useCurrencies()
 
 const customerId = route.params.id as string
 const customer = ref<Awaited<ReturnType<typeof fetchCustomer>> | null>(null)
@@ -23,6 +24,7 @@ const form = ref({
   postalCode: '',
   country: '',
   priceBookId: '',
+  currencyId: '',
   isTaxExempt: false,
   taxExemptReason: '',
   taxExemptCertificate: '',
@@ -36,7 +38,7 @@ const isTaxExemptExpired = computed(() => {
 })
 
 onMounted(async () => {
-  await Promise.all([loadCustomer(), fetchPriceBooks()])
+  await Promise.all([loadCustomer(), fetchPriceBooks(), fetchCurrencies()])
   // Fetch contracts for this customer after customer is loaded
   await fetchContracts({ customerId: customerId })
 })
@@ -64,6 +66,7 @@ async function loadCustomer() {
         postalCode: customer.value.postalCode ?? '',
         country: customer.value.country ?? '',
         priceBookId: customer.value.priceBookId ?? '',
+        currencyId: customer.value.currencyId ?? '',
         isTaxExempt: customer.value.isTaxExempt ?? false,
         taxExemptReason: customer.value.taxExemptReason ?? '',
         taxExemptCertificate: customer.value.taxExemptCertificate ?? '',
@@ -99,6 +102,7 @@ async function handleSave() {
       postalCode: form.value.postalCode.trim() || null,
       country: form.value.country.trim() || null,
       priceBookId: form.value.priceBookId || null,
+      currencyId: form.value.currencyId || null,
       isTaxExempt: form.value.isTaxExempt,
       taxExemptReason: form.value.taxExemptReason.trim() || null,
       taxExemptCertificate: form.value.taxExemptCertificate.trim() || null,
@@ -142,6 +146,7 @@ function cancelEdit() {
       postalCode: customer.value.postalCode ?? '',
       country: customer.value.country ?? '',
       priceBookId: customer.value.priceBookId ?? '',
+      currencyId: customer.value.currencyId ?? '',
       isTaxExempt: customer.value.isTaxExempt ?? false,
       taxExemptReason: customer.value.taxExemptReason ?? '',
       taxExemptCertificate: customer.value.taxExemptCertificate ?? '',
@@ -262,6 +267,14 @@ function cancelEdit() {
               </UFormField>
             </div>
 
+            <UFormField label="Currency">
+              <USelect
+                v-model="form.currencyId"
+                placeholder="Use default"
+                :items="currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))"
+              />
+            </UFormField>
+
             <UFormField label="Price Book">
               <USelect
                 v-model="form.priceBookId"
@@ -318,8 +331,12 @@ function cancelEdit() {
                 <p v-if="customer.country">{{ customer.country }}</p>
               </div>
             </div>
-            <div v-if="customer.priceBook" class="flex items-center gap-3">
+            <div v-if="customer.currency" class="flex items-center gap-3">
               <UIcon name="i-heroicons-currency-dollar" class="w-5 h-5 text-gray-400" />
+              <span>Currency: {{ customer.currency.code }} ({{ customer.currency.symbol }})</span>
+            </div>
+            <div v-if="customer.priceBook" class="flex items-center gap-3">
+              <UIcon name="i-heroicons-book-open" class="w-5 h-5 text-gray-400" />
               <span>Price Book: {{ customer.priceBook.name }}</span>
             </div>
 

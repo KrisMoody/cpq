@@ -17,6 +17,8 @@ const {
   createOption,
   updateOption,
   deleteOption,
+  reorderFeatures,
+  reorderOptions,
   error: productError,
 } = useProducts()
 const { products } = useProducts()
@@ -67,6 +69,12 @@ const editingOptionId = ref<string | null>(null)
 const showAttributesModal = ref(false)
 const attributeValues = ref<Record<string, any>>({})
 const savingAttributes = ref(false)
+
+// Drag-and-drop state
+const draggedFeatureId = ref<string | null>(null)
+const draggedOptionId = ref<string | null>(null)
+const dragOverFeatureId = ref<string | null>(null)
+const dragOverOptionId = ref<string | null>(null)
 
 onMounted(async () => {
   await loadProduct()
@@ -374,6 +382,115 @@ async function handleDeleteOption(featureId: string, optionId: string) {
   }
 }
 
+// Feature drag-and-drop handlers
+function handleFeatureDragStart(e: DragEvent, featureId: string) {
+  draggedFeatureId.value = featureId
+  if (e.dataTransfer) {
+    e.dataTransfer.effectAllowed = 'move'
+  }
+}
+
+function handleFeatureDragOver(e: DragEvent, featureId: string) {
+  e.preventDefault()
+  if (draggedFeatureId.value && draggedFeatureId.value !== featureId) {
+    dragOverFeatureId.value = featureId
+  }
+}
+
+function handleFeatureDragLeave() {
+  dragOverFeatureId.value = null
+}
+
+async function handleFeatureDrop(e: DragEvent, targetFeatureId: string) {
+  e.preventDefault()
+  dragOverFeatureId.value = null
+
+  if (!draggedFeatureId.value || !product.value?.features) return
+  if (draggedFeatureId.value === targetFeatureId) return
+
+  const features = [...product.value.features]
+  const draggedIndex = features.findIndex((f) => f.id === draggedFeatureId.value)
+  const targetIndex = features.findIndex((f) => f.id === targetFeatureId)
+
+  if (draggedIndex === -1 || targetIndex === -1) return
+
+  // Reorder locally for immediate feedback
+  const draggedFeature = features[draggedIndex]!
+  features.splice(draggedIndex, 1)
+  features.splice(targetIndex, 0, draggedFeature)
+  product.value.features = features
+
+  // Persist to server
+  const featureIds = features.map((f) => f.id)
+  const success = await reorderFeatures(productId, featureIds)
+  if (!success) {
+    await loadProduct() // Reload on failure
+  }
+
+  draggedFeatureId.value = null
+}
+
+function handleFeatureDragEnd() {
+  draggedFeatureId.value = null
+  dragOverFeatureId.value = null
+}
+
+// Option drag-and-drop handlers
+function handleOptionDragStart(e: DragEvent, optionId: string) {
+  draggedOptionId.value = optionId
+  if (e.dataTransfer) {
+    e.dataTransfer.effectAllowed = 'move'
+  }
+}
+
+function handleOptionDragOver(e: DragEvent, optionId: string) {
+  e.preventDefault()
+  if (draggedOptionId.value && draggedOptionId.value !== optionId) {
+    dragOverOptionId.value = optionId
+  }
+}
+
+function handleOptionDragLeave() {
+  dragOverOptionId.value = null
+}
+
+async function handleOptionDrop(e: DragEvent, featureId: string, targetOptionId: string) {
+  e.preventDefault()
+  dragOverOptionId.value = null
+
+  if (!draggedOptionId.value || !product.value?.features) return
+  if (draggedOptionId.value === targetOptionId) return
+
+  const feature = product.value.features.find((f) => f.id === featureId)
+  if (!feature) return
+
+  const options = [...feature.options]
+  const draggedIndex = options.findIndex((o) => o.id === draggedOptionId.value)
+  const targetIndex = options.findIndex((o) => o.id === targetOptionId)
+
+  if (draggedIndex === -1 || targetIndex === -1) return
+
+  // Reorder locally for immediate feedback
+  const draggedOption = options[draggedIndex]!
+  options.splice(draggedIndex, 1)
+  options.splice(targetIndex, 0, draggedOption)
+  feature.options = options
+
+  // Persist to server
+  const optionIds = options.map((o) => o.id)
+  const success = await reorderOptions(productId, featureId, optionIds)
+  if (!success) {
+    await loadProduct() // Reload on failure
+  }
+
+  draggedOptionId.value = null
+}
+
+function handleOptionDragEnd() {
+  draggedOptionId.value = null
+  dragOverOptionId.value = null
+}
+
 const productTypes = [
   { label: 'Standalone', value: 'STANDALONE' },
   { label: 'Bundle', value: 'BUNDLE' },
@@ -674,28 +791,41 @@ async function handleSaveAttributes() {
           <div
             v-for="feature in product.features"
             :key="feature.id"
-            class="border rounded-lg p-4 dark:border-gray-700"
+            draggable="true"
+            class="border rounded-lg p-4 dark:border-gray-700 transition-all cursor-move"
+            :class="{
+              'opacity-50': draggedFeatureId === feature.id,
+              'border-primary-500 border-2': dragOverFeatureId === feature.id,
+            }"
+            @dragstart="handleFeatureDragStart($event, feature.id)"
+            @dragover="handleFeatureDragOver($event, feature.id)"
+            @dragleave="handleFeatureDragLeave"
+            @drop="handleFeatureDrop($event, feature.id)"
+            @dragend="handleFeatureDragEnd"
           >
             <div class="flex items-center justify-between mb-3">
-              <div>
-                <h3 class="font-medium">{{ feature.name }}</h3>
-                <p class="text-sm text-gray-500">
-                  Select {{ feature.minOptions }}-{{ feature.maxOptions }} option(s)
-                </p>
+              <div class="flex items-center gap-2">
+                <UIcon name="i-heroicons-bars-3" class="w-4 h-4 text-gray-400" />
+                <div>
+                  <h3 class="font-medium">{{ feature.name }}</h3>
+                  <p class="text-sm text-gray-500">
+                    Select {{ feature.minOptions }}-{{ feature.maxOptions }} option(s)
+                  </p>
+                </div>
               </div>
               <div class="flex gap-2">
                 <UButton
                   size="xs"
                   variant="ghost"
                   icon="i-heroicons-pencil"
-                  @click="openEditFeature(feature)"
+                  @click.stop="openEditFeature(feature)"
                 />
                 <UButton
                   size="xs"
                   variant="ghost"
                   color="error"
                   icon="i-heroicons-trash"
-                  @click="handleDeleteFeature(feature.id)"
+                  @click.stop="handleDeleteFeature(feature.id)"
                 />
               </div>
             </div>
@@ -705,9 +835,20 @@ async function handleSaveAttributes() {
               <div
                 v-for="option in feature.options"
                 :key="option.id"
-                class="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-800 rounded"
+                draggable="true"
+                class="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-800 rounded cursor-move transition-all"
+                :class="{
+                  'opacity-50': draggedOptionId === option.id,
+                  'ring-2 ring-primary-500': dragOverOptionId === option.id,
+                }"
+                @dragstart.stop="handleOptionDragStart($event, option.id)"
+                @dragover.stop="handleOptionDragOver($event, option.id)"
+                @dragleave.stop="handleOptionDragLeave"
+                @drop.stop="handleOptionDrop($event, feature.id, option.id)"
+                @dragend.stop="handleOptionDragEnd"
               >
                 <div class="flex items-center gap-3">
+                  <UIcon name="i-heroicons-bars-2" class="w-3 h-3 text-gray-400" />
                   <span class="font-medium">{{ option.product?.name || 'Unknown product' }}</span>
                   <UBadge v-if="option.isDefault" size="xs" color="primary" variant="subtle">Default</UBadge>
                   <UBadge v-if="option.isRequired" size="xs" color="warning" variant="subtle">Required</UBadge>
@@ -718,14 +859,14 @@ async function handleSaveAttributes() {
                     size="xs"
                     variant="ghost"
                     icon="i-heroicons-pencil"
-                    @click="openEditOption(feature.id, option)"
+                    @click.stop="openEditOption(feature.id, option)"
                   />
                   <UButton
                     size="xs"
                     variant="ghost"
                     color="error"
                     icon="i-heroicons-trash"
-                    @click="handleDeleteOption(feature.id, option.id)"
+                    @click.stop="handleDeleteOption(feature.id, option.id)"
                   />
                 </div>
               </div>

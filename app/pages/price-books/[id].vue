@@ -14,6 +14,7 @@ const {
   formatPrice,
 } = usePricing()
 const { products, fetchProducts } = useProducts()
+const { currencies, fetchCurrencies } = useCurrencies()
 
 const priceBookId = route.params.id as string
 const priceBook = ref<PriceBook | null>(null)
@@ -25,6 +26,7 @@ const isEditing = ref(false)
 
 const form = ref({
   name: '',
+  currencyId: '',
   isDefault: false,
   isActive: true,
   validFrom: '',
@@ -69,7 +71,7 @@ const tierTypeOptions = [
 ]
 
 onMounted(async () => {
-  await Promise.all([loadPriceBook(), fetchProducts()])
+  await Promise.all([loadPriceBook(), fetchProducts(), fetchCurrencies()])
 })
 
 async function loadPriceBook() {
@@ -85,6 +87,7 @@ async function loadPriceBook() {
     if (pb) {
       form.value = {
         name: pb.name,
+        currencyId: pb.currencyId ?? '',
         isDefault: pb.isDefault,
         isActive: pb.isActive,
         validFrom: pb.validFrom ? pb.validFrom.split('T')[0] ?? '' : '',
@@ -110,6 +113,7 @@ async function handleSave() {
   try {
     const updated = await updatePriceBook(priceBookId, {
       name: form.value.name.trim(),
+      currencyId: form.value.currencyId || null,
       isDefault: form.value.isDefault,
       isActive: form.value.isActive,
       validFrom: form.value.validFrom || null,
@@ -143,6 +147,7 @@ function cancelEdit() {
   if (priceBook.value) {
     form.value = {
       name: priceBook.value.name,
+      currencyId: priceBook.value.currencyId ?? '',
       isDefault: priceBook.value.isDefault,
       isActive: priceBook.value.isActive,
       validFrom: priceBook.value.validFrom ? priceBook.value.validFrom.split('T')[0] ?? '' : '',
@@ -371,6 +376,14 @@ function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
             <UInput v-model="form.name" />
           </UFormField>
 
+          <UFormField label="Currency">
+            <USelect
+              v-model="form.currencyId"
+              placeholder="Use default"
+              :items="currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))"
+            />
+          </UFormField>
+
           <div class="grid grid-cols-2 gap-4">
             <UFormField label="Valid From">
               <UInput v-model="form.validFrom" type="date" />
@@ -393,16 +406,20 @@ function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
 
         <dl v-else class="grid grid-cols-2 gap-4">
           <div>
+            <dt class="text-sm text-gray-500">Currency</dt>
+            <dd>{{ priceBook.currency ? `${priceBook.currency.code} (${priceBook.currency.symbol})` : 'Default' }}</dd>
+          </div>
+          <div>
+            <dt class="text-sm text-gray-500">Products</dt>
+            <dd>{{ priceBook._count.entries }}</dd>
+          </div>
+          <div>
             <dt class="text-sm text-gray-500">Valid From</dt>
             <dd>{{ priceBook.validFrom ? new Date(priceBook.validFrom).toLocaleDateString() : '—' }}</dd>
           </div>
           <div>
             <dt class="text-sm text-gray-500">Valid To</dt>
             <dd>{{ priceBook.validTo ? new Date(priceBook.validTo).toLocaleDateString() : '—' }}</dd>
-          </div>
-          <div>
-            <dt class="text-sm text-gray-500">Products</dt>
-            <dd>{{ priceBook._count.entries }}</dd>
           </div>
         </dl>
       </UCard>

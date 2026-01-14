@@ -2,6 +2,7 @@
 const router = useRouter()
 const { createCustomer } = useCustomers()
 const { priceBooks, fetchPriceBooks } = usePricing()
+const { currencies, fetchCurrencies } = useCurrencies()
 
 const initialFormState = {
   name: '',
@@ -14,6 +15,7 @@ const initialFormState = {
   postalCode: '',
   country: '',
   priceBookId: '',
+  currencyId: '',
 }
 
 const form = ref({ ...initialFormState })
@@ -26,6 +28,7 @@ const error = ref<string | null>(null)
 
 onMounted(() => {
   fetchPriceBooks()
+  fetchCurrencies()
 })
 
 function handleCancel() {
@@ -55,6 +58,7 @@ async function handleSubmit() {
       postalCode: form.value.postalCode.trim() || undefined,
       country: form.value.country.trim() || undefined,
       priceBookId: form.value.priceBookId || undefined,
+      currencyId: form.value.currencyId || undefined,
     })
 
     if (customer) {
@@ -164,6 +168,14 @@ async function handleSubmit() {
         <!-- Pricing -->
         <div class="space-y-4">
           <h3 class="text-sm font-medium text-gray-500 uppercase">Pricing</h3>
+
+          <UFormField label="Currency" hint="Default currency for quotes">
+            <USelect
+              v-model="form.currencyId"
+              :items="[{ label: 'Use default currency', value: '' }, ...currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))]"
+              placeholder="Select currency (optional)"
+            />
+          </UFormField>
 
           <UFormField label="Price Book" hint="Quotes for this customer will use this price book by default">
             <USelect

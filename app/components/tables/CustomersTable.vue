@@ -28,6 +28,11 @@ const columns = [
     header: 'Email',
     cell: (info) => info.getValue() || '—',
   }),
+  columnHelper.display({
+    id: 'currency',
+    header: 'Currency',
+    cell: (info) => info.row.original.currency?.code || '—',
+  }),
   columnHelper.accessor('quoteCount', {
     header: 'Quotes',
     cell: (info) => info.getValue() ?? 0,

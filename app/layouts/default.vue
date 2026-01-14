@@ -116,6 +116,12 @@ const navigation: NavItem[] = [
         to: '/tax-rates',
       },
       {
+        id: 'currencies',
+        label: 'Currencies',
+        icon: 'i-heroicons-currency-dollar',
+        to: '/currencies',
+      },
+      {
         id: 'affinities',
         label: 'Affinities',
         icon: 'i-heroicons-link',
