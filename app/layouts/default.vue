@@ -115,6 +115,12 @@ const navigation: NavItem[] = [
         icon: 'i-heroicons-receipt-percent',
         to: '/tax-rates',
       },
+      {
+        id: 'currencies',
+        label: 'Currencies',
+        icon: 'i-heroicons-currency-dollar',
+        to: '/currencies',
+      },
     ],
   },
   {

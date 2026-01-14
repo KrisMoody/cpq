@@ -3,11 +3,13 @@ const router = useRouter()
 const route = useRoute()
 const { createQuote } = useQuotes()
 const { priceBooks, fetchPriceBooks } = usePricing()
+const { currencies, fetchCurrencies } = useCurrencies()
 
 const initialFormState = {
   name: '',
   customerId: (route.query.customerId as string) || null,
   priceBookId: '',
+  currencyId: '',
 }
 
 const form = ref({ ...initialFormState })
@@ -20,6 +22,7 @@ const error = ref<string | null>(null)
 
 onMounted(() => {
   fetchPriceBooks()
+  fetchCurrencies()
 })
 
 function handleCancel() {
@@ -42,6 +45,7 @@ async function handleSubmit() {
       name: form.value.name.trim(),
       customerId: form.value.customerId || undefined,
       priceBookId: form.value.priceBookId || undefined,
+      currencyId: form.value.currencyId || undefined,
     })
 
     if (quote) {
@@ -86,6 +90,14 @@ async function handleSubmit() {
 
         <UFormField label="Customer" hint="Optional for draft quotes, required for submission">
           <CpqCustomerSelector v-model="form.customerId" />
+        </UFormField>
+
+        <UFormField label="Currency" hint="Leave empty to use customer's currency or system default">
+          <USelect
+            v-model="form.currencyId"
+            :items="[{ label: 'Use default', value: '' }, ...currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))]"
+            placeholder="Select currency"
+          />
         </UFormField>
 
         <UFormField label="Price Book" hint="Leave empty to use customer's price book or system default">

@@ -1,14 +1,20 @@
 <script setup lang="ts">
 const router = useRouter()
 const { createPriceBook } = usePricing()
+const { currencies, fetchCurrencies } = useCurrencies()
 
 const initialFormState = {
   name: '',
+  currencyId: '',
   isDefault: false,
   isActive: true,
   validFrom: '',
   validTo: '',
 }
+
+onMounted(() => {
+  fetchCurrencies()
+})
 
 const form = ref({ ...initialFormState })
 const initialValues = ref({ ...initialFormState })
@@ -36,6 +42,7 @@ async function handleSubmit() {
   try {
     const priceBook = await createPriceBook({
       name: form.value.name.trim(),
+      currencyId: form.value.currencyId || null,
       isDefault: form.value.isDefault,
       isActive: form.value.isActive,
       validFrom: form.value.validFrom || null,
@@ -78,7 +85,15 @@ async function handleSubmit() {
           <UInput
             v-model="form.name"
             placeholder="Enter price book name"
-            icon="i-heroicons-currency-dollar"
+            icon="i-heroicons-book-open"
+          />
+        </UFormField>
+
+        <UFormField label="Currency" hint="Prices in this book will be in this currency">
+          <USelect
+            v-model="form.currencyId"
+            :items="[{ label: 'Use default currency', value: '' }, ...currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))]"
+            placeholder="Select currency"
           />
         </UFormField>
 
