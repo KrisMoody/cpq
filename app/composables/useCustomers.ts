@@ -1,3 +1,5 @@
+import type { Currency } from './useCurrencies'
+
 export interface Customer {
   id: string
   name: string
@@ -10,6 +12,7 @@ export interface Customer {
   postalCode: string | null
   country: string | null
   priceBookId: string | null
+  currencyId: string | null
   isTaxExempt: boolean
   taxExemptReason: string | null
   taxExemptCertificate: string | null
@@ -21,6 +24,7 @@ export interface Customer {
     id: string
     name: string
   } | null
+  currency?: Currency | null
   quoteCount?: number
 }
 
@@ -73,6 +77,7 @@ export function useCustomers() {
     postalCode?: string
     country?: string
     priceBookId?: string
+    currencyId?: string
     isTaxExempt?: boolean
     taxExemptReason?: string
     taxExemptCertificate?: string
@@ -104,6 +109,7 @@ export function useCustomers() {
       postalCode: string | null
       country: string | null
       priceBookId: string | null
+      currencyId: string | null
       isTaxExempt: boolean
       taxExemptReason: string | null
       taxExemptCertificate: string | null

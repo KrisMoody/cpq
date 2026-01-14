@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
   const priceBook = await prisma.priceBook.create({
     data: {
       name: body.name,
+      currencyId: body.currencyId || null,
       isDefault: body.isDefault ?? false,
       isActive: body.isActive ?? true,
       validFrom: body.validFrom ? new Date(body.validFrom) : null,
@@ -30,10 +31,19 @@ export default defineEventHandler(async (event) => {
     select: {
       id: true,
       name: true,
+      currencyId: true,
       isDefault: true,
       isActive: true,
       validFrom: true,
       validTo: true,
+      currency: {
+        select: {
+          id: true,
+          code: true,
+          name: true,
+          symbol: true,
+        },
+      },
       _count: {
         select: { entries: true },
       },

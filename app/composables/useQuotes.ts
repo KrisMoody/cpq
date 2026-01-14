@@ -1,5 +1,6 @@
 import type { QuoteStatus } from '../generated/prisma'
 import type { TaxBreakdownItem } from './useTaxRates'
+import type { Currency } from './useCurrencies'
 
 export interface AppliedDiscount {
   id: string
@@ -37,6 +38,7 @@ export interface Quote {
   id: string
   name: string
   customerId: string | null
+  currencyId: string | null
   status: QuoteStatus
   requiresApproval: boolean
   priceBookId: string
@@ -47,6 +49,7 @@ export interface Quote {
   taxAmount: string
   taxBreakdown: TaxBreakdownItem[] | null
   total: string
+  baseAmount?: string
   approvedBy?: string
   approvedAt?: string
   createdAt: string
@@ -62,6 +65,7 @@ export interface Quote {
     id: string
     name: string
   }
+  currency?: Currency | null
   _count?: {
     lineItems: number
   }
@@ -148,6 +152,7 @@ export function useQuotes() {
     name: string
     customerId?: string
     priceBookId?: string
+    currencyId?: string
     validTo?: string
   }): Promise<Quote | null> {
     try {

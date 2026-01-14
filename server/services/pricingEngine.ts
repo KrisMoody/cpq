@@ -1,6 +1,7 @@
 import { usePrisma } from '../utils/prisma'
 import { calculateQuoteTax, type TaxBreakdownItem } from './taxEngine'
 import { lookupPrice, calculateTotalPrice, type PriceLookupResult } from './priceLookup'
+import { convertToBaseCurrency } from './currencyService'
 import type { TierType, BillingFrequency } from '../../app/generated/prisma'
 
 /**
@@ -179,12 +180,14 @@ export async function calculateQuoteTotal(quoteId: string): Promise<{
   taxAmount: number
   taxBreakdown: TaxBreakdownItem[]
   total: number
+  baseAmount: number
   oneTimeTotal: number
   mrr: number
   arr: number
   tcv: number
   isTaxExempt: boolean
   exemptionExpired: boolean
+  currencyCode?: string
 }> {
   const prisma = usePrisma()
   const quote = await prisma.quote.findUnique({
@@ -202,6 +205,9 @@ export async function calculateQuoteTotal(quoteId: string): Promise<{
         },
       },
       appliedDiscounts: true,
+      currency: {
+        select: { id: true, code: true },
+      },
     },
   })
 
@@ -260,7 +266,13 @@ export async function calculateQuoteTotal(quoteId: string): Promise<{
   // Grand total = subtotal - quote discount + tax
   const total = subtotalAfterDiscount + taxResult.taxAmount
 
-  // Update quote with all totals including recurring metrics
+  // Calculate base currency amount for reporting
+  let baseAmount = total
+  if (quote.currencyId) {
+    baseAmount = await convertToBaseCurrency(total, quote.currencyId)
+  }
+
+  // Update quote with all totals including recurring metrics and base amount
   await prisma.quote.update({
     where: { id: quoteId },
     data: {
@@ -269,6 +281,7 @@ export async function calculateQuoteTotal(quoteId: string): Promise<{
       taxAmount: taxResult.taxAmount,
       taxBreakdown: taxResult.taxBreakdown as unknown as object,
       total,
+      baseAmount,
       oneTimeTotal,
       mrr,
       arr,
@@ -282,12 +295,14 @@ export async function calculateQuoteTotal(quoteId: string): Promise<{
     taxAmount: taxResult.taxAmount,
     taxBreakdown: taxResult.taxBreakdown,
     total,
+    baseAmount,
     oneTimeTotal,
     mrr,
     arr,
     tcv,
     isTaxExempt: taxResult.isTaxExempt,
     exemptionExpired: taxResult.exemptionExpired,
+    currencyCode: quote.currency?.code,
   }
 }
 

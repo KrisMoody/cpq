@@ -35,6 +35,7 @@ export default defineEventHandler(async (event) => {
     where: { id },
     data: {
       name: body.name ?? existing.name,
+      currencyId: body.currencyId !== undefined ? (body.currencyId || null) : existing.currencyId,
       isDefault: body.isDefault !== undefined ? body.isDefault : existing.isDefault,
       isActive: body.isActive !== undefined ? body.isActive : existing.isActive,
       validFrom: body.validFrom !== undefined
@@ -47,10 +48,19 @@ export default defineEventHandler(async (event) => {
     select: {
       id: true,
       name: true,
+      currencyId: true,
       isDefault: true,
       isActive: true,
       validFrom: true,
       validTo: true,
+      currency: {
+        select: {
+          id: true,
+          code: true,
+          name: true,
+          symbol: true,
+        },
+      },
       _count: {
         select: { entries: true },
       },

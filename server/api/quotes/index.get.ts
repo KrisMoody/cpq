@@ -33,6 +33,13 @@ export default defineEventHandler(async (event) => {
           name: true,
         },
       },
+      currency: {
+        select: {
+          id: true,
+          code: true,
+          symbol: true,
+        },
+      },
       _count: {
         select: { lineItems: true },
       },

@@ -53,8 +53,108 @@ async function main() {
   await prisma.attribute.deleteMany()
   await prisma.attributeGroup.deleteMany()
   await prisma.unitOfMeasure.deleteMany()
+  await prisma.exchangeRate.deleteMany()
+  await prisma.currency.deleteMany()
 
   console.log('  ✓ Cleaned existing data')
+
+  // ============================================================================
+  // Currencies
+  // ============================================================================
+
+  const usd = await prisma.currency.create({
+    data: {
+      code: 'USD',
+      name: 'US Dollar',
+      symbol: '$',
+      isBase: true,
+      isActive: true,
+    },
+  })
+
+  const eur = await prisma.currency.create({
+    data: {
+      code: 'EUR',
+      name: 'Euro',
+      symbol: '€',
+      isBase: false,
+      isActive: true,
+    },
+  })
+
+  const gbp = await prisma.currency.create({
+    data: {
+      code: 'GBP',
+      name: 'British Pound',
+      symbol: '£',
+      isBase: false,
+      isActive: true,
+    },
+  })
+
+  const cad = await prisma.currency.create({
+    data: {
+      code: 'CAD',
+      name: 'Canadian Dollar',
+      symbol: 'CA$',
+      isBase: false,
+      isActive: true,
+    },
+  })
+
+  const aud = await prisma.currency.create({
+    data: {
+      code: 'AUD',
+      name: 'Australian Dollar',
+      symbol: 'A$',
+      isBase: false,
+      isActive: true,
+    },
+  })
+
+  console.log('  ✓ Created currencies')
+
+  // ============================================================================
+  // Exchange Rates (rates to base currency - USD)
+  // ============================================================================
+
+  // EUR: 1 EUR = 1.08 USD
+  await prisma.exchangeRate.create({
+    data: {
+      currencyId: eur.id,
+      rate: 1.08,
+      effectiveDate: new Date(),
+    },
+  })
+
+  // GBP: 1 GBP = 1.27 USD
+  await prisma.exchangeRate.create({
+    data: {
+      currencyId: gbp.id,
+      rate: 1.27,
+      effectiveDate: new Date(),
+    },
+  })
+
+  // CAD: 1 CAD = 0.74 USD
+  await prisma.exchangeRate.create({
+    data: {
+      currencyId: cad.id,
+      rate: 0.74,
+      effectiveDate: new Date(),
+    },
+  })
+
+  // AUD: 1 AUD = 0.65 USD
+  await prisma.exchangeRate.create({
+    data: {
+      currencyId: aud.id,
+      rate: 0.65,
+      effectiveDate: new Date(),
+    },
+  })
+
+  console.log('  ✓ Created exchange rates')
 
   // ============================================================================
   // Units of Measure
@@ -804,6 +904,7 @@ async function main() {
   const standardPriceBook = await prisma.priceBook.create({
     data: {
       name: 'Standard Price Book',
+      currencyId: usd.id,
       isDefault: true,
       isActive: true,
       entries: {
@@ -853,6 +954,7 @@ async function main() {
   const enterprisePriceBook = await prisma.priceBook.create({
     data: {
       name: 'Enterprise Price Book',
+      currencyId: usd.id,
       isDefault: false,
       isActive: true,
       entries: {
@@ -1388,6 +1490,8 @@ async function main() {
   console.log('  ✓ Created sample contracts')
 
   console.log('\n✅ Database seeded successfully!')
+  console.log(`   - 5 currencies (USD base, EUR, GBP, CAD, AUD)`)
+  console.log(`   - 4 exchange rates`)
   console.log(`   - 9 units of measure (Each, Hour, Day, Month, Year, License, Seat, Box, Unit)`)
   console.log(`   - 6 categories (hierarchical)`)
   console.log(`   - 6 tax rates (3 US states, 3 EU countries)`)
@@ -1398,7 +1502,7 @@ async function main() {
   console.log(`   - 1 bundle product (Developer Laptop Pro)`)
   console.log(`   - 13 product-category assignments`)
   console.log(`   - 34 product-attribute assignments`)
-  console.log(`   - 2 price books (Standard + Enterprise) with entries`)
+  console.log(`   - 2 price books (Standard + Enterprise) with entries and USD currency`)
   console.log(`   - 3 price tiers for volume pricing`)
   console.log(`   - 4 customers (1 tax-exempt)`)
   console.log(`   - 5 rules (2 configuration, 3 pricing)`)
