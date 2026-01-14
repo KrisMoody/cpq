@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { PriceBook, PriceBookEntry } from '~/composables/usePricing'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const {
   fetchPriceBook,
@@ -16,7 +17,7 @@ const {
 const { products, fetchProducts } = useProducts()
 const { currencies, fetchCurrencies } = useCurrencies()
 
-const priceBookId = route.params.id as string
+const priceBookId = useRequiredParam('id')
 const priceBook = ref<PriceBook | null>(null)
 const entries = ref<PriceBookEntryWithTiers[]>([])
 const loading = ref(true)
@@ -94,8 +95,8 @@ async function loadPriceBook() {
         validTo: pb.validTo ? pb.validTo.split('T')[0] ?? '' : '',
       }
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to load price book'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to load price book')
   } finally {
     loading.value = false
   }
@@ -124,8 +125,8 @@ async function handleSave() {
       await loadPriceBook()
       isEditing.value = false
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to update price book'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to update price book')
   } finally {
     saving.value = false
   }
@@ -137,8 +138,8 @@ async function handleDelete() {
   try {
     await deletePriceBook(priceBookId)
     router.push('/price-books')
-  } catch (e: any) {
-    error.value = e.message || 'Failed to delete price book'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to delete price book')
   }
 }
 

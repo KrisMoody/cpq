@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 const router = useRouter()
 const { createCategory, fetchCategories, categories, flattenCategories } = useCategories()
 
@@ -55,8 +56,8 @@ async function handleSubmit() {
     if (category) {
       router.push(`/categories/${category.id}`)
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create category'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create category')
   } finally {
     loading.value = false
   }

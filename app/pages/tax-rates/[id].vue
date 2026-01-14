@@ -1,10 +1,10 @@
 <script setup lang="ts">
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const { fetchTaxRate, updateTaxRate, deleteTaxRate, formatRate, error } = useTaxRates()
 const { categories, fetchCategories } = useCategories()
 
-const taxRateId = route.params.id as string
+const taxRateId = useRequiredParam('id')
 const taxRate = ref<Awaited<ReturnType<typeof fetchTaxRate>> | null>(null)
 const loading = ref(true)
 const saving = ref(false)

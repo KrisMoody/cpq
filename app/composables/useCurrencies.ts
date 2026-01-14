@@ -1,3 +1,4 @@
+import { getErrorMessage } from '../utils/errors.js'
 export interface Currency {
   id: string
   code: string
@@ -37,8 +38,8 @@ export function useCurrencies() {
     try {
       const data = await $fetch<Currency[]>('/api/currencies')
       currencies.value = data
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch currencies'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch currencies')
     } finally {
       loading.value = false
     }
@@ -47,8 +48,8 @@ export function useCurrencies() {
   async function fetchCurrency(id: string): Promise<CurrencyWithCounts | null> {
     try {
       return await $fetch<CurrencyWithCounts>(`/api/currencies/${id}`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch currency'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch currency')
       return null
     }
   }
@@ -69,8 +70,8 @@ export function useCurrencies() {
       })
       await fetchCurrencies()
       return currency
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to create currency'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create currency')
       return null
     } finally {
       loading.value = false
@@ -95,8 +96,8 @@ export function useCurrencies() {
       })
       await fetchCurrencies()
       return currency
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to update currency'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update currency')
       return null
     } finally {
       loading.value = false
@@ -112,8 +113,8 @@ export function useCurrencies() {
       })
       await fetchCurrencies()
       return true
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to delete currency'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete currency')
       return false
     } finally {
       loading.value = false
@@ -123,8 +124,8 @@ export function useCurrencies() {
   async function fetchExchangeRates(currencyId: string): Promise<ExchangeRate[]> {
     try {
       return await $fetch<ExchangeRate[]>(`/api/currencies/${currencyId}/rates`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch exchange rates'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch exchange rates')
       return []
     }
   }
@@ -141,8 +142,8 @@ export function useCurrencies() {
       })
       await fetchCurrencies() // Refresh to get updated current rate
       return rate
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to add exchange rate'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to add exchange rate')
       return null
     }
   }

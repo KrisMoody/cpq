@@ -3,7 +3,8 @@ import withNuxt from './.nuxt/eslint.config.mjs'
 
 export default withNuxt({
   rules: {
-    // Relax for POC project - allow any types during rapid prototyping
+    // Warn on explicit any - use proper types or unknown
+    // TODO: Upgrade to 'error' once all remaining any types are resolved
     '@typescript-eslint/no-explicit-any': 'warn',
     // Allow unused vars with underscore prefix
     '@typescript-eslint/no-unused-vars': ['error', {

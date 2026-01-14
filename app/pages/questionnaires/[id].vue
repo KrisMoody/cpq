@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { QuestionType } from '~/generated/prisma/client.js'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const {
@@ -54,9 +54,10 @@ const newMapping = ref({
   score: 10,
 })
 
+const questionnaireId = useRequiredParam('id')
+
 onMounted(async () => {
-  const id = route.params.id as string
-  await Promise.all([loadQuestionnaire(id), fetchProducts()])
+  await Promise.all([loadQuestionnaire(questionnaireId), fetchProducts()])
 })
 
 async function loadQuestionnaire(id: string) {

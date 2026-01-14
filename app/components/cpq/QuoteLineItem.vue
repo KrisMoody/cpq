@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { QuoteLineItem, ContractPriceInfo } from '~/composables/useQuotes'
+import type { AttributeValue } from '~/types/domain'
 
 interface ProductAttributeDisplay {
   id: string
   name: string
   code: string
   type: string
-  value: any
+  value: AttributeValue
 }
 
 const props = defineProps<{
@@ -21,7 +22,7 @@ const props = defineProps<{
     product: QuoteLineItem['product'] & {
       unitOfMeasure?: { id: string; name: string; abbreviation: string } | null
       attributes?: Array<{
-        value: any
+        value: AttributeValue
         attribute: {
           id: string
           name: string
@@ -134,7 +135,7 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
       return opt?.label || String(attr.value)
     }
     case 'DATE':
-      return new Date(attr.value).toLocaleDateString()
+      return typeof attr.value === 'string' ? new Date(attr.value).toLocaleDateString() : '-'
     default:
       return String(attr.value)
   }

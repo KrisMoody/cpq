@@ -1,4 +1,5 @@
 import type { RuleType, RuleTrigger } from '../generated/prisma/client.js'
+import { getErrorMessage } from '../utils/errors.js'
 
 export interface Rule {
   id: string
@@ -44,8 +45,8 @@ export function useRules() {
       const params = type ? `?type=${type}` : ''
       const data = await $fetch<Rule[]>(`/api/rules${params}`)
       rules.value = data
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch rules'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch rules')
     } finally {
       loading.value = false
     }
@@ -54,8 +55,8 @@ export function useRules() {
   async function fetchRule(id: string): Promise<Rule | null> {
     try {
       return await $fetch<Rule>(`/api/rules/${id}`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch rule'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch rule')
       return null
     }
   }
@@ -77,8 +78,8 @@ export function useRules() {
       })
       await fetchRules()
       return rule
-    } catch (e: any) {
-      error.value = e.message || 'Failed to create rule'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create rule')
       return null
     }
   }
@@ -103,8 +104,8 @@ export function useRules() {
       })
       await fetchRules()
       return rule
-    } catch (e: any) {
-      error.value = e.message || 'Failed to update rule'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update rule')
       return null
     }
   }
@@ -116,8 +117,8 @@ export function useRules() {
       })
       await fetchRules()
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to delete rule'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete rule')
       return false
     }
   }
@@ -132,8 +133,8 @@ export function useRules() {
         method: 'POST',
         body: { trigger, context, type },
       })
-    } catch (e: any) {
-      error.value = e.message || 'Failed to evaluate rules'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to evaluate rules')
       return null
     }
   }

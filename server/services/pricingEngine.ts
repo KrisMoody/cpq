@@ -279,6 +279,7 @@ export async function calculateQuoteTotal(quoteId: string): Promise<{
       subtotal,
       discountTotal,
       taxAmount: taxResult.taxAmount,
+      // ASSERTION: Prisma JSON fields require casting to InputJsonValue
       taxBreakdown: taxResult.taxBreakdown as unknown as object,
       total,
       baseAmount,

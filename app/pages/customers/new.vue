@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 const router = useRouter()
 const { createCustomer } = useCustomers()
 const { priceBooks, fetchPriceBooks } = usePricing()
@@ -64,8 +65,8 @@ async function handleSubmit() {
     if (customer) {
       router.push(`/customers/${customer.id}`)
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create customer'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create customer')
   } finally {
     loading.value = false
   }

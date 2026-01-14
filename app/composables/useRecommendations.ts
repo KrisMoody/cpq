@@ -1,4 +1,5 @@
 import type { AffinityType, BillingFrequency } from '../generated/prisma/client.js'
+import { getErrorMessage } from '../utils/errors.js'
 
 export interface Recommendation {
   productId: string
@@ -28,8 +29,8 @@ export function useRecommendations() {
     try {
       const data = await $fetch<RecommendationsResponse>(`/api/recommendations/${quoteId}`)
       return data.recommendations
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch recommendations'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch recommendations')
       return []
     } finally {
       loading.value = false
@@ -54,8 +55,8 @@ export function useRecommendations() {
         },
       })
       return true
-    } catch (e: any) {
-      console.error('Failed to log recommendation action:', e)
+    } catch (e: unknown) {
+      console.error('Failed to log recommendation action:', getErrorMessage(e))
       return false
     }
   }

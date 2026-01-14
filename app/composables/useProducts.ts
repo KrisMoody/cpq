@@ -1,4 +1,5 @@
 import type { ProductType, BillingFrequency } from '../generated/prisma/client.js'
+import { getErrorMessage } from '../utils/errors.js'
 import type { UnitOfMeasure } from './useUnits'
 
 export interface ProductCategory {
@@ -76,8 +77,8 @@ export function useProducts() {
       const params = includeInactive ? '?includeInactive=true' : ''
       const data = await $fetch<Product[]>(`/api/products${params}`)
       products.value = data
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch products'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch products')
     } finally {
       loading.value = false
     }
@@ -86,8 +87,8 @@ export function useProducts() {
   async function fetchProduct(id: string): Promise<ProductWithFeatures | null> {
     try {
       return await $fetch<ProductWithFeatures>(`/api/products/${id}`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch product'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch product')
       return null
     }
   }
@@ -109,8 +110,8 @@ export function useProducts() {
       })
       await fetchProducts()
       return product
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to create product'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create product')
       return null
     }
   }
@@ -135,8 +136,8 @@ export function useProducts() {
         body: data,
       })
       return product
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to update product'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update product')
       return null
     }
   }
@@ -148,8 +149,8 @@ export function useProducts() {
       })
       await fetchProducts()
       return true
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to delete product'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete product')
       return false
     }
   }
@@ -169,8 +170,8 @@ export function useProducts() {
         method: 'POST',
         body: data,
       })
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to create feature'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create feature')
       return null
     }
   }
@@ -190,8 +191,8 @@ export function useProducts() {
         method: 'PUT',
         body: data,
       })
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to update feature'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update feature')
       return null
     }
   }
@@ -202,8 +203,8 @@ export function useProducts() {
         method: 'DELETE',
       })
       return true
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to delete feature'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete feature')
       return false
     }
   }
@@ -229,8 +230,8 @@ export function useProducts() {
           body: data,
         }
       )
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to create option'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create option')
       return null
     }
   }
@@ -256,8 +257,8 @@ export function useProducts() {
           body: data,
         }
       )
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to update option'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update option')
       return null
     }
   }
@@ -272,8 +273,8 @@ export function useProducts() {
         method: 'DELETE',
       })
       return true
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to delete option'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete option')
       return false
     }
   }
@@ -288,8 +289,8 @@ export function useProducts() {
         body: { featureIds },
       })
       return true
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to reorder features'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to reorder features')
       return false
     }
   }
@@ -305,8 +306,8 @@ export function useProducts() {
         body: { optionIds },
       })
       return true
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to reorder options'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to reorder options')
       return false
     }
   }

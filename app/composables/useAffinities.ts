@@ -1,4 +1,5 @@
 import type { AffinityType, BillingFrequency } from '../generated/prisma/client.js'
+import { getErrorMessage } from '../utils/errors.js'
 import type { ProductSummary, CategorySummary } from '../types/cpq'
 
 export interface ProductAffinity {
@@ -36,8 +37,8 @@ export function useAffinities() {
       const query = params.toString() ? `?${params.toString()}` : ''
       const data = await $fetch<ProductAffinity[]>(`/api/affinities${query}`)
       affinities.value = data
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch affinities'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch affinities')
     } finally {
       loading.value = false
     }
@@ -46,8 +47,8 @@ export function useAffinities() {
   async function fetchAffinity(id: string): Promise<ProductAffinity | null> {
     try {
       return await $fetch<ProductAffinity>(`/api/affinities/${id}`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch affinity'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch affinity')
       return null
     }
   }
@@ -71,8 +72,8 @@ export function useAffinities() {
       })
       await fetchAffinities()
       return affinity
-    } catch (e: any) {
-      error.value = e.message || 'Failed to create affinity'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create affinity')
       return null
     }
   }
@@ -99,8 +100,8 @@ export function useAffinities() {
       })
       await fetchAffinities()
       return affinity
-    } catch (e: any) {
-      error.value = e.message || 'Failed to update affinity'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update affinity')
       return null
     }
   }
@@ -112,8 +113,8 @@ export function useAffinities() {
       })
       await fetchAffinities()
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to delete affinity'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete affinity')
       return false
     }
   }

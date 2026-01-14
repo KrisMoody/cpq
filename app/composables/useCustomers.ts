@@ -1,4 +1,5 @@
 import type { Currency } from './useCurrencies'
+import { getErrorMessage } from '../utils/errors.js'
 
 export interface Customer {
   id: string
@@ -50,8 +51,8 @@ export function useCustomers() {
       const params = includeInactive ? '?includeInactive=true' : ''
       const data = await $fetch<Customer[]>(`/api/customers${params}`)
       customers.value = data
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch customers'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch customers')
     } finally {
       loading.value = false
     }
@@ -60,8 +61,8 @@ export function useCustomers() {
   async function fetchCustomer(id: string): Promise<CustomerWithQuotes | null> {
     try {
       return await $fetch<CustomerWithQuotes>(`/api/customers/${id}`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch customer'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch customer')
       return null
     }
   }
@@ -90,8 +91,8 @@ export function useCustomers() {
       })
       await fetchCustomers()
       return customer
-    } catch (e: any) {
-      error.value = e.message || 'Failed to create customer'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create customer')
       return null
     }
   }
@@ -124,8 +125,8 @@ export function useCustomers() {
       })
       await fetchCustomers()
       return customer
-    } catch (e: any) {
-      error.value = e.message || 'Failed to update customer'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update customer')
       return null
     }
   }
@@ -137,8 +138,8 @@ export function useCustomers() {
       })
       await fetchCustomers()
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to delete customer'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete customer')
       return false
     }
   }

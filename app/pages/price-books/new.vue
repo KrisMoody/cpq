@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 const router = useRouter()
 const { createPriceBook } = usePricing()
 const { currencies, fetchCurrencies } = useCurrencies()
@@ -52,8 +53,8 @@ async function handleSubmit() {
     if (priceBook) {
       router.push(`/price-books/${priceBook.id}`)
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create price book'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create price book')
   } finally {
     loading.value = false
   }

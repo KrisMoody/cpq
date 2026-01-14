@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 const router = useRouter()
 const route = useRoute()
 const { createQuote } = useQuotes()
@@ -51,8 +52,8 @@ async function handleSubmit() {
     if (quote) {
       router.push(`/quotes/${quote.id}`)
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create quote'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create quote')
   } finally {
     loading.value = false
   }

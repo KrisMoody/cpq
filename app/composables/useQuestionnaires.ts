@@ -1,4 +1,5 @@
 import type { QuestionType } from '../generated/prisma/client.js'
+import { getErrorMessage } from '../utils/errors.js'
 import type { ProductSummary } from '../types/cpq'
 
 export interface QuestionOption {
@@ -51,8 +52,8 @@ export function useQuestionnaires() {
       const params = includeInactive ? '?includeInactive=true' : ''
       const data = await $fetch<Questionnaire[]>(`/api/questionnaires${params}`)
       questionnaires.value = data
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch questionnaires'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch questionnaires')
     } finally {
       loading.value = false
     }
@@ -61,8 +62,8 @@ export function useQuestionnaires() {
   async function fetchQuestionnaire(id: string): Promise<Questionnaire | null> {
     try {
       return await $fetch<Questionnaire>(`/api/questionnaires/${id}`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch questionnaire'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch questionnaire')
       return null
     }
   }
@@ -79,8 +80,8 @@ export function useQuestionnaires() {
       })
       await fetchQuestionnaires()
       return questionnaire
-    } catch (e: any) {
-      error.value = e.message || 'Failed to create questionnaire'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create questionnaire')
       return null
     }
   }
@@ -100,8 +101,8 @@ export function useQuestionnaires() {
       })
       await fetchQuestionnaires()
       return questionnaire
-    } catch (e: any) {
-      error.value = e.message || 'Failed to update questionnaire'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update questionnaire')
       return null
     }
   }
@@ -113,8 +114,8 @@ export function useQuestionnaires() {
       })
       await fetchQuestionnaires()
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to delete questionnaire'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete questionnaire')
       return false
     }
   }
@@ -134,8 +135,8 @@ export function useQuestionnaires() {
         method: 'POST',
         body: data,
       })
-    } catch (e: any) {
-      error.value = e.message || 'Failed to add question'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to add question')
       return null
     }
   }
@@ -156,8 +157,8 @@ export function useQuestionnaires() {
         method: 'PUT',
         body: data,
       })
-    } catch (e: any) {
-      error.value = e.message || 'Failed to update question'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update question')
       return null
     }
   }
@@ -168,8 +169,8 @@ export function useQuestionnaires() {
         method: 'DELETE',
       })
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to delete question'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete question')
       return false
     }
   }
@@ -191,8 +192,8 @@ export function useQuestionnaires() {
           body: data,
         }
       )
-    } catch (e: any) {
-      error.value = e.message || 'Failed to add product mapping'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to add product mapping')
       return null
     }
   }
@@ -208,8 +209,8 @@ export function useQuestionnaires() {
         { method: 'DELETE' }
       )
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to delete product mapping'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete product mapping')
       return false
     }
   }
