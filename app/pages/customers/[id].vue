@@ -3,6 +3,7 @@ const route = useRoute()
 const router = useRouter()
 const { fetchCustomer, updateCustomer, deleteCustomer } = useCustomers()
 const { priceBooks, fetchPriceBooks, formatPrice } = usePricing()
+const { contracts, fetchContracts, getStatusColor, isContractActive } = useContracts()
 
 const customerId = route.params.id as string
 const customer = ref<Awaited<ReturnType<typeof fetchCustomer>> | null>(null)
@@ -36,7 +37,15 @@ const isTaxExemptExpired = computed(() => {
 
 onMounted(async () => {
   await Promise.all([loadCustomer(), fetchPriceBooks()])
+  // Fetch contracts for this customer after customer is loaded
+  await fetchContracts({ customerId: customerId })
 })
+
+const customerContracts = computed(() => contracts.value)
+
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString()
+}
 
 async function loadCustomer() {
   loading.value = true
@@ -387,6 +396,57 @@ function cancelEdit() {
           </template>
         </UCard>
       </div>
+
+      <!-- Contracts Section -->
+      <UCard>
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h2 class="font-semibold">Contracts</h2>
+            <UButton
+              :to="`/contracts/new?customerId=${customer.id}`"
+              variant="soft"
+              size="sm"
+              icon="i-heroicons-plus"
+            >
+              New Contract
+            </UButton>
+          </div>
+        </template>
+
+        <div v-if="customerContracts.length === 0" class="text-center py-8 text-gray-500">
+          <UIcon name="i-heroicons-document-text" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
+          <p>No contracts for this customer</p>
+        </div>
+
+        <div v-else class="space-y-3">
+          <NuxtLink
+            v-for="contract in customerContracts"
+            :key="contract.id"
+            :to="`/contracts/${contract.id}`"
+            class="block p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          >
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="font-medium text-primary-600 dark:text-primary-400">{{ contract.name }}</p>
+                <p class="text-sm text-gray-500">
+                  {{ formatDate(contract.startDate) }} - {{ formatDate(contract.endDate) }}
+                </p>
+                <p v-if="contract.priceEntryCount" class="text-xs text-gray-400 mt-1">
+                  {{ contract.priceEntryCount }} custom price{{ contract.priceEntryCount !== 1 ? 's' : '' }}
+                </p>
+              </div>
+              <div class="text-right">
+                <UBadge :color="getStatusColor(contract.status) as any" variant="subtle">
+                  {{ contract.status }}
+                </UBadge>
+                <p v-if="contract.discountPercent" class="text-sm text-gray-500 mt-1">
+                  {{ contract.discountPercent }}% off
+                </p>
+              </div>
+            </div>
+          </NuxtLink>
+        </div>
+      </UCard>
     </div>
   </div>
 </template>

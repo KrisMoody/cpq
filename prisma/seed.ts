@@ -8,6 +8,7 @@ import {
   DiscountScope,
   TierType,
   AttributeType,
+  ContractStatus,
 } from '../app/generated/prisma'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
@@ -34,6 +35,8 @@ async function main() {
   await prisma.rule.deleteMany()
   await prisma.quoteLineItem.deleteMany()
   await prisma.quote.deleteMany()
+  await prisma.contractPriceEntry.deleteMany()
+  await prisma.contract.deleteMany()
   await prisma.customer.deleteMany()
   await prisma.priceTier.deleteMany()
   await prisma.priceBookEntry.deleteMany()
@@ -1189,6 +1192,62 @@ async function main() {
 
   console.log('  ✓ Created example quote with line items')
 
+  // ============================================================================
+  // Contracts
+  // ============================================================================
+
+  // Active contract for TechGiant with special pricing
+  const techGiantContract = await prisma.contract.create({
+    data: {
+      name: 'TechGiant 2024 Enterprise Agreement',
+      customerId: techGiant.id,
+      startDate: new Date('2024-01-01'),
+      endDate: new Date('2024-12-31'),
+      status: ContractStatus.ACTIVE,
+      discountPercent: 15, // 15% off all products
+      priceEntries: {
+        create: [
+          // Fixed price for Developer Laptop bundle
+          { productId: developerLaptop.id, fixedPrice: 850.00 },
+          // Fixed price for i9 processor
+          { productId: i9.id, fixedPrice: 400.00 },
+        ],
+      },
+    },
+  })
+
+  // Draft contract for Acme Corp (pending approval)
+  const acmeContract = await prisma.contract.create({
+    data: {
+      name: 'Acme Corp 2024 Agreement',
+      customerId: acmeCorp.id,
+      startDate: new Date('2024-02-01'),
+      endDate: new Date('2025-01-31'),
+      status: ContractStatus.DRAFT,
+      discountPercent: 10, // 10% off all products
+    },
+  })
+
+  // Expired contract for Global Enterprises
+  const globalContract = await prisma.contract.create({
+    data: {
+      name: 'Global Enterprises 2023 Agreement',
+      customerId: globalEnterprises.id,
+      startDate: new Date('2023-01-01'),
+      endDate: new Date('2023-12-31'),
+      status: ContractStatus.EXPIRED,
+      discountPercent: 12,
+      priceEntries: {
+        create: [
+          { productId: ram64.id, fixedPrice: 350.00 },
+          { productId: ssd2tb.id, fixedPrice: 200.00 },
+        ],
+      },
+    },
+  })
+
+  console.log('  ✓ Created sample contracts')
+
   console.log('\n✅ Database seeded successfully!')
   console.log(`   - 9 units of measure (Each, Hour, Day, Month, Year, License, Seat, Box, Unit)`)
   console.log(`   - 6 categories (hierarchical)`)
@@ -1205,6 +1264,7 @@ async function main() {
   console.log(`   - 5 rules (2 configuration, 3 pricing)`)
   console.log(`   - 5 discounts (including 1 with tiers)`)
   console.log(`   - 1 example quote with 6 line items`)
+  console.log(`   - 3 contracts (1 active, 1 draft, 1 expired)`)
 }
 
 main()

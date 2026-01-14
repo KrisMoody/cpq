@@ -78,12 +78,25 @@ export interface RuleEvaluationResult {
   }>
 }
 
+export interface ContractPriceInfo {
+  contractId: string
+  contractName: string
+  priceType: 'fixed' | 'percentage'
+  originalPrice: number
+  discountPercent?: number
+}
+
 export interface EvaluationSummary {
   rules: RuleEvaluationResult[]
   warnings: string[]
   errors: string[]
   requiresApproval: boolean
   approvalReasons: string[]
+  contractPricing?: {
+    contractId: string
+    contractName: string
+    lineItems: { [lineItemId: string]: ContractPriceInfo }
+  }
 }
 
 export interface QuoteWithLineItems extends Quote {

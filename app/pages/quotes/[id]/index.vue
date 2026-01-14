@@ -309,6 +309,24 @@ const quoteSubtotal = computed(() => {
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Line Items -->
         <div class="lg:col-span-2 space-y-4">
+          <!-- Contract Pricing Banner -->
+          <UAlert
+            v-if="evaluation?.contractPricing"
+            color="info"
+            icon="i-heroicons-document-check"
+          >
+            <template #title>Contract Pricing Active</template>
+            <template #description>
+              <NuxtLink
+                :to="`/contracts/${evaluation.contractPricing.contractId}`"
+                class="font-medium underline hover:text-primary-700"
+              >
+                {{ evaluation.contractPricing.contractName }}
+              </NuxtLink>
+              is applying contract pricing to {{ Object.keys(evaluation.contractPricing.lineItems).length }} line item(s).
+            </template>
+          </UAlert>
+
           <UCard>
             <template #header>
               <div class="flex items-center justify-between">
@@ -335,6 +353,7 @@ const quoteSubtotal = computed(() => {
                 :key="line.id"
                 :line-item="line"
                 :editable="isEditable"
+                :contract-info="evaluation?.contractPricing?.lineItems?.[line.id]"
                 @remove="handleRemoveLine"
                 @update-quantity="handleUpdateQuantity"
                 @apply-discount="openApplyDiscount"

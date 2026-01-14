@@ -1,4 +1,5 @@
 import { usePrisma } from '../../../utils/prisma'
+import { lookupPriceWithContract, type ContractWithPrices, type ContractPriceInfo } from '../../../services/priceLookup'
 
 interface RuleCondition {
   field: string
@@ -27,6 +28,11 @@ interface EvaluationSummary {
   errors: string[]
   requiresApproval: boolean
   approvalReasons: string[]
+  contractPricing?: {
+    contractId: string
+    contractName: string
+    lineItems: { [lineItemId: string]: ContractPriceInfo }
+  }
 }
 
 export default defineEventHandler(async (event) => {
@@ -72,24 +78,47 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Recalculate line item prices with tier pricing
+  // Look up active contract for customer (if any)
+  let activeContract: ContractWithPrices | null = null
+  const contractLineItemInfo: { [lineItemId: string]: ContractPriceInfo } = {}
+
+  if (quote.customerId) {
+    const now = new Date()
+    const contract = await prisma.contract.findFirst({
+      where: {
+        customerId: quote.customerId,
+        status: 'ACTIVE',
+        startDate: { lte: now },
+        endDate: { gte: now },
+      },
+      include: {
+        priceEntries: true,
+      },
+    })
+    if (contract) {
+      activeContract = contract
+    }
+  }
+
+  // Recalculate line item prices with tier pricing and contract pricing
   for (const lineItem of quote.lineItems) {
     const priceEntry = quote.priceBook.entries.find(
       (e) => e.productId === lineItem.productId
     )
 
     if (priceEntry) {
-      let listPrice = Number(priceEntry.listPrice)
-
-      // Check for applicable tier
-      const applicableTier = priceEntry.priceTiers.find(
-        (tier) =>
-          lineItem.quantity >= tier.minQuantity &&
-          (tier.maxQuantity === null || lineItem.quantity <= tier.maxQuantity)
+      // Use lookupPriceWithContract to handle tier pricing and contract pricing
+      const priceResult = lookupPriceWithContract(
+        { ...priceEntry, priceTiers: priceEntry.priceTiers },
+        lineItem.quantity,
+        activeContract
       )
 
-      if (applicableTier) {
-        listPrice = Number(applicableTier.tierPrice)
+      let listPrice = priceResult.unitPrice
+
+      // Track contract pricing info for this line item
+      if (priceResult.contractApplied && priceResult.contractInfo) {
+        contractLineItemInfo[lineItem.id] = priceResult.contractInfo
       }
 
       // Calculate line item discounts
@@ -170,6 +199,13 @@ export default defineEventHandler(async (event) => {
     errors: [],
     requiresApproval: false,
     approvalReasons: [],
+    contractPricing: activeContract && Object.keys(contractLineItemInfo).length > 0
+      ? {
+          contractId: activeContract.id,
+          contractName: activeContract.name,
+          lineItems: contractLineItemInfo,
+        }
+      : undefined,
   }
 
   // Build context for rule evaluation

@@ -46,12 +46,13 @@ model Product {
   unitOfMeasureId String?
   createdAt       DateTime    @default(now())
 
-  unitOfMeasure    UnitOfMeasure?   @relation(fields: [unitOfMeasureId], references: [id])
-  features         ProductFeature[]
-  priceBookEntries PriceBookEntry[]
-  quoteLineItems   QuoteLineItem[]
-  categories       ProductCategory[]
-  attributes       ProductAttribute[]
+  unitOfMeasure        UnitOfMeasure?       @relation(fields: [unitOfMeasureId], references: [id])
+  features             ProductFeature[]
+  priceBookEntries     PriceBookEntry[]
+  quoteLineItems       QuoteLineItem[]
+  categories           ProductCategory[]
+  attributes           ProductAttribute[]
+  contractPriceEntries ContractPriceEntry[]
 }
 
 // ============================================================================
@@ -213,6 +214,48 @@ model Customer {
 
   priceBook PriceBook? @relation(fields: [priceBookId], references: [id])
   quotes    Quote[]
+  contracts Contract[]
+}
+
+// ============================================================================
+// Contracts
+// ============================================================================
+
+model Contract {
+  id              String         @id @default(cuid())
+  name            String
+  customerId      String
+  startDate       DateTime
+  endDate         DateTime
+  status          ContractStatus @default(DRAFT)
+  discountPercent Decimal?       @db.Decimal(5, 2) // Optional percentage discount on all products
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  customer     Customer             @relation(fields: [customerId], references: [id])
+  priceEntries ContractPriceEntry[]
+
+  @@index([customerId])
+  @@index([status])
+}
+
+model ContractPriceEntry {
+  id         String  @id @default(cuid())
+  contractId String
+  productId  String
+  fixedPrice Decimal @db.Decimal(10, 2)
+
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id])
+
+  @@unique([contractId, productId])
+  @@index([productId])
+}
+
+enum ContractStatus {
+  DRAFT
+  ACTIVE
+  EXPIRED
 }
 
 // ============================================================================

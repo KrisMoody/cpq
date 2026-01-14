@@ -1,7 +1,19 @@
-import type { PriceBookEntry, PriceTier, TierType } from '../../app/generated/prisma'
+import type { PriceBookEntry, PriceTier, TierType, Contract, ContractPriceEntry } from '../../app/generated/prisma'
 
 export interface PriceBookEntryWithTiers extends PriceBookEntry {
   priceTiers: PriceTier[]
+}
+
+export interface ContractWithPrices extends Contract {
+  priceEntries: ContractPriceEntry[]
+}
+
+export interface ContractPriceInfo {
+  contractId: string
+  contractName: string
+  priceType: 'fixed' | 'percentage'
+  originalPrice: number
+  discountPercent?: number
 }
 
 export interface PriceLookupResult {
@@ -15,6 +27,8 @@ export interface PriceLookupResult {
   }
   cost?: number
   margin?: number
+  contractApplied?: boolean
+  contractInfo?: ContractPriceInfo
 }
 
 /**
@@ -79,4 +93,93 @@ export function calculateTotalPrice(
   }
 
   return lookupResult.unitPrice * quantity
+}
+
+/**
+ * Look up contract-specific pricing for a product
+ * Returns null if no contract pricing applies
+ */
+export function lookupContractPrice(
+  contract: ContractWithPrices,
+  productId: string,
+  basePrice: number
+): { price: number; info: ContractPriceInfo } | null {
+  const now = new Date()
+
+  // Contract must be active and within validity period
+  if (contract.status !== 'ACTIVE') {
+    return null
+  }
+
+  if (now < new Date(contract.startDate) || now > new Date(contract.endDate)) {
+    return null
+  }
+
+  // Check for product-specific fixed price first
+  const fixedEntry = contract.priceEntries.find((e) => e.productId === productId)
+
+  if (fixedEntry) {
+    return {
+      price: Number(fixedEntry.fixedPrice),
+      info: {
+        contractId: contract.id,
+        contractName: contract.name,
+        priceType: 'fixed',
+        originalPrice: basePrice,
+      },
+    }
+  }
+
+  // Check for percentage discount
+  if (contract.discountPercent && Number(contract.discountPercent) > 0) {
+    const discountPercent = Number(contract.discountPercent)
+    const discountedPrice = basePrice * (1 - discountPercent / 100)
+
+    return {
+      price: discountedPrice,
+      info: {
+        contractId: contract.id,
+        contractName: contract.name,
+        priceType: 'percentage',
+        originalPrice: basePrice,
+        discountPercent,
+      },
+    }
+  }
+
+  return null
+}
+
+/**
+ * Look up price with contract pricing considered
+ * Contract pricing takes precedence over price book pricing
+ */
+export function lookupPriceWithContract(
+  entry: PriceBookEntryWithTiers,
+  quantity: number,
+  contract?: ContractWithPrices | null
+): PriceLookupResult {
+  // First get the standard price book price
+  const result = lookupPrice(entry, quantity)
+
+  // If no contract, return standard result
+  if (!contract) {
+    return result
+  }
+
+  // Check for contract pricing
+  const contractPrice = lookupContractPrice(contract, entry.productId, result.unitPrice)
+
+  if (contractPrice) {
+    result.unitPrice = contractPrice.price
+    result.contractApplied = true
+    result.contractInfo = contractPrice.info
+
+    // Recalculate margin with contract price
+    if (result.cost && result.cost > 0) {
+      result.margin = ((result.unitPrice - result.cost) / result.unitPrice) * 100
+    }
+  }
+
+  return result
 }

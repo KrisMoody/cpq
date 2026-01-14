@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { QuoteLineItem } from '~/composables/useQuotes'
+import type { QuoteLineItem, ContractPriceInfo } from '~/composables/useQuotes'
 
 interface ProductAttributeDisplay {
   id: string
@@ -34,6 +34,7 @@ const props = defineProps<{
   }
   isChild?: boolean
   editable?: boolean
+  contractInfo?: ContractPriceInfo
 }>()
 
 const emit = defineEmits<{
@@ -207,7 +208,14 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
         <!-- Unit Price -->
         <div class="text-right w-24">
           <p class="text-xs text-gray-500">Unit Price</p>
-          <p class="font-medium">{{ formatPrice(lineItem.listPrice) }}</p>
+          <div class="flex items-center justify-end gap-1">
+            <p v-if="contractInfo" class="text-xs text-gray-400 line-through">
+              {{ formatPrice(contractInfo.originalPrice) }}
+            </p>
+            <p class="font-medium" :class="{ 'text-info-600 dark:text-info-400': contractInfo }">
+              {{ formatPrice(lineItem.listPrice) }}
+            </p>
+          </div>
         </div>
 
         <!-- Line Total (before discounts) -->
@@ -248,6 +256,15 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
           />
         </div>
       </div>
+    </div>
+
+    <!-- Contract Pricing Indicator -->
+    <div v-if="contractInfo" class="mt-2 flex flex-wrap gap-1">
+      <UBadge variant="subtle" color="info" size="xs">
+        <UIcon name="i-heroicons-document-check" class="w-3 h-3 mr-1" />
+        Contract:
+        {{ contractInfo.priceType === 'fixed' ? 'Fixed Price' : `${contractInfo.discountPercent}% off` }}
+      </UBadge>
     </div>
 
     <!-- Applied Discounts Pills -->

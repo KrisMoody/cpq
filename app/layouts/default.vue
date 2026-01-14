@@ -32,6 +32,12 @@ const navigation = [
         icon: 'i-heroicons-users',
         to: '/customers',
       },
+      {
+        id: 'contracts',
+        label: 'Contracts',
+        icon: 'i-heroicons-document-check',
+        to: '/contracts',
+      },
     ],
   },
   {
