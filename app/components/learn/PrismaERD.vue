@@ -20,18 +20,48 @@ const { fitView } = useVueFlow()
 const nodes = ref<Node[]>([])
 const edges = ref<Edge[]>([])
 
+// Track global expanded state
+const allExpanded = ref(false)
+
+// Estimate node height based on content
+function estimateNodeHeight(model: ParsedModel, expanded: boolean): number {
+  if (!expanded) {
+    return 60 // Collapsed: header + summary
+  }
+  // Expanded: header (40px) + fields (20px each, max 300px) + relations section
+  const fieldsHeight = Math.min(model.fields.length * 20, 300)
+  const relationsHeight = model.relations.length > 0 ? 40 + model.relations.length * 20 : 0
+  return 50 + fieldsHeight + relationsHeight
+}
+
+function expandAll() {
+  allExpanded.value = true
+  if (schema.value) {
+    nodes.value = calculateLayout(schema.value.models, true)
+    nextTick(() => fitView({ padding: 0.2 }))
+  }
+}
+
+function collapseAll() {
+  allExpanded.value = false
+  if (schema.value) {
+    nodes.value = calculateLayout(schema.value.models, false)
+    nextTick(() => fitView({ padding: 0.2 }))
+  }
+}
+
 // Custom node types - use type assertion for Vue Flow compatibility
 const nodeTypes = {
   tableNode: markRaw(SchemaTableNode),
 } as const
 
-// Calculate initial layout based on domain groups
-function calculateLayout(models: ParsedModel[]): Node[] {
+// Calculate layout based on domain groups with dynamic spacing
+function calculateLayout(models: ParsedModel[], expanded = false): Node[] {
   const result: Node[] = []
   const domainOrder = ['Product', 'Pricing', 'Quote', 'Customer', 'Rules', 'Discount', 'Reference']
 
   const horizontalGap = 280
-  const verticalGap = 120
+  const verticalPadding = 20
 
   let currentX = 50
 
@@ -43,6 +73,8 @@ function calculateLayout(models: ParsedModel[]): Node[] {
       const model = models.find((m) => m.name === modelName)
       if (!model) continue
 
+      const nodeHeight = estimateNodeHeight(model, expanded)
+
       result.push({
         id: model.name,
         type: 'tableNode',
@@ -52,10 +84,11 @@ function calculateLayout(models: ParsedModel[]): Node[] {
           fields: model.fields,
           relations: model.relations,
           color: domainColors[model.name] || '#6b7280',
+          isExpanded: expanded,
         },
       })
 
-      currentY += verticalGap
+      currentY += nodeHeight + verticalPadding
     }
 
     // Move to next column if we placed any nodes
@@ -70,6 +103,8 @@ function calculateLayout(models: ParsedModel[]): Node[] {
 
   let ungroupedY = 50
   for (const model of ungroupedModels) {
+    const nodeHeight = estimateNodeHeight(model, expanded)
+
     result.push({
       id: model.name,
       type: 'tableNode',
@@ -79,9 +114,10 @@ function calculateLayout(models: ParsedModel[]): Node[] {
         fields: model.fields,
         relations: model.relations,
         color: domainColors[model.name] || '#6b7280',
+        isExpanded: expanded,
       },
     })
-    ungroupedY += verticalGap
+    ungroupedY += nodeHeight + verticalPadding
   }
 
   return result
@@ -217,7 +253,19 @@ onUnmounted(() => {
 
     <div class="mt-3 flex items-center justify-between text-xs text-gray-500">
       <p>Interactive database schema. Drag nodes, zoom with scroll, pan by dragging background.</p>
-      <p class="text-gray-400">Press <kbd class="px-1 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px]">Cmd+0</kbd> to reset view</p>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-1">
+          <UButton size="xs" variant="ghost" color="neutral" @click="expandAll">
+            <UIcon name="i-heroicons-arrows-pointing-out" class="w-3.5 h-3.5" />
+            Expand all
+          </UButton>
+          <UButton size="xs" variant="ghost" color="neutral" @click="collapseAll">
+            <UIcon name="i-heroicons-arrows-pointing-in" class="w-3.5 h-3.5" />
+            Collapse all
+          </UButton>
+        </div>
+        <p class="text-gray-400">Press <kbd class="px-1 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px]">Cmd+0</kbd> to reset view</p>
+      </div>
     </div>
   </div>
 </template>

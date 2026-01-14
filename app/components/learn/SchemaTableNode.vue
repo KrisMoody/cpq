@@ -8,12 +8,23 @@ interface NodeData {
   fields: ParsedField[]
   relations: ParsedRelation[]
   color: string
+  isExpanded?: boolean
 }
 
 // Accept all Vue Flow node props
-defineProps<NodeProps<NodeData>>()
+const props = defineProps<NodeProps<NodeData>>()
 
-const isExpanded = ref(false)
+const isExpanded = ref(props.data.isExpanded ?? false)
+
+// Sync with parent's expand/collapse all
+watch(
+  () => props.data.isExpanded,
+  (newVal) => {
+    if (newVal !== undefined) {
+      isExpanded.value = newVal
+    }
+  },
+)
 
 function toggleExpanded() {
   isExpanded.value = !isExpanded.value
