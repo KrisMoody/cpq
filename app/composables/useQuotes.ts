@@ -1,4 +1,5 @@
 import type { QuoteStatus } from '../generated/prisma/client.js'
+import { getErrorMessage } from '../utils/errors.js'
 import type { TaxBreakdownItem } from './useTaxRates'
 import type { Currency } from './useCurrencies'
 
@@ -132,8 +133,8 @@ export function useQuotes() {
     try {
       const data = await $fetch<Quote[]>('/api/quotes')
       quotes.value = data
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch quotes'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch quotes')
     } finally {
       loading.value = false
     }
@@ -142,8 +143,8 @@ export function useQuotes() {
   async function fetchQuote(id: string): Promise<QuoteWithLineItems | null> {
     try {
       return await $fetch<QuoteWithLineItems>(`/api/quotes/${id}`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch quote'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch quote')
       return null
     }
   }
@@ -162,8 +163,8 @@ export function useQuotes() {
       })
       await fetchQuotes()
       return quote
-    } catch (e: any) {
-      error.value = e.message || 'Failed to create quote'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create quote')
       return null
     }
   }
@@ -184,8 +185,8 @@ export function useQuotes() {
       })
       await fetchQuotes()
       return quote
-    } catch (e: any) {
-      error.value = e.message || 'Failed to update quote'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update quote')
       return null
     }
   }
@@ -204,8 +205,8 @@ export function useQuotes() {
         method: 'POST',
         body: data,
       })
-    } catch (e: any) {
-      error.value = e.message || 'Failed to add line item'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to add line item')
       return null
     }
   }
@@ -216,8 +217,8 @@ export function useQuotes() {
         method: 'DELETE',
       })
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to remove line item'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to remove line item')
       return false
     }
   }
@@ -227,8 +228,8 @@ export function useQuotes() {
       return await $fetch<CalculateQuoteResponse>(`/api/quotes/${quoteId}/calculate`, {
         method: 'POST',
       })
-    } catch (e: any) {
-      error.value = e.message || 'Failed to calculate quote'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to calculate quote')
       return null
     }
   }
@@ -244,8 +245,8 @@ export function useQuotes() {
         body: { discountId, lineItemId },
       })
       return result.quote
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to apply discount'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to apply discount')
       return null
     }
   }
@@ -260,8 +261,8 @@ export function useQuotes() {
         body: data,
       })
       return result.quote
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to apply manual discount'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to apply manual discount')
       return null
     }
   }
@@ -276,8 +277,8 @@ export function useQuotes() {
         { method: 'DELETE' }
       )
       return result.quote
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to remove discount'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to remove discount')
       return null
     }
   }
@@ -296,8 +297,8 @@ export function useQuotes() {
         }
       )
       return result.quote
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to update line item'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update line item')
       return null
     }
   }
@@ -309,8 +310,8 @@ export function useQuotes() {
       })
       await fetchQuotes()
       return quote
-    } catch (e: any) {
-      error.value = e.message || 'Failed to submit quote'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to submit quote')
       return null
     }
   }
@@ -323,8 +324,8 @@ export function useQuotes() {
       })
       await fetchQuotes()
       return quote
-    } catch (e: any) {
-      error.value = e.message || 'Failed to approve quote'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to approve quote')
       return null
     }
   }
@@ -336,8 +337,8 @@ export function useQuotes() {
       })
       await fetchQuotes()
       return quote
-    } catch (e: any) {
-      error.value = e.message || 'Failed to reject quote'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to reject quote')
       return null
     }
   }
@@ -349,8 +350,8 @@ export function useQuotes() {
       })
       await fetchQuotes()
       return true
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to delete quote'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete quote')
       return false
     }
   }

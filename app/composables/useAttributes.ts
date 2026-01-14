@@ -1,4 +1,6 @@
 import type { AttributeType } from '../generated/prisma/client.js'
+import type { AttributeValue, AttributeConstraints, AttributeOption } from '../types/domain.js'
+import { getErrorMessage } from '../utils/errors.js'
 
 export interface AttributeGroup {
   id: string
@@ -13,8 +15,8 @@ export interface Attribute {
   code: string
   type: AttributeType
   groupId: string | null
-  options: Array<{ label: string; value: string }> | null
-  constraints: Record<string, any> | null
+  options: AttributeOption[] | null
+  constraints: AttributeConstraints
   isRequired: boolean
   sortOrder: number
   group?: {
@@ -31,7 +33,7 @@ export interface ProductAttribute {
   id: string
   productId: string
   attributeId: string
-  value: any
+  value: AttributeValue
   attribute: Attribute
 }
 
@@ -52,8 +54,8 @@ export function useAttributes() {
       const data = await $fetch<Attribute[]>(`/api/attributes${queryString ? `?${queryString}` : ''}`)
       attributes.value = data
       return data
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to fetch attributes'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch attributes')
       return []
     } finally {
       loading.value = false
@@ -63,8 +65,8 @@ export function useAttributes() {
   async function fetchAttribute(id: string): Promise<Attribute | null> {
     try {
       return await $fetch<Attribute>(`/api/attributes/${id}`)
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to fetch attribute'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch attribute')
       return null
     }
   }
@@ -75,7 +77,7 @@ export function useAttributes() {
     type: AttributeType
     groupId?: string | null
     options?: Array<{ label: string; value: string }>
-    constraints?: Record<string, any>
+    constraints?: AttributeConstraints
     isRequired?: boolean
     sortOrder?: number
   }): Promise<Attribute | null> {
@@ -86,8 +88,8 @@ export function useAttributes() {
       })
       await fetchAttributes({ includeGroup: true })
       return attribute
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to create attribute'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create attribute')
       return null
     }
   }
@@ -100,7 +102,7 @@ export function useAttributes() {
       type: AttributeType
       groupId: string | null
       options: Array<{ label: string; value: string }>
-      constraints: Record<string, any>
+      constraints: AttributeConstraints
       isRequired: boolean
       sortOrder: number
     }>
@@ -112,8 +114,8 @@ export function useAttributes() {
       })
       await fetchAttributes({ includeGroup: true })
       return attribute
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to update attribute'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update attribute')
       return null
     }
   }
@@ -125,8 +127,8 @@ export function useAttributes() {
       })
       await fetchAttributes({ includeGroup: true })
       return true
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to delete attribute'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete attribute')
       return false
     }
   }
@@ -144,8 +146,8 @@ export function useAttributes() {
       )
       groups.value = data
       return data
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to fetch attribute groups'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch attribute groups')
       return []
     } finally {
       loading.value = false
@@ -160,8 +162,8 @@ export function useAttributes() {
       })
       await fetchGroups()
       return group
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to create attribute group'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create attribute group')
       return null
     }
   }
@@ -177,8 +179,8 @@ export function useAttributes() {
       })
       await fetchGroups()
       return group
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to update attribute group'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update attribute group')
       return null
     }
   }
@@ -190,8 +192,8 @@ export function useAttributes() {
       })
       await fetchGroups()
       return true
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to delete attribute group'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete attribute group')
       return false
     }
   }
@@ -199,15 +201,16 @@ export function useAttributes() {
   // Product Attributes
   async function setProductAttributes(
     productId: string,
-    attrValues: Array<{ attributeId: string; value: any }>
-  ): Promise<any> {
+    attrValues: Array<{ attributeId: string; value: AttributeValue }>
+  ): Promise<ProductAttribute[] | null> {
     try {
-      return await $fetch(`/api/products/${productId}/attributes`, {
+      const result = await $fetch<ProductAttribute[]>(`/api/products/${productId}/attributes`, {
         method: 'PUT',
         body: { attributes: attrValues },
       })
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to set product attributes'
+      return result
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to set product attributes')
       return null
     }
   }

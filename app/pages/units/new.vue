@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 const router = useRouter()
 const { units, fetchUnits, createUnit, error: unitError } = useUnits()
 
@@ -58,8 +59,8 @@ async function handleSubmit() {
     } else {
       error.value = unitError.value || 'Failed to create unit'
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create unit'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create unit')
   } finally {
     loading.value = false
   }

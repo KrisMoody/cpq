@@ -1,4 +1,6 @@
 import type { Rule, RuleTrigger, RuleType, Prisma } from '../../app/generated/prisma/client.js'
+import type { AttributeValue } from '../../app/types/domain.js'
+import { getErrorMessage } from '../../app/utils/errors.js'
 
 type JsonValue = Prisma.JsonValue
 
@@ -11,16 +13,26 @@ export interface RuleContext {
   customerId?: string
   optionId?: string
   discountPercentage?: number
-  // Product attributes - keyed by attribute code
-  productAttributes?: Record<string, any>
-  [key: string]: any
+  /** Product attributes keyed by attribute code */
+  productAttributes?: Record<string, AttributeValue>
+  /** Allow additional dynamic fields */
+  [key: string]: unknown
 }
+
+/** Comparison operators for rule conditions */
+export type ConditionOperator = 'eq' | 'neq' | 'gt' | 'lt' | 'gte' | 'lte' | 'contains' | 'in'
+
+/** Logical operators for compound conditions */
+export type LogicalOperator = 'and' | 'or' | 'not'
+
+/** Valid condition value types */
+export type ConditionValue = string | number | boolean | string[]
 
 export interface ConditionExpression {
   field?: string
-  op?: 'eq' | 'neq' | 'gt' | 'lt' | 'gte' | 'lte' | 'contains' | 'in'
-  value?: any
-  operator?: 'and' | 'or' | 'not'
+  op?: ConditionOperator
+  value?: ConditionValue
+  operator?: LogicalOperator
   conditions?: ConditionExpression[]
 }
 
@@ -59,12 +71,13 @@ function parseAction(json: JsonValue): ActionExpression | null {
  * Get a nested value from an object using dot notation
  * e.g., getNestedValue({ productAttributes: { color: 'red' } }, 'productAttributes.color') => 'red'
  */
-function getNestedValue(obj: Record<string, any>, path: string): any {
+function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
   const parts = path.split('.')
-  let current = obj
+  let current: unknown = obj
   for (const part of parts) {
     if (current === null || current === undefined) return undefined
-    current = current[part]
+    if (typeof current !== 'object') return undefined
+    current = (current as Record<string, unknown>)[part]
   }
   return current
 }
@@ -121,17 +134,17 @@ function evaluateCondition(condition: ConditionExpression, context: RuleContext)
     case 'neq':
       return contextValue !== value
     case 'gt':
-      return typeof contextValue === 'number' && contextValue > value
+      return typeof contextValue === 'number' && typeof value === 'number' && contextValue > value
     case 'lt':
-      return typeof contextValue === 'number' && contextValue < value
+      return typeof contextValue === 'number' && typeof value === 'number' && contextValue < value
     case 'gte':
-      return typeof contextValue === 'number' && contextValue >= value
+      return typeof contextValue === 'number' && typeof value === 'number' && contextValue >= value
     case 'lte':
-      return typeof contextValue === 'number' && contextValue <= value
+      return typeof contextValue === 'number' && typeof value === 'number' && contextValue <= value
     case 'contains':
-      return typeof contextValue === 'string' && contextValue.includes(value)
+      return typeof contextValue === 'string' && typeof value === 'string' && contextValue.includes(value)
     case 'in':
-      return Array.isArray(value) && value.includes(contextValue)
+      return Array.isArray(value) && value.includes(contextValue as string)
     default:
       return false
   }
@@ -169,8 +182,8 @@ export function evaluateRule(rule: Rule, context: RuleContext): RuleResult {
         result.warning = action.message || `Warning from rule: ${rule.name}`
       }
     }
-  } catch (e: any) {
-    result.error = `Error evaluating rule: ${e.message}`
+  } catch (e: unknown) {
+    result.error = `Error evaluating rule: ${getErrorMessage(e)}`
   }
 
   return result

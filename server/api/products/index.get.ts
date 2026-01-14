@@ -1,15 +1,16 @@
 import { usePrisma } from '../../utils/prisma'
+import type { Prisma } from '../../../app/generated/prisma/client.js'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
   const query = getQuery(event)
   const includeInactive = query.includeInactive === 'true'
   const includeAttributes = query.includeAttributes === 'true'
-  const categoryId = query.categoryId as string | undefined
-  const attributeFilter = query.attributeFilter as string | undefined // JSON string: [{ code: string, value: any }]
+  const categoryId = typeof query.categoryId === 'string' ? query.categoryId : undefined
+  const attributeFilter = typeof query.attributeFilter === 'string' ? query.attributeFilter : undefined
 
   // Build where clause
-  const where: any = {}
+  const where: Prisma.ProductWhereInput = {}
   if (!includeInactive) {
     where.isActive = true
   }
@@ -24,7 +25,7 @@ export default defineEventHandler(async (event) => {
   // Apply attribute filters if provided
   if (attributeFilter) {
     try {
-      const filters = JSON.parse(attributeFilter) as Array<{ code: string; value: any; operator?: string }>
+      const filters = JSON.parse(attributeFilter) as Array<{ code: string; value: unknown; operator?: string }>
       if (filters.length > 0) {
         // Get attribute IDs for the codes
         const codes = filters.map((f) => f.code)
@@ -35,39 +36,41 @@ export default defineEventHandler(async (event) => {
         const attrMap = new Map(attributes.map((a) => [a.code, a]))
 
         // Build attribute conditions
-        const attrConditions = filters
-          .map((f) => {
-            const attr = attrMap.get(f.code)
-            if (!attr) return null
+        const attrConditions: Prisma.ProductWhereInput[] = []
 
-            // For range queries on numbers
-            if (attr.type === 'NUMBER' && f.operator) {
-              // Handle range operators
-              return {
-                attributes: {
-                  some: {
-                    attributeId: attr.id,
-                    // Prisma JSON filtering varies by database
-                    // For PostgreSQL, use path queries
-                  },
-                },
-              }
-            }
+        for (const f of filters) {
+          const attr = attrMap.get(f.code)
+          if (!attr) continue
 
-            // Exact match
-            return {
+          // For range queries on numbers
+          if (attr.type === 'NUMBER' && f.operator) {
+            // Handle range operators
+            attrConditions.push({
               attributes: {
                 some: {
                   attributeId: attr.id,
-                  value: { equals: f.value },
+                  // Prisma JSON filtering varies by database
+                  // For PostgreSQL, use path queries
                 },
               },
-            }
-          })
-          .filter(Boolean)
+            })
+          } else {
+            // Exact match
+            // ASSERTION: Filter value from query string needs cast for Prisma JSON field
+            attrConditions.push({
+              attributes: {
+                some: {
+                  attributeId: attr.id,
+                  value: { equals: f.value as Prisma.InputJsonValue },
+                },
+              },
+            })
+          }
+        }
 
         if (attrConditions.length > 0) {
-          where.AND = [...(where.AND || []), ...attrConditions]
+          const existingAnd = Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []
+          where.AND = [...existingAnd, ...attrConditions]
         }
       }
     } catch {

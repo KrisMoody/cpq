@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { ProductType, BillingFrequency } from '~/generated/prisma/client.js'
 
 const router = useRouter()
@@ -86,8 +87,8 @@ async function handleSubmit() {
     } else {
       error.value = productError.value || 'Failed to create product'
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create product'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create product')
   } finally {
     loading.value = false
   }

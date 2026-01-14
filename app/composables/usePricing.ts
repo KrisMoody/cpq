@@ -1,4 +1,5 @@
 import type { Currency } from './useCurrencies'
+import { getErrorMessage } from '../utils/errors.js'
 
 export interface PriceBook {
   id: string
@@ -80,8 +81,8 @@ export function usePricing() {
     try {
       const data = await $fetch<PriceBook[]>('/api/price-books')
       priceBooks.value = data
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch price books'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch price books')
     } finally {
       loading.value = false
     }
@@ -90,8 +91,8 @@ export function usePricing() {
   async function fetchPriceBook(id: string): Promise<PriceBook | null> {
     try {
       return await $fetch<PriceBook>(`/api/price-books/${id}`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch price book'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch price book')
       return null
     }
   }
@@ -99,8 +100,8 @@ export function usePricing() {
   async function fetchPriceBookPrices(id: string): Promise<PriceBookWithEntries | null> {
     try {
       return await $fetch<PriceBookWithEntries>(`/api/price-books/${id}/prices`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch prices'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch prices')
       return null
     }
   }
@@ -115,8 +116,8 @@ export function usePricing() {
       })
       await fetchPriceBooks()
       return priceBook
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to create price book'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create price book')
       return null
     } finally {
       loading.value = false
@@ -133,8 +134,8 @@ export function usePricing() {
       })
       await fetchPriceBooks()
       return priceBook
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to update price book'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update price book')
       return null
     } finally {
       loading.value = false
@@ -150,8 +151,8 @@ export function usePricing() {
       })
       await fetchPriceBooks()
       return true
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to delete price book'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete price book')
       return false
     } finally {
       loading.value = false
@@ -165,8 +166,8 @@ export function usePricing() {
         method: 'POST',
         body: input,
       })
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to add price book entry'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to add price book entry')
       return null
     }
   }
@@ -178,8 +179,8 @@ export function usePricing() {
         method: 'PUT',
         body: input,
       })
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to update price book entry'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update price book entry')
       return null
     }
   }
@@ -191,8 +192,8 @@ export function usePricing() {
         method: 'DELETE',
       })
       return true
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to delete price book entry'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete price book entry')
       return false
     }
   }

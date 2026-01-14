@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { UnitOfMeasureWithDetails } from '~/composables/useUnits'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const { units, fetchUnits, fetchUnit, updateUnit, deleteUnit, error: unitError } = useUnits()
 
-const unitId = route.params.id as string
+const unitId = useRequiredParam('id')
 const unit = ref<UnitOfMeasureWithDetails | null>(null)
 const loading = ref(true)
 const saving = ref(false)
@@ -42,8 +43,8 @@ async function loadUnit() {
         : unit.value.conversionFactor,
       isActive: unit.value.isActive,
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to load unit'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to load unit')
   } finally {
     loading.value = false
   }
@@ -88,8 +89,8 @@ async function handleSave() {
     } else {
       error.value = unitError.value || 'Failed to update unit'
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to update unit'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to update unit')
   } finally {
     saving.value = false
   }
@@ -105,8 +106,8 @@ async function handleDeactivate() {
     } else {
       error.value = unitError.value || 'Failed to deactivate unit'
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to deactivate unit'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to deactivate unit')
   }
 }
 </script>

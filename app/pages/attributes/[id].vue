@@ -2,12 +2,12 @@
 import type { AttributeType } from '~/generated/prisma/client.js'
 import type { Attribute } from '~/composables/useAttributes'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const { groups, fetchGroups, fetchAttribute, updateAttribute, deleteAttribute, error } = useAttributes()
 
-const attributeId = route.params.id as string
+const attributeId = useRequiredParam('id')
 const attribute = ref<Attribute | null>(null)
 const loading = ref(true)
 const saving = ref(false)

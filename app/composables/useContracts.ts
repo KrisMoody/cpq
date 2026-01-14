@@ -1,3 +1,5 @@
+import { getErrorMessage } from '../utils/errors.js'
+
 export type ContractStatus = 'DRAFT' | 'ACTIVE' | 'EXPIRED'
 
 export interface ContractPriceEntry {
@@ -50,8 +52,8 @@ export function useContracts() {
       const url = queryString ? `/api/contracts?${queryString}` : '/api/contracts'
       const data = await $fetch<Contract[]>(url)
       contracts.value = data
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch contracts'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch contracts')
     } finally {
       loading.value = false
     }
@@ -60,8 +62,8 @@ export function useContracts() {
   async function fetchContract(id: string): Promise<ContractWithPrices | null> {
     try {
       return await $fetch<ContractWithPrices>(`/api/contracts/${id}`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch contract'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch contract')
       return null
     }
   }
@@ -81,8 +83,8 @@ export function useContracts() {
       })
       await fetchContracts()
       return contract
-    } catch (e: any) {
-      error.value = e.message || 'Failed to create contract'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create contract')
       return null
     }
   }
@@ -105,8 +107,8 @@ export function useContracts() {
       })
       await fetchContracts()
       return contract
-    } catch (e: any) {
-      error.value = e.message || 'Failed to update contract'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update contract')
       return null
     }
   }
@@ -118,8 +120,8 @@ export function useContracts() {
       })
       await fetchContracts()
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to delete contract'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete contract')
       return false
     }
   }
@@ -133,8 +135,8 @@ export function useContracts() {
         method: 'POST',
         body: data,
       })
-    } catch (e: any) {
-      error.value = e.message || 'Failed to add price entry'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to add price entry')
       return null
     }
   }
@@ -149,8 +151,8 @@ export function useContracts() {
         method: 'PUT',
         body: data,
       })
-    } catch (e: any) {
-      error.value = e.message || 'Failed to update price entry'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update price entry')
       return null
     }
   }
@@ -161,8 +163,8 @@ export function useContracts() {
         method: 'DELETE',
       })
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to delete price entry'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete price entry')
       return false
     }
   }
@@ -184,8 +186,8 @@ export function useContracts() {
       })
       await fetchContracts()
       return contract
-    } catch (e: any) {
-      error.value = e.message || 'Failed to renew contract'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to renew contract')
       return null
     }
   }

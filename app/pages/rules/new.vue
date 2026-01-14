@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { RuleType, RuleTrigger } from '~/generated/prisma/client.js'
 
 const router = useRouter()
@@ -123,8 +124,8 @@ async function handleSubmit() {
     if (rule) {
       router.push('/rules')
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create rule'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create rule')
   } finally {
     loading.value = false
   }

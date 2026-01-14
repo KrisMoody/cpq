@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { ProductWithDetails, ProductFeature } from '~/composables/useProducts'
 import type { ProductType, BillingFrequency } from '~/generated/prisma/client.js'
 import type { Attribute } from '~/composables/useAttributes'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const {
@@ -27,7 +28,7 @@ const { createQuote, addLineItem } = useQuotes()
 const { attributes, groups, fetchAttributes, fetchGroups, setProductAttributes } = useAttributes()
 const { units, fetchUnits } = useUnits()
 
-const productId = route.params.id as string
+const productId = useRequiredParam('id')
 const product = ref<ProductWithDetails | null>(null)
 const loading = ref(true)
 const saving = ref(false)
@@ -116,8 +117,8 @@ async function loadProduct() {
         }
       })
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to load product'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to load product')
   } finally {
     loading.value = false
   }
@@ -179,8 +180,8 @@ async function handleSave() {
     } else {
       error.value = productError.value || 'Failed to update product'
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to update product'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to update product')
   } finally {
     saving.value = false
   }
@@ -213,8 +214,8 @@ async function handleDeactivate() {
     } else {
       error.value = productError.value || 'Failed to deactivate product'
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to deactivate product'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to deactivate product')
   }
 }
 
@@ -233,8 +234,8 @@ async function handleAddToQuote() {
       })
       router.push(`/quotes/${quote.id}`)
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create quote'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create quote')
   }
 }
 
@@ -263,8 +264,8 @@ async function handleBundleConfigure(options: Array<{ optionId: string; quantity
 
       router.push(`/quotes/${quote.id}`)
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create quote with bundle configuration'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create quote with bundle configuration')
   }
 }
 
@@ -302,8 +303,8 @@ async function handleSaveFeature() {
     }
     showFeatureModal.value = false
     await loadProduct()
-  } catch (e: any) {
-    error.value = e.message || 'Failed to save feature'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to save feature')
   } finally {
     saving.value = false
   }
@@ -315,8 +316,8 @@ async function handleDeleteFeature(featureId: string) {
   try {
     await deleteFeature(productId, featureId)
     await loadProduct()
-  } catch (e: any) {
-    error.value = e.message || 'Failed to delete feature'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to delete feature')
   }
 }
 
@@ -364,8 +365,8 @@ async function handleSaveOption() {
     }
     showOptionModal.value = false
     await loadProduct()
-  } catch (e: any) {
-    error.value = e.message || 'Failed to save option'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to save option')
   } finally {
     saving.value = false
   }
@@ -377,8 +378,8 @@ async function handleDeleteOption(featureId: string, optionId: string) {
   try {
     await deleteOption(productId, featureId, optionId)
     await loadProduct()
-  } catch (e: any) {
-    error.value = e.message || 'Failed to delete option'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to delete option')
   }
 }
 

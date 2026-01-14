@@ -63,7 +63,7 @@ export default defineEventHandler(async (event) => {
       stackable: body.stackable !== undefined ? body.stackable : existing.stackable,
       priority: body.priority ?? existing.priority,
       tiers: body.tiers ? {
-        create: body.tiers.map((tier: any, index: number) => ({
+        create: (body.tiers as Array<{ minQuantity: number; maxQuantity?: number | null; value: number }>).map((tier, index) => ({
           tierNumber: index + 1,
           minQuantity: tier.minQuantity,
           maxQuantity: tier.maxQuantity ?? null,

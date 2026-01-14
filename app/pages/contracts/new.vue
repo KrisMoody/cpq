@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { ContractStatus } from '~/composables/useContracts'
 
 const router = useRouter()
@@ -86,8 +87,8 @@ async function handleSubmit() {
     if (contract) {
       router.push(`/contracts/${contract.id}`)
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create contract'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create contract')
   } finally {
     loading.value = false
   }

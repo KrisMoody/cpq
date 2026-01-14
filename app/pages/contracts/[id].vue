@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { ContractStatus, ContractWithPrices } from '~/composables/useContracts'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const {
   fetchContract,
@@ -18,7 +19,7 @@ const { customers, fetchCustomers } = useCustomers()
 const { products, fetchProducts } = useProducts()
 const { formatPrice } = usePricing()
 
-const contractId = route.params.id as string
+const contractId = useRequiredParam('id')
 const contract = ref<ContractWithPrices | null>(null)
 const loading = ref(true)
 const saving = ref(false)
@@ -72,8 +73,8 @@ async function loadContract() {
         discountPercent: contract.value.discountPercent ? parseFloat(contract.value.discountPercent) : null,
       }
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to load contract'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to load contract')
   } finally {
     loading.value = false
   }
@@ -102,8 +103,8 @@ async function handleSave() {
       contract.value = updated
       isEditing.value = false
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to update contract'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to update contract')
   } finally {
     saving.value = false
   }
@@ -115,8 +116,8 @@ async function handleDelete() {
   try {
     await deleteContract(contractId)
     router.push('/contracts')
-  } catch (e: any) {
-    error.value = e.message || 'Failed to delete contract'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to delete contract')
   }
 }
 

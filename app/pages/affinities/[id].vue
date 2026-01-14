@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { AffinityType, BillingFrequency } from '~/generated/prisma/client.js'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const { fetchAffinity, updateAffinity, deleteAffinity, error } = useAffinities()
@@ -26,10 +26,11 @@ const form = ref({
   isActive: true,
 })
 
+const affinityId = useRequiredParam('id')
+
 onMounted(async () => {
-  const id = route.params.id as string
   await Promise.all([fetchProducts(), fetchCategories()])
-  affinity.value = await fetchAffinity(id)
+  affinity.value = await fetchAffinity(affinityId)
   if (affinity.value) {
     form.value.sourceType = affinity.value.sourceProductId ? 'product' : 'category'
     form.value.targetType = affinity.value.targetProductId ? 'product' : 'category'
