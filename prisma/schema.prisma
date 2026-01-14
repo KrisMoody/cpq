@@ -1,0 +1,448 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../app/generated/prisma"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================================
+// Units of Measure
+// ============================================================================
+
+model UnitOfMeasure {
+  id               String  @id @default(cuid())
+  name             String
+  abbreviation     String
+  baseUnitId       String?
+  conversionFactor Decimal @default(1) @db.Decimal(10, 4)
+  isActive         Boolean @default(true)
+
+  baseUnit UnitOfMeasure?  @relation("UnitConversion", fields: [baseUnitId], references: [id])
+  derived  UnitOfMeasure[] @relation("UnitConversion")
+  products Product[]
+
+  @@unique([name])
+  @@unique([abbreviation])
+}
+
+// ============================================================================
+// Product Catalog
+// ============================================================================
+
+model Product {
+  id              String      @id @default(cuid())
+  name            String
+  description     String?
+  sku             String      @unique
+  type            ProductType @default(STANDALONE)
+  isTaxable       Boolean     @default(true)
+  isActive        Boolean     @default(true)
+  unitOfMeasureId String?
+  createdAt       DateTime    @default(now())
+
+  unitOfMeasure    UnitOfMeasure?   @relation(fields: [unitOfMeasureId], references: [id])
+  features         ProductFeature[]
+  priceBookEntries PriceBookEntry[]
+  quoteLineItems   QuoteLineItem[]
+  categories       ProductCategory[]
+  attributes       ProductAttribute[]
+}
+
+// ============================================================================
+// Categories
+// ============================================================================
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  parentId    String?
+  isActive    Boolean   @default(true)
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  parent     Category?           @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children   Category[]          @relation("CategoryHierarchy")
+  products   ProductCategory[]
+  discounts  Discount[]
+  attributes CategoryAttribute[]
+  taxRates   TaxRate[]
+}
+
+model ProductCategory {
+  id         String   @id @default(cuid())
+  productId  String
+  categoryId String
+  createdAt  DateTime @default(now())
+
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, categoryId])
+  @@index([categoryId])
+}
+
+enum ProductType {
+  STANDALONE
+  BUNDLE
+}
+
+model ProductFeature {
+  id         String @id @default(cuid())
+  productId  String
+  name       String
+  minOptions Int    @default(0)
+  maxOptions Int    @default(1)
+  sortOrder  Int    @default(0)
+
+  product Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  options ProductOption[]
+}
+
+model ProductOption {
+  id              String  @id @default(cuid())
+  featureId       String
+  optionProductId String
+  isRequired      Boolean @default(false)
+  isDefault       Boolean @default(false)
+  minQty          Int     @default(1)
+  maxQty          Int     @default(1)
+  sortOrder       Int     @default(0)
+
+  feature ProductFeature @relation(fields: [featureId], references: [id], onDelete: Cascade)
+}
+
+// ============================================================================
+// Product Attributes
+// ============================================================================
+
+model AttributeGroup {
+  id        String   @id @default(cuid())
+  name      String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  attributes Attribute[]
+}
+
+enum AttributeType {
+  TEXT
+  NUMBER
+  BOOLEAN
+  SELECT
+  DATE
+}
+
+model Attribute {
+  id          String        @id @default(cuid())
+  name        String
+  code        String        @unique
+  type        AttributeType
+  groupId     String?
+  options     Json?         // For SELECT type: [{ label: string, value: string }]
+  constraints Json?         // For NUMBER: { min?: number, max?: number }, for TEXT: { minLength?: number, maxLength?: number }
+  isRequired  Boolean       @default(false)
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  group              AttributeGroup?     @relation(fields: [groupId], references: [id])
+  productAttributes  ProductAttribute[]
+  categoryAttributes CategoryAttribute[]
+}
+
+model ProductAttribute {
+  id          String   @id @default(cuid())
+  productId   String
+  attributeId String
+  value       Json     // Stores the attribute value based on type
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attribute Attribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, attributeId])
+  @@index([attributeId])
+}
+
+model CategoryAttribute {
+  id          String   @id @default(cuid())
+  categoryId  String
+  attributeId String
+  createdAt   DateTime @default(now())
+
+  category  Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  attribute Attribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, attributeId])
+  @@index([attributeId])
+}
+
+// ============================================================================
+// Customers
+// ============================================================================
+
+model Customer {
+  id                   String    @id @default(cuid())
+  name                 String
+  email                String?
+  phone                String?
+  company              String?
+  street               String?
+  city                 String?
+  state                String?
+  postalCode           String?
+  country              String?
+  priceBookId          String?
+  isTaxExempt          Boolean   @default(false)
+  taxExemptReason      String?
+  taxExemptCertificate String?
+  taxExemptExpiry      DateTime?
+  isActive             Boolean   @default(true)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  priceBook PriceBook? @relation(fields: [priceBookId], references: [id])
+  quotes    Quote[]
+}
+
+// ============================================================================
+// Price Books
+// ============================================================================
+
+model PriceBook {
+  id        String    @id @default(cuid())
+  name      String
+  isDefault Boolean   @default(false)
+  isActive  Boolean   @default(true)
+  validFrom DateTime?
+  validTo   DateTime?
+
+  entries   PriceBookEntry[]
+  quotes    Quote[]
+  customers Customer[]
+}
+
+model PriceBookEntry {
+  id          String   @id @default(cuid())
+  priceBookId String
+  productId   String
+  listPrice   Decimal  @db.Decimal(10, 2)
+  cost        Decimal? @db.Decimal(10, 2)
+  minMargin   Decimal? @db.Decimal(5, 2) // Minimum margin percentage for approval rules
+
+  priceBook  PriceBook   @relation(fields: [priceBookId], references: [id], onDelete: Cascade)
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  priceTiers PriceTier[]
+
+  @@unique([priceBookId, productId])
+}
+
+model PriceTier {
+  id               String    @id @default(cuid())
+  priceBookEntryId String
+  minQuantity      Int
+  maxQuantity      Int?
+  tierPrice        Decimal   @db.Decimal(10, 2)
+  tierType         TierType  @default(UNIT_PRICE)
+
+  priceBookEntry PriceBookEntry @relation(fields: [priceBookEntryId], references: [id], onDelete: Cascade)
+
+  @@index([priceBookEntryId, minQuantity])
+}
+
+enum TierType {
+  UNIT_PRICE
+  FLAT_PRICE
+}
+
+// ============================================================================
+// Quotes
+// ============================================================================
+
+model Quote {
+  id               String      @id @default(cuid())
+  name             String
+  customerId       String?
+  status           QuoteStatus @default(DRAFT)
+  priceBookId      String
+  validFrom        DateTime    @default(now())
+  validTo          DateTime
+  subtotal         Decimal     @default(0) @db.Decimal(10, 2)
+  discountTotal    Decimal     @default(0) @db.Decimal(10, 2)
+  taxAmount        Decimal     @default(0) @db.Decimal(10, 2)
+  taxBreakdown     Json?       // Array of { name, rate, amount } for each applied tax
+  total            Decimal     @default(0) @db.Decimal(10, 2)
+  requiresApproval Boolean     @default(false)
+  approvedBy       String?
+  approvedAt       DateTime?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  customer         Customer?         @relation(fields: [customerId], references: [id])
+  priceBook        PriceBook         @relation(fields: [priceBookId], references: [id])
+  lineItems        QuoteLineItem[]
+  appliedDiscounts AppliedDiscount[]
+}
+
+enum QuoteStatus {
+  DRAFT
+  PENDING
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  ACCEPTED
+  FINALIZED
+  CANCELLED
+}
+
+model QuoteLineItem {
+  id           String  @id @default(cuid())
+  quoteId      String
+  productId    String
+  parentLineId String?
+  quantity     Int     @default(1)
+  listPrice    Decimal @db.Decimal(10, 2)
+  discount     Decimal @default(0) @db.Decimal(10, 2)
+  netPrice     Decimal @db.Decimal(10, 2)
+  sortOrder    Int     @default(0)
+
+  quote            Quote             @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  product          Product           @relation(fields: [productId], references: [id])
+  parentLine       QuoteLineItem?    @relation("LineItemChildren", fields: [parentLineId], references: [id])
+  childLines       QuoteLineItem[]   @relation("LineItemChildren")
+  appliedDiscounts AppliedDiscount[]
+}
+
+// ============================================================================
+// Rules Engine
+// ============================================================================
+
+model Rule {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  type        RuleType
+  trigger     RuleTrigger
+  priority    Int         @default(100)
+  condition   Json        // JSON condition expression
+  action      Json        // JSON action expression
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+enum RuleType {
+  CONFIGURATION
+  PRICING
+}
+
+enum RuleTrigger {
+  ON_PRODUCT_ADD
+  ON_QUANTITY_CHANGE
+  ON_QUOTE_SAVE
+  ON_FINALIZE
+}
+
+// ============================================================================
+// Discounts
+// ============================================================================
+
+model Discount {
+  id            String        @id @default(cuid())
+  name          String
+  description   String?
+  type          DiscountType
+  value         Decimal       @db.Decimal(10, 2)
+  scope         DiscountScope
+  categoryId    String?       // For PRODUCT_CATEGORY scope
+  minQuantity   Int?
+  maxQuantity   Int?
+  minOrderValue Decimal?      @db.Decimal(10, 2)
+  validFrom     DateTime?
+  validTo       DateTime?
+  isActive      Boolean       @default(true)
+  stackable     Boolean       @default(false)
+  priority      Int           @default(100)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  category         Category?        @relation(fields: [categoryId], references: [id])
+  tiers            DiscountTier[]
+  appliedDiscounts AppliedDiscount[]
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+enum DiscountScope {
+  LINE_ITEM
+  QUOTE
+  PRODUCT_CATEGORY
+}
+
+model DiscountTier {
+  id          String   @id @default(cuid())
+  discountId  String
+  tierNumber  Int
+  minQuantity Int
+  maxQuantity Int?
+  value       Decimal  @db.Decimal(10, 2)
+
+  discount Discount @relation(fields: [discountId], references: [id], onDelete: Cascade)
+
+  @@index([discountId, tierNumber])
+}
+
+model AppliedDiscount {
+  id               String       @id @default(cuid())
+  quoteId          String
+  lineItemId       String?
+  discountId       String?
+  type             DiscountType
+  value            Decimal      @db.Decimal(10, 2)
+  calculatedAmount Decimal      @db.Decimal(10, 2)
+  reason           String?
+  appliedBy        String?
+  appliedAt        DateTime     @default(now())
+
+  quote    Quote          @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  lineItem QuoteLineItem? @relation(fields: [lineItemId], references: [id], onDelete: Cascade)
+  discount Discount?      @relation(fields: [discountId], references: [id])
+
+  @@index([quoteId])
+}
+
+// ============================================================================
+// Tax Management
+// ============================================================================
+
+model TaxRate {
+  id         String    @id @default(cuid())
+  name       String
+  rate       Decimal   @db.Decimal(5, 4) // Supports rates like 0.0825 (8.25%)
+  country    String
+  state      String?   // State/region, optional for country-level taxes
+  categoryId String?   // Optional: link to specific product category
+  validFrom  DateTime?
+  validTo    DateTime?
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  category Category? @relation(fields: [categoryId], references: [id])
+
+  @@index([country, state])
+  @@index([isActive])
+}
