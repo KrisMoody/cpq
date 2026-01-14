@@ -45,9 +45,13 @@ const chartOptions = ref<ApexOptions>({
           0: 'Product hierarchy: configurable items with features and options',
           1: 'Pricing hierarchy: price books with entries and volume tiers',
           2: 'Quote hierarchy: quotes with line items and applied discounts',
-          3: 'Customer hierarchy: customers linked to their quotes',
-          4: 'Rules hierarchy: business rules with conditions and actions',
-          5: 'Discount hierarchy: discount definitions with volume tiers',
+          3: 'Customer hierarchy: customers linked to their contracts and quotes',
+          4: 'Category hierarchy: nested categories with self-referencing parent',
+          5: 'Attribute hierarchy: grouped attributes assigned to products and categories',
+          6: 'Currency hierarchy: currencies with exchange rates',
+          7: 'Guided Selling hierarchy: questionnaires with questions and product mappings',
+          8: 'Rules hierarchy: business rules with conditions and actions',
+          9: 'Discount hierarchy: discount definitions with volume tiers',
         }
         return descriptions[opts.seriesIndex] || ''
       },
@@ -67,7 +71,7 @@ const series = ref([
   },
   {
     name: 'Pricing Hierarchy',
-    color: '#10b981',
+    color: '#14b8a6',
     data: [
       { x: 'PriceBook', y: 25 },
       { x: '  └ PriceBookEntry', y: 20 },
@@ -88,7 +92,46 @@ const series = ref([
     color: '#8b5cf6',
     data: [
       { x: 'Customer', y: 25 },
-      { x: '  └ Quotes', y: 20 },
+      { x: '  └ Contract', y: 20 },
+      { x: '      └ ContractPriceEntry', y: 15 },
+      { x: '  └ Quote', y: 20 },
+    ],
+  },
+  {
+    name: 'Category Hierarchy',
+    color: '#22c55e',
+    data: [
+      { x: 'Category', y: 24 },
+      { x: '  └ Category (parent)', y: 18 },
+      { x: '  └ CategoryAttribute', y: 16 },
+    ],
+  },
+  {
+    name: 'Attribute Hierarchy',
+    color: '#06b6d4',
+    data: [
+      { x: 'AttributeGroup', y: 24 },
+      { x: '  └ Attribute', y: 20 },
+      { x: '      └ ProductAttribute', y: 15 },
+      { x: '      └ CategoryAttribute', y: 15 },
+    ],
+  },
+  {
+    name: 'Currency Hierarchy',
+    color: '#10b981',
+    data: [
+      { x: 'Currency', y: 22 },
+      { x: '  └ ExchangeRate', y: 16 },
+    ],
+  },
+  {
+    name: 'Guided Selling',
+    color: '#6366f1',
+    data: [
+      { x: 'Questionnaire', y: 24 },
+      { x: '  └ Question', y: 20 },
+      { x: '      └ QuestionProductMapping', y: 15 },
+      { x: 'ProductAffinity', y: 18 },
     ],
   },
   {
@@ -116,7 +159,7 @@ const series = ref([
     <ClientOnly>
       <ApexChart
         :type="(chartType as any)"
-        height="450"
+        height="550"
         :options="chartOptions"
         :series="series"
       />
