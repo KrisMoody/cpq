@@ -86,10 +86,10 @@ const taxAmountNum = computed(() => parseFloat(String(props.quote.taxAmount || 0
 const totalNum = computed(() => parseFloat(String(props.quote.total)))
 
 // Recurring metrics
-const oneTimeTotalNum = computed(() => parseFloat(String((props.quote as any).oneTimeTotal || 0)))
-const mrrNum = computed(() => parseFloat(String((props.quote as any).mrr || 0)))
-const arrNum = computed(() => parseFloat(String((props.quote as any).arr || 0)))
-const tcvNum = computed(() => parseFloat(String((props.quote as any).tcv || 0)))
+const oneTimeTotalNum = computed(() => parseFloat(String(props.quote.oneTimeTotal || 0)))
+const mrrNum = computed(() => parseFloat(String(props.quote.mrr || 0)))
+const arrNum = computed(() => parseFloat(String(props.quote.arr || 0)))
+const tcvNum = computed(() => parseFloat(String(props.quote.tcv || 0)))
 const hasRecurringItems = computed(() => mrrNum.value > 0)
 
 const taxBreakdown = computed((): TaxBreakdownItem[] => {

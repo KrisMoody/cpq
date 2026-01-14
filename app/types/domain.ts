@@ -105,6 +105,26 @@ export type ActionType =
 export type ActionScope = 'LINE_ITEM' | 'QUOTE'
 
 /**
+ * A rule action definition
+ */
+export interface RuleAction {
+  type: ActionType
+  scope?: ActionScope
+  /** Target product/option ID for REQUIRE/EXCLUDE actions */
+  targetId?: string
+  /** Message for warnings/notifications */
+  message?: string
+  /** Discount percentage for APPLY_DISCOUNT */
+  discountPercent?: number
+  /** Fixed price for SET_PRICE */
+  price?: number
+  /** Approval reason for REQUIRE_APPROVAL */
+  reason?: string
+  /** Allow additional action-specific fields */
+  [key: string]: unknown
+}
+
+/**
  * Context object passed to rule evaluation.
  * Contains known fields plus dynamic attribute values.
  */

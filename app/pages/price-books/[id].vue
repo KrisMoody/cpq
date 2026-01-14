@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getErrorMessage } from '~/utils/errors'
-import type { PriceBook, PriceBookEntry } from '~/composables/usePricing'
+import type { PriceBook, PriceBookEntry, PriceTier } from '~/composables/usePricing'
 
 const _route = useRoute()
 const router = useRouter()
@@ -19,7 +19,7 @@ const { currencies, fetchCurrencies } = useCurrencies()
 
 const priceBookId = useRequiredParam('id')
 const priceBook = ref<PriceBook | null>(null)
-const entries = ref<PriceBookEntryWithTiers[]>([])
+const entries = ref<PriceBookEntry[]>([])
 const loading = ref(true)
 const saving = ref(false)
 const error = ref<string | null>(null)
@@ -53,18 +53,6 @@ const editingEntry = ref({
 const expandedEntryId = ref<string | null>(null)
 const editingTiersEntryId = ref<string | null>(null)
 const editingTiers = ref<Array<{ minQuantity: number; maxQuantity: number | null; tierPrice: number; tierType: string }>>([])
-
-interface PriceTier {
-  id: string
-  minQuantity: number
-  maxQuantity: number | null
-  tierPrice: string
-  tierType: string
-}
-
-interface PriceBookEntryWithTiers extends PriceBookEntry {
-  priceTiers?: PriceTier[]
-}
 
 const tierTypeOptions = [
   { label: 'Unit Price', value: 'UNIT_PRICE' },
@@ -227,9 +215,9 @@ function toggleTiers(entryId: string) {
   expandedEntryId.value = expandedEntryId.value === entryId ? null : entryId
 }
 
-function startEditTiers(entry: PriceBookEntryWithTiers) {
+function startEditTiers(entry: PriceBookEntry) {
   editingTiersEntryId.value = entry.id
-  editingTiers.value = (entry.priceTiers ?? []).map((t) => ({
+  editingTiers.value = (entry.priceTiers ?? []).map((t: PriceTier) => ({
     minQuantity: t.minQuantity,
     maxQuantity: t.maxQuantity,
     tierPrice: parseFloat(t.tierPrice),
@@ -258,7 +246,7 @@ function removeTier(index: number) {
   editingTiers.value.splice(index, 1)
 }
 
-async function saveTiers(entry: PriceBookEntryWithTiers) {
+async function saveTiers(entry: PriceBookEntry) {
   // Validate tiers
   for (let i = 0; i < editingTiers.value.length; i++) {
     const tier = editingTiers.value[i]
@@ -295,7 +283,7 @@ async function saveTiers(entry: PriceBookEntryWithTiers) {
 }
 
 function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
-  return (entry as any).priceTiers || []
+  return entry.priceTiers || []
 }
 </script>
 

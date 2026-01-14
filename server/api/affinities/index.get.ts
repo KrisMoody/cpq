@@ -1,4 +1,9 @@
+import { AffinityType } from '../../../app/generated/prisma/client.js'
 import { usePrisma } from '../../utils/prisma'
+
+function isValidAffinityType(value: string): value is AffinityType {
+  return Object.values(AffinityType).includes(value as AffinityType)
+}
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
@@ -9,7 +14,7 @@ export default defineEventHandler(async (event) => {
   const affinities = await prisma.productAffinity.findMany({
     where: {
       ...(includeInactive ? {} : { isActive: true }),
-      ...(type ? { type: type as any } : {}),
+      ...(type && isValidAffinityType(type) ? { type } : {}),
     },
     include: {
       sourceProduct: { select: { id: true, name: true, sku: true } },

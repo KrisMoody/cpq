@@ -29,7 +29,7 @@ export interface Attribute {
   }
 }
 
-export interface ProductAttribute {
+export interface ProductAttributeWithFullAttribute {
   id: string
   productId: string
   attributeId: string
@@ -202,9 +202,9 @@ export function useAttributes() {
   async function setProductAttributes(
     productId: string,
     attrValues: Array<{ attributeId: string; value: AttributeValue }>
-  ): Promise<ProductAttribute[] | null> {
+  ): Promise<ProductAttributeWithFullAttribute[] | null> {
     try {
-      const result = await $fetch<ProductAttribute[]>(`/api/products/${productId}/attributes`, {
+      const result = await $fetch<ProductAttributeWithFullAttribute[]>(`/api/products/${productId}/attributes`, {
         method: 'PUT',
         body: { attributes: attrValues },
       })

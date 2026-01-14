@@ -1,4 +1,5 @@
 import type { RuleType, RuleTrigger } from '../generated/prisma/client.js'
+import type { ConditionExpression, RuleAction } from '../types/domain.js'
 import { getErrorMessage } from '../utils/errors.js'
 
 export interface Rule {
@@ -8,8 +9,8 @@ export interface Rule {
   type: RuleType
   trigger: RuleTrigger
   priority: number
-  condition: Record<string, any>
-  action: Record<string, any>
+  condition: ConditionExpression
+  action: RuleAction
   isActive: boolean
   createdAt: string
   updatedAt: string
@@ -19,7 +20,7 @@ export interface RuleResult {
   ruleId: string
   ruleName: string
   matched: boolean
-  action?: Record<string, any>
+  action?: RuleAction
   error?: string
   warning?: string
 }
@@ -28,7 +29,7 @@ export interface EvaluationResult {
   success: boolean
   errors: string[]
   warnings: string[]
-  appliedActions: Record<string, any>[]
+  appliedActions: RuleAction[]
   requiresApproval: boolean
   results: RuleResult[]
 }

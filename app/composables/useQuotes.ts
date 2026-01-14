@@ -54,6 +54,11 @@ export interface Quote {
   approvedBy?: string
   approvedAt?: string
   createdAt: string
+  /** Recurring revenue metrics (populated after calculation) */
+  oneTimeTotal?: string
+  mrr?: string
+  arr?: string
+  tcv?: string
   customer?: {
     id: string
     name: string

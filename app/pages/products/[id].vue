@@ -68,7 +68,7 @@ const editingOptionId = ref<string | null>(null)
 
 // Attribute editing state
 const showAttributesModal = ref(false)
-const attributeValues = ref<Record<string, any>>({})
+const attributeValues = ref<Record<string, string | number | boolean | null>>({})
 const savingAttributes = ref(false)
 
 // Drag-and-drop state
@@ -102,9 +102,9 @@ async function loadProduct() {
       sku: product.value.sku,
       description: product.value.description || '',
       type: product.value.type,
-      billingFrequency: (product.value as any).billingFrequency || 'ONE_TIME',
-      customBillingMonths: (product.value as any).customBillingMonths || null,
-      defaultTermMonths: (product.value as any).defaultTermMonths || null,
+      billingFrequency: product.value.billingFrequency || 'ONE_TIME',
+      customBillingMonths: product.value.customBillingMonths || null,
+      defaultTermMonths: product.value.defaultTermMonths || null,
       isActive: product.value.isActive,
       unitOfMeasureId: product.value.unitOfMeasureId || null,
     }
@@ -195,9 +195,9 @@ function cancelEdit() {
       sku: product.value.sku,
       description: product.value.description || '',
       type: product.value.type,
-      billingFrequency: (product.value as any).billingFrequency || 'ONE_TIME',
-      customBillingMonths: (product.value as any).customBillingMonths || null,
-      defaultTermMonths: (product.value as any).defaultTermMonths || null,
+      billingFrequency: product.value.billingFrequency || 'ONE_TIME',
+      customBillingMonths: product.value.customBillingMonths || null,
+      defaultTermMonths: product.value.defaultTermMonths || null,
       isActive: product.value.isActive,
       unitOfMeasureId: product.value.unitOfMeasureId || null,
     }
@@ -520,17 +520,17 @@ const unitOptions = computed(() => [
 
 // Attribute helpers
 const productAttributes = computed(() => {
-  return (product.value as any)?.attributes || []
+  return product.value?.attributes || []
 })
 
 const groupedProductAttributes = computed(() => {
-  const grouped = new Map<string | null, Array<{ attribute: Attribute; value: any }>>()
+  const grouped = new Map<string | null, Array<{ attribute: Attribute; value: string | number | boolean | null }>>()
   for (const pa of productAttributes.value) {
     const groupId = pa.attribute.groupId
     if (!grouped.has(groupId)) {
       grouped.set(groupId, [])
     }
-    grouped.get(groupId)!.push({ attribute: pa.attribute, value: pa.value })
+    grouped.get(groupId)!.push({ attribute: pa.attribute as Attribute, value: pa.value })
   }
   return grouped
 })
@@ -541,29 +541,41 @@ function getGroupName(groupId: string | null): string {
   return group?.name || 'Unknown'
 }
 
-function formatAttributeValue(attr: Attribute, value: any): string {
+function formatAttributeValue(attr: Attribute, value: string | number | boolean | null): string {
   if (value === null || value === undefined || value === '') return '-'
   switch (attr.type) {
     case 'BOOLEAN':
       return value ? 'Yes' : 'No'
     case 'SELECT': {
       const opt = attr.options?.find((o) => o.value === value)
-      return opt?.label || value
+      return opt?.label || String(value)
     }
     case 'DATE':
-      return new Date(value).toLocaleDateString()
+      return new Date(String(value)).toLocaleDateString()
     default:
       return String(value)
   }
 }
 
 function openAttributesModal() {
-  // Initialize form with current attribute values
+  // Initialize form with current attribute values (default all to null, then set existing values)
   attributeValues.value = {}
+  for (const attr of attributes.value) {
+    attributeValues.value[attr.id] = null
+  }
   for (const pa of productAttributes.value) {
     attributeValues.value[pa.attribute.id] = pa.value
   }
   showAttributesModal.value = true
+}
+
+// Getter/setter for attribute values that handles undefined → null conversion
+function getAttributeValue(attrId: string): string | number | boolean | null {
+  return attributeValues.value[attrId] ?? null
+}
+
+function setAttributeValue(attrId: string, value: string | number | boolean | null) {
+  attributeValues.value[attrId] = value
 }
 
 async function handleSaveAttributes() {
@@ -630,12 +642,12 @@ async function handleSaveAttributes() {
             <span v-if="product.unitOfMeasure" class="ml-3">
               Unit: {{ product.unitOfMeasure.name }} ({{ product.unitOfMeasure.abbreviation }})
             </span>
-            <span v-if="(product as any).billingFrequency && (product as any).billingFrequency !== 'ONE_TIME'" class="ml-3">
+            <span v-if="product.billingFrequency && product.billingFrequency !== 'ONE_TIME'" class="ml-3">
               <UBadge color="primary" variant="subtle" size="xs">
-                {{ formatBillingFrequency((product as any).billingFrequency) }}
+                {{ formatBillingFrequency(product.billingFrequency) }}
               </UBadge>
-              <span v-if="(product as any).defaultTermMonths" class="text-xs ml-1">
-                ({{ (product as any).defaultTermMonths }}mo term)
+              <span v-if="product.defaultTermMonths" class="text-xs ml-1">
+                ({{ product.defaultTermMonths }}mo term)
               </span>
             </span>
           </p>
@@ -1037,8 +1049,9 @@ async function handleSaveAttributes() {
                     :required="attr.isRequired"
                   >
                     <CpqAttributeInput
-                      v-model="attributeValues[attr.id]"
+                      :model-value="getAttributeValue(attr.id)"
                       :attribute="attr"
+                      @update:model-value="setAttributeValue(attr.id, $event)"
                     />
                   </UFormField>
                 </div>
@@ -1057,8 +1070,9 @@ async function handleSaveAttributes() {
                     :required="attr.isRequired"
                   >
                     <CpqAttributeInput
-                      v-model="attributeValues[attr.id]"
+                      :model-value="getAttributeValue(attr.id)"
                       :attribute="attr"
+                      @update:model-value="setAttributeValue(attr.id, $event)"
                     />
                   </UFormField>
                 </div>

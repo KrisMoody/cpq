@@ -192,7 +192,7 @@ export function useContracts() {
     }
   }
 
-  function getStatusColor(status: ContractStatus): string {
+  function getStatusColor(status: ContractStatus): 'success' | 'warning' | 'neutral' {
     switch (status) {
       case 'ACTIVE':
         return 'success'

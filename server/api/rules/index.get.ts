@@ -1,4 +1,9 @@
+import { RuleType } from '../../../app/generated/prisma/client.js'
 import { usePrisma } from '../../utils/prisma'
+
+function isValidRuleType(value: string): value is RuleType {
+  return Object.values(RuleType).includes(value as RuleType)
+}
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
@@ -7,7 +12,7 @@ export default defineEventHandler(async (event) => {
 
   const rules = await prisma.rule.findMany({
     where: {
-      ...(type ? { type: type as any } : {}),
+      ...(type && isValidRuleType(type) ? { type } : {}),
     },
     orderBy: [{ priority: 'asc' }, { name: 'asc' }],
   })

@@ -1,4 +1,10 @@
+import type { AttributeValue } from '../../../../app/types/domain.js'
 import { usePrisma } from '../../../utils/prisma'
+
+interface AttributeInput {
+  attributeId: string
+  value: AttributeValue
+}
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
@@ -33,7 +39,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Fetch all attributes to validate values
-  const attributeIds = body.attributes.map((a: any) => a.attributeId)
+  const attributeIds = (body.attributes as AttributeInput[]).map((a) => a.attributeId)
   const attributes = await prisma.attribute.findMany({
     where: { id: { in: attributeIds } },
   })
@@ -141,7 +147,7 @@ export default defineEventHandler(async (event) => {
 
   // Perform upserts for all attributes
   await prisma.$transaction(
-    body.attributes.map(({ attributeId, value }: { attributeId: string; value: any }) => {
+    (body.attributes as AttributeInput[]).map(({ attributeId, value }) => {
       // Skip null/empty values by deleting any existing value
       if (value === null || value === undefined || value === '') {
         return prisma.productAttribute.deleteMany({
