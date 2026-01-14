@@ -93,7 +93,7 @@ const totalAdditionalPrice = computed(() => {
 function handleConfigure() {
   const options: Array<{ optionId: string; quantity: number }> = []
 
-  Object.entries(selectedOptions.value).forEach(([featureId, optionIds]) => {
+  Object.entries(selectedOptions.value).forEach(([_featureId, optionIds]) => {
     optionIds.forEach((optionId) => {
       options.push({ optionId, quantity: 1 })
     })

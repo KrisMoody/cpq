@@ -3,7 +3,7 @@ const route = useRoute()
 const router = useRouter()
 const { fetchCustomer, updateCustomer, deleteCustomer } = useCustomers()
 const { priceBooks, fetchPriceBooks, formatPrice } = usePricing()
-const { contracts, fetchContracts, getStatusColor, isContractActive } = useContracts()
+const { contracts, fetchContracts, getStatusColor, isContractActive: _isContractActive } = useContracts()
 
 const customerId = route.params.id as string
 const customer = ref<Awaited<ReturnType<typeof fetchCustomer>> | null>(null)

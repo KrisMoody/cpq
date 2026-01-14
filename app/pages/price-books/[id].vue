@@ -445,7 +445,7 @@ function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
                 <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">List Price</th>
                 <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Cost</th>
                 <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Margin</th>
-                <th class="px-4 py-3"></th>
+                <th class="px-4 py-3"/>
               </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">

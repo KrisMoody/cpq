@@ -146,7 +146,7 @@ export async function checkTaxExemption(customerId: string | null): Promise<{
  */
 export async function calculateQuoteTax(
   quoteId: string,
-  taxableSubtotal: number
+  _taxableSubtotal: number
 ): Promise<TaxCalculationResult> {
   const prisma = usePrisma()
 

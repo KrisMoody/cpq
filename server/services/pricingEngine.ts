@@ -1,6 +1,6 @@
 import { usePrisma } from '../utils/prisma'
 import { calculateQuoteTax, type TaxBreakdownItem } from './taxEngine'
-import { lookupPrice, calculateTotalPrice, type PriceLookupResult } from './priceLookup'
+import { lookupPrice, calculateTotalPrice } from './priceLookup'
 import { convertToBaseCurrency } from './currencyService'
 import type { TierType, BillingFrequency } from '../../app/generated/prisma/client.js'
 

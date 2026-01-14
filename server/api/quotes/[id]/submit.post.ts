@@ -1,6 +1,6 @@
 import { usePrisma } from '../../../utils/prisma'
 
-const VALID_TRANSITIONS: Record<string, string[]> = {
+const _VALID_TRANSITIONS: Record<string, string[]> = {
   DRAFT: ['PENDING_APPROVAL', 'APPROVED'],
   PENDING_APPROVAL: ['APPROVED', 'REJECTED'],
   APPROVED: ['ACCEPTED', 'REJECTED'],

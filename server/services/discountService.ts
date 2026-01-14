@@ -130,12 +130,12 @@ export function calculateDiscounts(
   nonStackableDiscounts.sort((a, b) => a.priority - b.priority)
 
   // Track best non-stackable discount per scope
-  const bestNonStackableQuote: AppliedDiscountResult | null = null
+  const _bestNonStackableQuote: AppliedDiscountResult | null = null
   const bestNonStackableLine = new Map<string, AppliedDiscountResult>()
 
   // Process LINE_ITEM and PRODUCT_CATEGORY scope discounts
   for (const lineItem of quote.lineItems) {
-    let lineTotal = lineItem.listPrice * lineItem.quantity
+    const lineTotal = lineItem.listPrice * lineItem.quantity
     let lineDiscountTotal = 0
 
     // Process stackable line item discounts (LINE_ITEM and PRODUCT_CATEGORY)

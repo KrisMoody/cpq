@@ -13,7 +13,7 @@ import { usePrisma } from '../../utils/prisma'
  * - Restricting to specific IP addresses
  * - Using Vercel/Netlify cron features with built-in authentication
  */
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (_event) => {
   const prisma = usePrisma()
   const now = new Date()
 

@@ -5,7 +5,7 @@ const props = defineProps<{
   product: Product
 }>()
 
-const { formatPrice } = usePricing()
+const { formatPrice: _formatPrice } = usePricing()
 
 const typeLabel = computed(() => {
   return props.product.type === 'BUNDLE' ? 'Configurable Bundle' : 'Standalone'
