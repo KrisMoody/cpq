@@ -13,7 +13,7 @@ const props = defineProps<{
   quotes: Quote[]
 }>()
 
-const { formatPrice } = usePricing()
+const { formatPrice } = useCurrencies()
 
 const columnHelper = createColumnHelper<Quote>()
 
@@ -31,9 +31,10 @@ const columns = [
     header: 'Status',
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor('total', {
+  columnHelper.display({
+    id: 'total',
     header: 'Total',
-    cell: (info) => formatPrice(info.getValue()),
+    cell: (info) => formatPrice(info.row.original.total, info.row.original.currency),
   }),
   columnHelper.accessor('validTo', {
     header: 'Valid Until',
