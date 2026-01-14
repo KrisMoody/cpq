@@ -198,7 +198,7 @@ export function useProducts() {
 
   async function deleteFeature(productId: string, featureId: string): Promise<boolean> {
     try {
-      await $fetch(`/api/products/${productId}/features/${featureId}`, {
+      await ($fetch as any)(`/api/products/${productId}/features/${featureId}`, {
         method: 'DELETE',
       })
       return true
@@ -268,12 +268,45 @@ export function useProducts() {
     optionId: string
   ): Promise<boolean> {
     try {
-      await $fetch(`/api/products/${productId}/features/${featureId}/options/${optionId}`, {
+      await ($fetch as any)(`/api/products/${productId}/features/${featureId}/options/${optionId}`, {
         method: 'DELETE',
       })
       return true
     } catch (e: any) {
       error.value = e.data?.message || e.message || 'Failed to delete option'
+      return false
+    }
+  }
+
+  async function reorderFeatures(
+    productId: string,
+    featureIds: string[]
+  ): Promise<boolean> {
+    try {
+      await $fetch(`/api/products/${productId}/features/reorder`, {
+        method: 'PUT',
+        body: { featureIds },
+      })
+      return true
+    } catch (e: any) {
+      error.value = e.data?.message || e.message || 'Failed to reorder features'
+      return false
+    }
+  }
+
+  async function reorderOptions(
+    productId: string,
+    featureId: string,
+    optionIds: string[]
+  ): Promise<boolean> {
+    try {
+      await $fetch(`/api/products/${productId}/features/${featureId}/options/reorder`, {
+        method: 'PUT',
+        body: { optionIds },
+      })
+      return true
+    } catch (e: any) {
+      error.value = e.data?.message || e.message || 'Failed to reorder options'
       return false
     }
   }
@@ -293,5 +326,7 @@ export function useProducts() {
     createOption,
     updateOption,
     deleteOption,
+    reorderFeatures,
+    reorderOptions,
   }
 }
