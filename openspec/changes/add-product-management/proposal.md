@@ -21,3 +21,19 @@ The current system only supports viewing and configuring products. Users cannot 
   - `app/pages/products/index.vue`
   - `app/pages/products/[id].vue`
   - `app/pages/products/new.vue` (new)
+
+## Implementation Notes
+
+### Dependencies
+- **Requires**: None - can start immediately
+- **Modifies**: `product-catalog` spec only
+
+### Coordination Points
+- **Product entity**: This proposal owns Product model changes. If implementing `add-subscriptions` in parallel, coordinate on adding the `billingFrequency` field - that proposal should wait for this one to merge first, or submit the field addition as a separate PR for review here.
+
+### Suggested Order
+- **Implement before**: `add-subscriptions` (if parallel development)
+- **Implement after**: None - no blockers
+
+### Parallel Development Notes
+This is a good starting point with no external dependencies. If working in parallel with another developer, this proposal pairs well with `add-guided-selling` (completely independent) or `add-contract-pricing` (different domain).

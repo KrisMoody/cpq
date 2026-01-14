@@ -19,3 +19,24 @@ Enterprise customers often negotiate contract-based pricing with specific validi
   - `app/composables/useContracts.ts` (new)
   - `app/pages/contracts/` (new)
   - `app/pages/customers/[id].vue` - Show contracts
+
+## Implementation Notes
+
+### Dependencies
+- **Requires**: `price-books`, `pricing` specs (already implemented)
+- **Modifies**: `price-books` spec (minor - adds contract as price source), creates new `contract-pricing` spec
+
+### Coordination Points
+- **PriceBook/priceLookup.ts**: If implementing `add-multi-currency` in parallel, both proposals modify price resolution logic. Coordinate on the resolution order: contract pricing should resolve before currency conversion is applied.
+- **Customer entity**: Minor touch point - adds contract display to customer detail page
+
+### Suggested Order
+- **Implement before**: `add-multi-currency` (contract pricing should be stable before adding currency layer)
+- **Implement after**: None - can start immediately
+
+### Parallel Development Notes
+This proposal focuses on the pricing domain. Pairs well with:
+- `add-subscriptions` (different focus: quote totals vs. price resolution)
+- `add-guided-selling` (completely independent)
+
+Avoid parallel implementation with `add-multi-currency` - both touch the pricing engine and price resolution logic.

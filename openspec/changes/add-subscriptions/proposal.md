@@ -18,3 +18,25 @@ Modern CPQ systems must handle subscription-based and recurring revenue models (
   - `server/services/pricingEngine.ts` - Recurring calculations
   - Quote components - Show recurring totals
   - Product forms - Billing frequency selector
+
+## Implementation Notes
+
+### Dependencies
+- **Requires**: `product-catalog`, `quotes`, `pricing` specs (already implemented)
+- **Modifies**: `product-catalog` (adds `billingFrequency`), `quotes` (adds recurring totals display)
+
+### Coordination Points
+- **Product entity**: Adds `billingFrequency` field to Product. If `add-product-management` is being implemented in parallel, coordinate on Product model changes - ideally let product-management merge first, or submit the field addition as a coordinated PR.
+- **Quote totals display**: Adds recurring vs. one-time breakdown. If `add-multi-currency` runs in parallel, both modify quote total display - subscription totals should be in place before currency formatting is layered on.
+- **pricingEngine.ts**: Adds recurring calculations. Keep these in separate methods from contract pricing logic to minimize conflicts.
+
+### Suggested Order
+- **Implement before**: `add-multi-currency` (recurring totals should be stable before adding currency formatting)
+- **Implement after**: `add-product-management` (if parallel - to avoid Product model conflicts)
+
+### Parallel Development Notes
+This proposal focuses on quote behavior and product billing attributes. Pairs well with:
+- `add-contract-pricing` (different focus: price resolution vs. totals calculation)
+- `add-guided-selling` (completely independent)
+
+Avoid parallel implementation with `add-multi-currency` - both modify quote totals display and pricing engine.

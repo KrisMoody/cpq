@@ -18,3 +18,28 @@ Sales reps often need guidance on which products to recommend based on customer 
   - `server/services/recommendationEngine.ts` (new)
   - `app/components/cpq/Recommendations.vue` (new)
   - `app/components/cpq/GuidedSelling.vue` (new)
+
+## Implementation Notes
+
+### Dependencies
+- **Requires**: None - this is a standalone new capability
+- **Modifies**: Creates new `guided-selling` spec only
+
+### Coordination Points
+- **Quote editor page**: Adds recommendation display panel. Minor UI addition that shouldn't conflict with other proposals.
+- **prisma/schema.prisma**: Adds new Recommendation models. No overlap with other proposals' schema changes.
+
+### Suggested Order
+- **Implement before**: None - independent of other proposals
+- **Implement after**: None - can start anytime
+
+### Parallel Development Notes
+This is the **safest proposal for parallel development**. It creates entirely new functionality with no overlap on existing code paths.
+
+Safe to implement in parallel with **any other proposal**:
+- `add-product-management` - no overlap
+- `add-contract-pricing` - no overlap
+- `add-subscriptions` - no overlap
+- `add-multi-currency` - no overlap (recommendations don't display prices)
+
+**Recommended pairing**: If two developers are working in parallel, one should take this proposal while the other works on pricing-related proposals (`add-contract-pricing` or `add-subscriptions`).
