@@ -36,15 +36,18 @@ model UnitOfMeasure {
 // ============================================================================
 
 model Product {
-  id              String      @id @default(cuid())
-  name            String
-  description     String?
-  sku             String      @unique
-  type            ProductType @default(STANDALONE)
-  isTaxable       Boolean     @default(true)
-  isActive        Boolean     @default(true)
-  unitOfMeasureId String?
-  createdAt       DateTime    @default(now())
+  id                  String           @id @default(cuid())
+  name                String
+  description         String?
+  sku                 String           @unique
+  type                ProductType      @default(STANDALONE)
+  billingFrequency    BillingFrequency @default(ONE_TIME)
+  customBillingMonths Int?             // Used when billingFrequency is CUSTOM
+  defaultTermMonths   Int?             // Default contract term in months
+  isTaxable           Boolean          @default(true)
+  isActive            Boolean          @default(true)
+  unitOfMeasureId     String?
+  createdAt           DateTime         @default(now())
 
   unitOfMeasure        UnitOfMeasure?       @relation(fields: [unitOfMeasureId], references: [id])
   features             ProductFeature[]
@@ -93,6 +96,14 @@ model ProductCategory {
 enum ProductType {
   STANDALONE
   BUNDLE
+}
+
+enum BillingFrequency {
+  ONE_TIME
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+  CUSTOM
 }
 
 model ProductFeature {
@@ -325,6 +336,10 @@ model Quote {
   taxAmount        Decimal     @default(0) @db.Decimal(10, 2)
   taxBreakdown     Json?       // Array of { name, rate, amount } for each applied tax
   total            Decimal     @default(0) @db.Decimal(10, 2)
+  oneTimeTotal     Decimal     @default(0) @db.Decimal(10, 2) // Sum of one-time items
+  mrr              Decimal     @default(0) @db.Decimal(10, 2) // Monthly Recurring Revenue
+  arr              Decimal     @default(0) @db.Decimal(10, 2) // Annual Recurring Revenue (MRR * 12)
+  tcv              Decimal     @default(0) @db.Decimal(10, 2) // Total Contract Value
   requiresApproval Boolean     @default(false)
   approvedBy       String?
   approvedAt       DateTime?
@@ -349,15 +364,18 @@ enum QuoteStatus {
 }
 
 model QuoteLineItem {
-  id           String  @id @default(cuid())
-  quoteId      String
-  productId    String
-  parentLineId String?
-  quantity     Int     @default(1)
-  listPrice    Decimal @db.Decimal(10, 2)
-  discount     Decimal @default(0) @db.Decimal(10, 2)
-  netPrice     Decimal @db.Decimal(10, 2)
-  sortOrder    Int     @default(0)
+  id             String   @id @default(cuid())
+  quoteId        String
+  productId      String
+  parentLineId   String?
+  quantity       Int      @default(1)
+  listPrice      Decimal  @db.Decimal(10, 2)
+  discount       Decimal  @default(0) @db.Decimal(10, 2)
+  netPrice       Decimal  @db.Decimal(10, 2)
+  termMonths     Int?     // Contract term for this line item (overrides product default)
+  isProrated     Boolean  @default(false)
+  proratedAmount Decimal? @db.Decimal(10, 2)
+  sortOrder      Int      @default(0)
 
   quote            Quote             @relation(fields: [quoteId], references: [id], onDelete: Cascade)
   product          Product           @relation(fields: [productId], references: [id])

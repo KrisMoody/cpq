@@ -1,5 +1,5 @@
 import { usePrisma } from '../../utils/prisma'
-import { ProductType } from '@prisma/client'
+import { ProductType, BillingFrequency } from '@prisma/client'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
@@ -24,6 +24,9 @@ export default defineEventHandler(async (event) => {
       description: body.description,
       sku: body.sku,
       type: body.type || ProductType.STANDALONE,
+      billingFrequency: body.billingFrequency || BillingFrequency.ONE_TIME,
+      customBillingMonths: body.customBillingMonths || null,
+      defaultTermMonths: body.defaultTermMonths || null,
       isActive: body.isActive ?? true,
       unitOfMeasureId: body.unitOfMeasureId || null,
     },

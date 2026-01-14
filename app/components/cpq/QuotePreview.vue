@@ -77,6 +77,13 @@ const discountTotalNum = computed(() => parseFloat(String(props.quote.discountTo
 const taxAmountNum = computed(() => parseFloat(String(props.quote.taxAmount || 0)))
 const totalNum = computed(() => parseFloat(String(props.quote.total)))
 
+// Recurring metrics
+const oneTimeTotalNum = computed(() => parseFloat(String((props.quote as any).oneTimeTotal || 0)))
+const mrrNum = computed(() => parseFloat(String((props.quote as any).mrr || 0)))
+const arrNum = computed(() => parseFloat(String((props.quote as any).arr || 0)))
+const tcvNum = computed(() => parseFloat(String((props.quote as any).tcv || 0)))
+const hasRecurringItems = computed(() => mrrNum.value > 0)
+
 const taxBreakdown = computed((): TaxBreakdownItem[] => {
   return (props.quote.taxBreakdown as TaxBreakdownItem[]) || []
 })
@@ -85,6 +92,17 @@ const isTaxExempt = computed(() => props.quote.customer?.isTaxExempt || false)
 
 function formatTaxRate(rate: number): string {
   return `${(rate * 100).toFixed(2)}%`
+}
+
+function formatBillingFrequency(frequency: string): string {
+  const map: Record<string, string> = {
+    'ONE_TIME': 'One-Time',
+    'MONTHLY': 'Monthly',
+    'QUARTERLY': 'Quarterly',
+    'ANNUAL': 'Annual',
+    'CUSTOM': 'Custom',
+  }
+  return map[frequency] || frequency
 }
 </script>
 
@@ -294,6 +312,31 @@ function formatTaxRate(rate: number): string {
               <div class="flex justify-between text-lg border-t-2 border-gray-300 dark:border-gray-600 pt-3">
                 <span class="font-semibold text-gray-900 dark:text-white">Total</span>
                 <span class="font-bold text-primary-600">{{ formatPrice(totalNum) }}</span>
+              </div>
+
+              <!-- Recurring Revenue Metrics -->
+              <div v-if="hasRecurringItems" class="space-y-2 border-t-2 border-blue-300 dark:border-blue-700 pt-3 mt-3">
+                <p class="text-xs font-semibold text-blue-600 uppercase">Recurring Revenue</p>
+
+                <div v-if="oneTimeTotalNum > 0" class="flex justify-between text-sm">
+                  <span class="text-gray-600 dark:text-gray-400">One-Time Charges</span>
+                  <span class="font-medium text-gray-900 dark:text-white">{{ formatPrice(oneTimeTotalNum) }}</span>
+                </div>
+
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600 dark:text-gray-400">MRR (Monthly)</span>
+                  <span class="font-medium text-blue-600">{{ formatPrice(mrrNum) }}/mo</span>
+                </div>
+
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600 dark:text-gray-400">ARR (Annual)</span>
+                  <span class="font-medium text-blue-600">{{ formatPrice(arrNum) }}/yr</span>
+                </div>
+
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600 dark:text-gray-400">Total Contract Value</span>
+                  <span class="font-bold text-green-600">{{ formatPrice(tcvNum) }}</span>
+                </div>
               </div>
             </div>
           </div>

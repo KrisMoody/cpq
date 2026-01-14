@@ -1,7 +1,7 @@
 import { usePrisma } from '../utils/prisma'
 import { calculateQuoteTax, type TaxBreakdownItem } from './taxEngine'
 import { lookupPrice, calculateTotalPrice, type PriceLookupResult } from './priceLookup'
-import type { TierType } from '../../app/generated/prisma'
+import type { TierType, BillingFrequency } from '../../app/generated/prisma'
 
 /**
  * Result of line price calculation with tier information
@@ -26,6 +26,69 @@ export interface LinePriceResult {
   cost?: number
   /** Calculated margin percentage */
   margin?: number
+  /** Billing frequency from product */
+  billingFrequency: BillingFrequency
+  /** Whether this is a recurring charge */
+  isRecurring: boolean
+  /** Monthly amount for recurring items */
+  monthlyAmount?: number
+}
+
+/**
+ * Convert billing frequency to months for calculations
+ */
+export function billingFrequencyToMonths(frequency: BillingFrequency, customMonths?: number | null): number {
+  switch (frequency) {
+    case 'ONE_TIME':
+      return 0
+    case 'MONTHLY':
+      return 1
+    case 'QUARTERLY':
+      return 3
+    case 'ANNUAL':
+      return 12
+    case 'CUSTOM':
+      return customMonths || 1
+    default:
+      return 0
+  }
+}
+
+/**
+ * Calculate Monthly Recurring Revenue from a price and billing frequency
+ */
+export function calculateMRR(price: number, frequency: BillingFrequency, customMonths?: number | null): number {
+  const months = billingFrequencyToMonths(frequency, customMonths)
+  if (months === 0) return 0
+  return price / months
+}
+
+/**
+ * Calculate pro-rated amount for a subscription starting mid-period
+ */
+export function calculateProration(
+  fullPrice: number,
+  frequency: BillingFrequency,
+  startDate: Date,
+  customMonths?: number | null
+): { proratedAmount: number; daysRemaining: number; totalDays: number } {
+  const billingMonths = billingFrequencyToMonths(frequency, customMonths)
+  if (billingMonths === 0) {
+    return { proratedAmount: fullPrice, daysRemaining: 0, totalDays: 0 }
+  }
+
+  // Calculate billing period end date
+  const periodEnd = new Date(startDate)
+  periodEnd.setMonth(periodEnd.getMonth() + billingMonths)
+
+  // Calculate days in period and days remaining
+  const totalDays = Math.ceil((periodEnd.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+  const now = new Date()
+  const daysRemaining = Math.max(0, Math.ceil((periodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
+
+  const proratedAmount = (fullPrice / totalDays) * daysRemaining
+
+  return { proratedAmount: Math.round(proratedAmount * 100) / 100, daysRemaining, totalDays }
 }
 
 /**
@@ -55,6 +118,12 @@ export async function calculateLinePrice(
       priceTiers: {
         orderBy: { minQuantity: 'asc' },
       },
+      product: {
+        select: {
+          billingFrequency: true,
+          customBillingMonths: true,
+        },
+      },
     },
   })
 
@@ -63,10 +132,17 @@ export async function calculateLinePrice(
   }
 
   const baseListPrice = Number(entry.listPrice)
+  const billingFrequency = entry.product.billingFrequency
+  const isRecurring = billingFrequency !== 'ONE_TIME'
 
   // Use the price lookup service to calculate tier-aware pricing
   const lookupResult = lookupPrice(entry, quantity)
   const totalPrice = calculateTotalPrice(entry, quantity)
+
+  // Calculate monthly amount for recurring items
+  const monthlyAmount = isRecurring
+    ? calculateMRR(totalPrice, billingFrequency, entry.product.customBillingMonths)
+    : undefined
 
   return {
     listPrice: baseListPrice,
@@ -76,16 +152,23 @@ export async function calculateLinePrice(
     tierInfo: lookupResult.tierInfo,
     cost: lookupResult.cost,
     margin: lookupResult.margin,
+    billingFrequency,
+    isRecurring,
+    monthlyAmount,
   }
 }
 
 /**
- * Calculate and update quote totals including tax
+ * Calculate and update quote totals including tax and recurring metrics
  *
  * Pricing Formula:
  * - subtotal = sum of all line item netPrices
  * - discountTotal = sum of all applied discounts (already reflected in line netPrices + quote-level)
  * - total = subtotal - quoteDiscount + taxAmount
+ * - oneTimeTotal = sum of one-time line items
+ * - mrr = sum of monthly recurring revenue across all recurring items
+ * - arr = mrr × 12
+ * - tcv = sum of (mrr × termMonths) for each recurring item + oneTimeTotal
  *
  * Note: Line-level discounts are already deducted from each line's netPrice,
  * so we only need to apply quote-level discounts from discountTotal here.
@@ -96,6 +179,10 @@ export async function calculateQuoteTotal(quoteId: string): Promise<{
   taxAmount: number
   taxBreakdown: TaxBreakdownItem[]
   total: number
+  oneTimeTotal: number
+  mrr: number
+  arr: number
+  tcv: number
   isTaxExempt: boolean
   exemptionExpired: boolean
 }> {
@@ -103,7 +190,17 @@ export async function calculateQuoteTotal(quoteId: string): Promise<{
   const quote = await prisma.quote.findUnique({
     where: { id: quoteId },
     include: {
-      lineItems: true,
+      lineItems: {
+        include: {
+          product: {
+            select: {
+              billingFrequency: true,
+              customBillingMonths: true,
+              defaultTermMonths: true,
+            },
+          },
+        },
+      },
       appliedDiscounts: true,
     },
   })
@@ -117,6 +214,32 @@ export async function calculateQuoteTotal(quoteId: string): Promise<{
     (sum, item) => sum + Number(item.netPrice),
     0
   )
+
+  // Calculate one-time vs recurring totals
+  let oneTimeTotal = 0
+  let mrr = 0
+  let tcv = 0
+
+  for (const item of quote.lineItems) {
+    const netPrice = Number(item.netPrice)
+    const billingFrequency = item.product.billingFrequency
+    const isRecurring = billingFrequency !== 'ONE_TIME'
+
+    if (isRecurring) {
+      // Calculate MRR for this item
+      const itemMRR = calculateMRR(netPrice, billingFrequency, item.product.customBillingMonths)
+      mrr += itemMRR
+
+      // Use line item term or product default term
+      const termMonths = item.termMonths ?? item.product.defaultTermMonths ?? 12
+      tcv += itemMRR * termMonths
+    } else {
+      oneTimeTotal += netPrice
+      tcv += netPrice // One-time items contribute to TCV directly
+    }
+  }
+
+  const arr = mrr * 12
 
   // Calculate quote-level discount from applied discounts (those without lineItemId)
   const quoteDiscount = quote.appliedDiscounts
@@ -137,7 +260,7 @@ export async function calculateQuoteTotal(quoteId: string): Promise<{
   // Grand total = subtotal - quote discount + tax
   const total = subtotalAfterDiscount + taxResult.taxAmount
 
-  // Update quote
+  // Update quote with all totals including recurring metrics
   await prisma.quote.update({
     where: { id: quoteId },
     data: {
@@ -146,6 +269,10 @@ export async function calculateQuoteTotal(quoteId: string): Promise<{
       taxAmount: taxResult.taxAmount,
       taxBreakdown: taxResult.taxBreakdown as unknown as object,
       total,
+      oneTimeTotal,
+      mrr,
+      arr,
+      tcv,
     },
   })
 
@@ -155,6 +282,10 @@ export async function calculateQuoteTotal(quoteId: string): Promise<{
     taxAmount: taxResult.taxAmount,
     taxBreakdown: taxResult.taxBreakdown,
     total,
+    oneTimeTotal,
+    mrr,
+    arr,
+    tcv,
     isTaxExempt: taxResult.isTaxExempt,
     exemptionExpired: taxResult.exemptionExpired,
   }

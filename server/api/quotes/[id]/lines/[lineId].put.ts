@@ -123,10 +123,13 @@ export default defineEventHandler(async (event) => {
       listPrice,
       discount: lineDiscountAmount,
       netPrice: Math.max(0, netPrice),
+      termMonths: body.termMonths !== undefined ? body.termMonths : lineItem.termMonths,
+      isProrated: body.isProrated !== undefined ? body.isProrated : lineItem.isProrated,
+      proratedAmount: body.proratedAmount !== undefined ? body.proratedAmount : lineItem.proratedAmount,
     },
     include: {
       product: {
-        select: { id: true, name: true, sku: true, type: true },
+        select: { id: true, name: true, sku: true, type: true, billingFrequency: true, defaultTermMonths: true },
       },
       appliedDiscounts: {
         include: {

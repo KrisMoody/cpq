@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ProductWithDetails, ProductFeature } from '~/composables/useProducts'
-import type { ProductType } from '~/generated/prisma'
+import type { ProductType, BillingFrequency } from '~/generated/prisma'
 import type { Attribute } from '~/composables/useAttributes'
 
 const route = useRoute()
@@ -38,6 +38,9 @@ const form = ref({
   sku: '',
   description: '',
   type: 'STANDALONE' as ProductType,
+  billingFrequency: 'ONE_TIME' as BillingFrequency,
+  customBillingMonths: null as number | null,
+  defaultTermMonths: null as number | null,
   isActive: true,
   unitOfMeasureId: '' as string,
 })
@@ -90,6 +93,9 @@ async function loadProduct() {
       sku: product.value.sku,
       description: product.value.description || '',
       type: product.value.type,
+      billingFrequency: (product.value as any).billingFrequency || 'ONE_TIME',
+      customBillingMonths: (product.value as any).customBillingMonths || null,
+      defaultTermMonths: (product.value as any).defaultTermMonths || null,
       isActive: product.value.isActive,
       unitOfMeasureId: product.value.unitOfMeasureId || '',
     }
@@ -152,6 +158,9 @@ async function handleSave() {
       sku: form.value.sku.trim(),
       description: form.value.description.trim() || null,
       type: form.value.type,
+      billingFrequency: form.value.billingFrequency,
+      customBillingMonths: form.value.customBillingMonths || null,
+      defaultTermMonths: form.value.defaultTermMonths || null,
       isActive: form.value.isActive,
       unitOfMeasureId: form.value.unitOfMeasureId || null,
     })
@@ -177,6 +186,9 @@ function cancelEdit() {
       sku: product.value.sku,
       description: product.value.description || '',
       type: product.value.type,
+      billingFrequency: (product.value as any).billingFrequency || 'ONE_TIME',
+      customBillingMonths: (product.value as any).customBillingMonths || null,
+      defaultTermMonths: (product.value as any).defaultTermMonths || null,
       isActive: product.value.isActive,
       unitOfMeasureId: product.value.unitOfMeasureId || '',
     }
@@ -367,6 +379,22 @@ const productTypes = [
   { label: 'Bundle', value: 'BUNDLE' },
 ]
 
+const billingFrequencies = [
+  { label: 'One-Time', value: 'ONE_TIME' },
+  { label: 'Monthly', value: 'MONTHLY' },
+  { label: 'Quarterly', value: 'QUARTERLY' },
+  { label: 'Annual', value: 'ANNUAL' },
+  { label: 'Custom', value: 'CUSTOM' },
+]
+
+const isRecurring = computed(() => form.value.billingFrequency !== 'ONE_TIME')
+const isCustomFrequency = computed(() => form.value.billingFrequency === 'CUSTOM')
+
+function formatBillingFrequency(frequency: string): string {
+  const freq = billingFrequencies.find(f => f.value === frequency)
+  return freq?.label || frequency
+}
+
 const unitOptions = computed(() => [
   { label: 'No unit selected', value: '' },
   ...units.value.map((u) => ({ label: `${u.name} (${u.abbreviation})`, value: u.id })),
@@ -484,6 +512,14 @@ async function handleSaveAttributes() {
             <span v-if="product.unitOfMeasure" class="ml-3">
               Unit: {{ product.unitOfMeasure.name }} ({{ product.unitOfMeasure.abbreviation }})
             </span>
+            <span v-if="(product as any).billingFrequency && (product as any).billingFrequency !== 'ONE_TIME'" class="ml-3">
+              <UBadge color="primary" variant="subtle" size="xs">
+                {{ formatBillingFrequency((product as any).billingFrequency) }}
+              </UBadge>
+              <span v-if="(product as any).defaultTermMonths" class="text-xs ml-1">
+                ({{ (product as any).defaultTermMonths }}mo term)
+              </span>
+            </span>
           </p>
         </div>
         <div class="flex items-center gap-2">
@@ -535,6 +571,28 @@ async function handleSaveAttributes() {
 
           <UFormField label="Type">
             <USelect v-model="form.type" :items="productTypes" />
+          </UFormField>
+
+          <UFormField label="Billing Frequency" hint="How often this product is billed">
+            <USelect v-model="form.billingFrequency" :items="billingFrequencies" />
+          </UFormField>
+
+          <UFormField v-if="isCustomFrequency" label="Custom Billing Period (months)" required>
+            <UInput
+              v-model.number="form.customBillingMonths"
+              type="number"
+              min="1"
+              placeholder="e.g., 6 for semi-annual"
+            />
+          </UFormField>
+
+          <UFormField v-if="isRecurring" label="Default Contract Term (months)" hint="Default subscription term for quotes">
+            <UInput
+              v-model.number="form.defaultTermMonths"
+              type="number"
+              min="1"
+              placeholder="e.g., 12 for annual contracts"
+            />
           </UFormField>
 
           <UFormField label="Unit of Measure" hint="How this product is measured and priced">

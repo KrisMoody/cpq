@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ProductType } from '~/generated/prisma'
+import type { ProductType, BillingFrequency } from '~/generated/prisma'
 
 const router = useRouter()
 const { createProduct, error: productError } = useProducts()
@@ -10,6 +10,9 @@ const initialFormState = {
   sku: '',
   description: '',
   type: 'STANDALONE' as ProductType,
+  billingFrequency: 'ONE_TIME' as BillingFrequency,
+  customBillingMonths: null as number | null,
+  defaultTermMonths: null as number | null,
   unitOfMeasureId: '' as string,
 }
 
@@ -31,6 +34,17 @@ const productTypes = [
   { label: 'Standalone Product', value: 'STANDALONE' },
   { label: 'Bundle (Configurable)', value: 'BUNDLE' },
 ]
+
+const billingFrequencies = [
+  { label: 'One-Time', value: 'ONE_TIME' },
+  { label: 'Monthly', value: 'MONTHLY' },
+  { label: 'Quarterly', value: 'QUARTERLY' },
+  { label: 'Annual', value: 'ANNUAL' },
+  { label: 'Custom', value: 'CUSTOM' },
+]
+
+const isRecurring = computed(() => form.value.billingFrequency !== 'ONE_TIME')
+const isCustomFrequency = computed(() => form.value.billingFrequency === 'CUSTOM')
 
 const unitOptions = computed(() => [
   { label: 'No unit selected', value: '' },
@@ -61,6 +75,9 @@ async function handleSubmit() {
       sku: form.value.sku.trim(),
       description: form.value.description.trim() || undefined,
       type: form.value.type,
+      billingFrequency: form.value.billingFrequency,
+      customBillingMonths: form.value.customBillingMonths || undefined,
+      defaultTermMonths: form.value.defaultTermMonths || undefined,
       unitOfMeasureId: form.value.unitOfMeasureId || undefined,
     })
 
@@ -145,9 +162,40 @@ async function handleSubmit() {
           </UAlert>
         </div>
 
-        <!-- Unit of Measure -->
+        <!-- Billing & Pricing -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Pricing</h3>
+          <h3 class="text-sm font-medium text-gray-500 uppercase">Billing & Pricing</h3>
+
+          <UFormField label="Billing Frequency" hint="How often this product is billed">
+            <USelect
+              v-model="form.billingFrequency"
+              :items="billingFrequencies"
+            />
+          </UFormField>
+
+          <UFormField v-if="isCustomFrequency" label="Custom Billing Period (months)" required>
+            <UInput
+              v-model.number="form.customBillingMonths"
+              type="number"
+              min="1"
+              placeholder="e.g., 6 for semi-annual"
+            />
+          </UFormField>
+
+          <UFormField v-if="isRecurring" label="Default Contract Term (months)" hint="Default subscription term for quotes">
+            <UInput
+              v-model.number="form.defaultTermMonths"
+              type="number"
+              min="1"
+              placeholder="e.g., 12 for annual contracts"
+            />
+          </UFormField>
+
+          <UAlert v-if="isRecurring" color="info" variant="subtle" icon="i-heroicons-information-circle">
+            <template #description>
+              Recurring products will show MRR/ARR metrics on quotes. The term can be overridden per line item.
+            </template>
+          </UAlert>
 
           <UFormField label="Unit of Measure" hint="How this product is measured and priced (e.g., per hour, per license)">
             <USelect
