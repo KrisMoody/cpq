@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Discount } from '~/composables/useDiscounts'
+import { getErrorMessage } from '~/utils/errors'
 
 const props = defineProps<{
   open: boolean
@@ -93,8 +94,8 @@ async function applyDiscount(discountId: string) {
 
     emit('applied')
     isOpen.value = false
-  } catch (e: any) {
-    error.value = e.data?.message || e.message || 'Failed to apply discount'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to apply discount')
   } finally {
     applying.value = false
   }

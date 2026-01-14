@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 const router = useRouter()
 const route = useRoute()
 const { createQuote } = useQuotes()
@@ -8,8 +9,8 @@ const { currencies, fetchCurrencies } = useCurrencies()
 const initialFormState = {
   name: '',
   customerId: (route.query.customerId as string) || null,
-  priceBookId: '',
-  currencyId: '',
+  priceBookId: undefined as string | undefined,
+  currencyId: undefined as string | undefined,
 }
 
 const form = ref({ ...initialFormState })
@@ -51,8 +52,8 @@ async function handleSubmit() {
     if (quote) {
       router.push(`/quotes/${quote.id}`)
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create quote'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create quote')
   } finally {
     loading.value = false
   }
@@ -70,12 +71,12 @@ async function handleSubmit() {
       Back to Quotes
     </UButton>
 
-    <UCard>
+    <UCard :ui="{ body: 'overflow-visible' }">
       <template #header>
         <h1 class="text-xl font-bold">Create New Quote</h1>
       </template>
 
-      <form class="space-y-4" @submit.prevent="handleSubmit">
+      <form class="space-y-4 overflow-visible" @submit.prevent="handleSubmit">
         <UAlert v-if="error" color="error" icon="i-heroicons-exclamation-triangle" class="mb-4">
           <template #description>{{ error }}</template>
         </UAlert>
@@ -93,18 +94,20 @@ async function handleSubmit() {
         </UFormField>
 
         <UFormField label="Currency" hint="Leave empty to use customer's currency or system default">
-          <USelect
+          <USelectMenu
             v-model="form.currencyId"
-            :items="[{ label: 'Use default', value: '' }, ...currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))]"
-            placeholder="Select currency"
+            :items="currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))"
+            placeholder="Use default"
+            value-key="value"
           />
         </UFormField>
 
         <UFormField label="Price Book" hint="Leave empty to use customer's price book or system default">
-          <USelect
+          <USelectMenu
             v-model="form.priceBookId"
-            :items="[{ label: 'Use default', value: '' }, ...priceBooks.map(pb => ({ label: pb.name + (pb.isDefault ? ' (Default)' : ''), value: pb.id }))]"
-            placeholder="Select price book"
+            :items="priceBooks.map(pb => ({ label: pb.name + (pb.isDefault ? ' (Default)' : ''), value: pb.id }))"
+            placeholder="Use default"
+            value-key="value"
           />
         </UFormField>
 

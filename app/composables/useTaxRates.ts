@@ -1,3 +1,4 @@
+import { getErrorMessage } from '../utils/errors.js'
 export interface TaxRate {
   id: string
   name: string
@@ -31,8 +32,8 @@ export function useTaxRates() {
       const params = includeInactive ? '?includeInactive=true' : ''
       const data = await $fetch<TaxRate[]>(`/api/tax-rates${params}`)
       taxRates.value = data
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch tax rates'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch tax rates')
     } finally {
       loading.value = false
     }
@@ -41,8 +42,8 @@ export function useTaxRates() {
   async function fetchTaxRate(id: string): Promise<TaxRate | null> {
     try {
       return await $fetch<TaxRate>(`/api/tax-rates/${id}`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch tax rate'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch tax rate')
       return null
     }
   }
@@ -63,8 +64,8 @@ export function useTaxRates() {
       })
       await fetchTaxRates()
       return taxRate
-    } catch (e: any) {
-      error.value = e.message || 'Failed to create tax rate'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create tax rate')
       return null
     }
   }
@@ -89,8 +90,8 @@ export function useTaxRates() {
       })
       await fetchTaxRates()
       return taxRate
-    } catch (e: any) {
-      error.value = e.message || 'Failed to update tax rate'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update tax rate')
       return null
     }
   }
@@ -102,8 +103,8 @@ export function useTaxRates() {
       })
       await fetchTaxRates()
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to delete tax rate'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete tax rate')
       return false
     }
   }

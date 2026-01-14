@@ -1,3 +1,4 @@
+import { getErrorMessage } from '../utils/errors.js'
 export interface UnitOfMeasure {
   id: string
   name: string
@@ -34,8 +35,8 @@ export function useUnits() {
       const params = includeInactive ? '?includeInactive=true' : ''
       const data = await $fetch<UnitOfMeasure[]>(`/api/units${params}`)
       units.value = data
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch units'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch units')
     } finally {
       loading.value = false
     }
@@ -44,8 +45,8 @@ export function useUnits() {
   async function fetchUnit(id: string): Promise<UnitOfMeasureWithDetails | null> {
     try {
       return await $fetch<UnitOfMeasureWithDetails>(`/api/units/${id}`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch unit'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch unit')
       return null
     }
   }
@@ -63,8 +64,8 @@ export function useUnits() {
       })
       await fetchUnits()
       return unit
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to create unit'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create unit')
       return null
     }
   }
@@ -86,8 +87,8 @@ export function useUnits() {
       })
       await fetchUnits()
       return unit
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to update unit'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update unit')
       return null
     }
   }
@@ -99,8 +100,8 @@ export function useUnits() {
       })
       await fetchUnits()
       return true
-    } catch (e: any) {
-      error.value = e.data?.message || e.message || 'Failed to delete unit'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete unit')
       return false
     }
   }

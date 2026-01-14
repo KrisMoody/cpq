@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { RuleType, RuleTrigger } from '~/generated/prisma/client.js'
 
 const router = useRouter()
@@ -123,8 +124,8 @@ async function handleSubmit() {
     if (rule) {
       router.push('/rules')
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create rule'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create rule')
   } finally {
     loading.value = false
   }
@@ -171,11 +172,11 @@ async function handleSubmit() {
 
           <div class="grid grid-cols-2 gap-4">
             <UFormField label="Type">
-              <USelect v-model="form.type" :items="typeOptions" />
+              <USelect v-model="form.type" :items="typeOptions" value-key="value" />
             </UFormField>
 
             <UFormField label="Trigger">
-              <USelect v-model="form.trigger" :items="triggerOptions" />
+              <USelect v-model="form.trigger" :items="triggerOptions" value-key="value" />
             </UFormField>
           </div>
 
@@ -196,11 +197,11 @@ async function handleSubmit() {
 
           <div class="grid grid-cols-3 gap-4">
             <UFormField label="Field">
-              <USelect v-model="form.conditionField" :items="conditionFields" />
+              <USelect v-model="form.conditionField" :items="conditionFields" value-key="value" />
             </UFormField>
 
             <UFormField label="Operator">
-              <USelect v-model="form.conditionOp" :items="conditionOps" />
+              <USelect v-model="form.conditionOp" :items="conditionOps" value-key="value" />
             </UFormField>
 
             <UFormField label="Value">
@@ -220,7 +221,7 @@ async function handleSubmit() {
           <h3 class="text-sm font-medium text-gray-500 uppercase">Action (Then)</h3>
 
           <UFormField label="Action Type">
-            <USelect v-model="form.actionType" :items="actionTypeOptions" />
+            <USelect v-model="form.actionType" :items="actionTypeOptions" value-key="value" />
           </UFormField>
 
           <UFormField

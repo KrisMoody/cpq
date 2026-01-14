@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 const router = useRouter()
 const { createCategory, fetchCategories, categories, flattenCategories } = useCategories()
 
 const initialFormState = {
   name: '',
   description: '',
-  parentId: '',
+  parentId: undefined as string | undefined,
   sortOrder: 0,
 }
 
@@ -29,13 +30,10 @@ function handleCancel() {
 
 const parentOptions = computed(() => {
   const flat = flattenCategories(categories.value)
-  return [
-    { label: 'None (root category)', value: '' },
-    ...flat.map((c) => ({
-      label: '\u00A0'.repeat(c.depth * 4) + c.name,
-      value: c.id,
-    })),
-  ]
+  return flat.map((c) => ({
+    label: '\u00A0'.repeat(c.depth * 4) + c.name,
+    value: c.id,
+  }))
 })
 
 async function handleSubmit() {
@@ -58,8 +56,8 @@ async function handleSubmit() {
     if (category) {
       router.push(`/categories/${category.id}`)
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create category'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create category')
   } finally {
     loading.value = false
   }
@@ -107,7 +105,8 @@ async function handleSubmit() {
           <USelect
             v-model="form.parentId"
             :items="parentOptions"
-            placeholder="Select parent category"
+            placeholder="None (root category)"
+            value-key="value"
           />
         </UFormField>
 

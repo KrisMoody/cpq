@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { UnitOfMeasureWithDetails } from '~/composables/useUnits'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const { units, fetchUnits, fetchUnit, updateUnit, deleteUnit, error: unitError } = useUnits()
 
-const unitId = route.params.id as string
+const unitId = useRequiredParam('id')
 const unit = ref<UnitOfMeasureWithDetails | null>(null)
 const loading = ref(true)
 const saving = ref(false)
@@ -15,7 +16,7 @@ const error = ref<string | null>(null)
 const form = ref({
   name: '',
   abbreviation: '',
-  baseUnitId: '' as string,
+  baseUnitId: null as string | null,
   conversionFactor: 1,
   isActive: true,
 })
@@ -36,14 +37,14 @@ async function loadUnit() {
     form.value = {
       name: unit.value.name,
       abbreviation: unit.value.abbreviation,
-      baseUnitId: unit.value.baseUnitId || '',
+      baseUnitId: unit.value.baseUnitId || null,
       conversionFactor: typeof unit.value.conversionFactor === 'string'
         ? parseFloat(unit.value.conversionFactor)
         : unit.value.conversionFactor,
       isActive: unit.value.isActive,
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to load unit'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to load unit')
   } finally {
     loading.value = false
   }
@@ -53,7 +54,7 @@ async function loadUnit() {
 const baseUnitOptions = computed(() => {
   const derivedIds = new Set(unit.value?.derived?.map(d => d.id) || [])
   return [
-    { label: 'None (base unit)', value: '' },
+    { label: 'None (base unit)', value: null },
     ...units.value
       .filter((u) => u.id !== unitId && !derivedIds.has(u.id))
       .map((u) => ({ label: `${u.name} (${u.abbreviation})`, value: u.id })),
@@ -88,8 +89,8 @@ async function handleSave() {
     } else {
       error.value = unitError.value || 'Failed to update unit'
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to update unit'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to update unit')
   } finally {
     saving.value = false
   }
@@ -105,8 +106,8 @@ async function handleDeactivate() {
     } else {
       error.value = unitError.value || 'Failed to deactivate unit'
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to deactivate unit'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to deactivate unit')
   }
 }
 </script>
@@ -186,6 +187,7 @@ async function handleDeactivate() {
             <USelect
               v-model="form.baseUnitId"
               :items="baseUnitOptions"
+              value-key="value"
             />
           </UFormField>
 

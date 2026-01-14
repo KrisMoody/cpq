@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { QuestionType } from '~/generated/prisma/client.js'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const {
@@ -49,14 +49,15 @@ const editQuestionForm = ref({
 // Product mapping state
 const showAddMapping = ref<string | null>(null)
 const newMapping = ref({
-  answerValue: '',
-  productId: '',
+  answerValue: undefined as string | undefined,
+  productId: undefined as string | undefined,
   score: 10,
 })
 
+const questionnaireId = useRequiredParam('id')
+
 onMounted(async () => {
-  const id = route.params.id as string
-  await Promise.all([loadQuestionnaire(id), fetchProducts()])
+  await Promise.all([loadQuestionnaire(questionnaireId), fetchProducts()])
 })
 
 async function loadQuestionnaire(id: string) {
@@ -202,7 +203,7 @@ async function handleAddMapping(questionId: string) {
     })
     await loadQuestionnaire(questionnaire.value.id)
     showAddMapping.value = null
-    newMapping.value = { answerValue: '', productId: '', score: 10 }
+    newMapping.value = { answerValue: undefined, productId: undefined, score: 10 }
     toast.add({ title: 'Product mapping added', color: 'success' })
   } catch {
     toast.add({ title: 'Failed to add mapping', color: 'error' })

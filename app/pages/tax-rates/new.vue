@@ -10,7 +10,7 @@ const initialFormState = {
   ratePercent: '', // User enters percentage (e.g., "8.25")
   country: '',
   state: '',
-  categoryId: '',
+  categoryId: undefined as string | undefined,
   validFrom: '',
   validTo: '',
 }
@@ -65,10 +65,9 @@ async function handleSubmit() {
   }
 }
 
-const categoryOptions = computed(() => [
-  { label: 'All Products', value: '' },
-  ...categories.value.map((c) => ({ label: c.name, value: c.id })),
-])
+const categoryOptions = computed(() =>
+  categories.value.map((c) => ({ label: c.name, value: c.id }))
+)
 </script>
 
 <template>
@@ -126,6 +125,8 @@ const categoryOptions = computed(() => [
           <USelect
             v-model="form.categoryId"
             :items="categoryOptions"
+            value-key="value"
+            placeholder="All Products"
           />
           <template #hint>
             Apply this tax only to specific product category, or all products

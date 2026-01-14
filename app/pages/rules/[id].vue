@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { RuleType, RuleTrigger } from '~/generated/prisma/client.js'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const { fetchRule, updateRule, deleteRule } = useRules()
 
-const ruleId = route.params.id as string
+const ruleId = useRequiredParam('id')
 const rule = ref<Awaited<ReturnType<typeof fetchRule>> | null>(null)
 const loading = ref(true)
 const saving = ref(false)
@@ -55,8 +56,8 @@ async function loadRule() {
         action: rule.value.action,
       }
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to load rule'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to load rule')
   } finally {
     loading.value = false
   }
@@ -86,8 +87,8 @@ async function handleSave() {
     if (updated) {
       await loadRule()
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to update rule'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to update rule')
   } finally {
     saving.value = false
   }
@@ -99,8 +100,8 @@ async function handleDelete() {
   try {
     await deleteRule(ruleId)
     router.push('/rules')
-  } catch (e: any) {
-    error.value = e.message || 'Failed to delete rule'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to delete rule')
   }
 }
 
@@ -181,11 +182,11 @@ function cancelEdit() {
 
           <div class="grid grid-cols-2 gap-4">
             <UFormField label="Type">
-              <USelect v-model="form.type" :items="typeOptions" />
+              <USelect v-model="form.type" :items="typeOptions" value-key="value" />
             </UFormField>
 
             <UFormField label="Trigger">
-              <USelect v-model="form.trigger" :items="triggerOptions" />
+              <USelect v-model="form.trigger" :items="triggerOptions" value-key="value" />
             </UFormField>
           </div>
 

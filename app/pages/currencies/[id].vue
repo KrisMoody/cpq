@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CurrencyWithCounts, ExchangeRate } from '~/composables/useCurrencies'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const {
   fetchCurrency,
@@ -12,7 +12,7 @@ const {
   error,
 } = useCurrencies()
 
-const currencyId = route.params.id as string
+const currencyId = useRequiredParam('id')
 const currency = ref<CurrencyWithCounts | null>(null)
 const exchangeRates = ref<ExchangeRate[]>([])
 const loading = ref(true)

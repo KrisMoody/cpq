@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { PriceBook, PriceBookEntry } from '~/composables/usePricing'
+import { getErrorMessage } from '~/utils/errors'
+import type { PriceBook, PriceBookEntry, PriceTier } from '~/composables/usePricing'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const {
   fetchPriceBook,
@@ -16,9 +17,9 @@ const {
 const { products, fetchProducts } = useProducts()
 const { currencies, fetchCurrencies } = useCurrencies()
 
-const priceBookId = route.params.id as string
+const priceBookId = useRequiredParam('id')
 const priceBook = ref<PriceBook | null>(null)
-const entries = ref<PriceBookEntryWithTiers[]>([])
+const entries = ref<PriceBookEntry[]>([])
 const loading = ref(true)
 const saving = ref(false)
 const error = ref<string | null>(null)
@@ -53,18 +54,6 @@ const expandedEntryId = ref<string | null>(null)
 const editingTiersEntryId = ref<string | null>(null)
 const editingTiers = ref<Array<{ minQuantity: number; maxQuantity: number | null; tierPrice: number; tierType: string }>>([])
 
-interface PriceTier {
-  id: string
-  minQuantity: number
-  maxQuantity: number | null
-  tierPrice: string
-  tierType: string
-}
-
-interface PriceBookEntryWithTiers extends PriceBookEntry {
-  priceTiers?: PriceTier[]
-}
-
 const tierTypeOptions = [
   { label: 'Unit Price', value: 'UNIT_PRICE' },
   { label: 'Flat Price', value: 'FLAT_PRICE' },
@@ -94,8 +83,8 @@ async function loadPriceBook() {
         validTo: pb.validTo ? pb.validTo.split('T')[0] ?? '' : '',
       }
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to load price book'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to load price book')
   } finally {
     loading.value = false
   }
@@ -124,8 +113,8 @@ async function handleSave() {
       await loadPriceBook()
       isEditing.value = false
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to update price book'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to update price book')
   } finally {
     saving.value = false
   }
@@ -137,8 +126,8 @@ async function handleDelete() {
   try {
     await deletePriceBook(priceBookId)
     router.push('/price-books')
-  } catch (e: any) {
-    error.value = e.message || 'Failed to delete price book'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to delete price book')
   }
 }
 
@@ -226,9 +215,9 @@ function toggleTiers(entryId: string) {
   expandedEntryId.value = expandedEntryId.value === entryId ? null : entryId
 }
 
-function startEditTiers(entry: PriceBookEntryWithTiers) {
+function startEditTiers(entry: PriceBookEntry) {
   editingTiersEntryId.value = entry.id
-  editingTiers.value = (entry.priceTiers ?? []).map((t) => ({
+  editingTiers.value = (entry.priceTiers ?? []).map((t: PriceTier) => ({
     minQuantity: t.minQuantity,
     maxQuantity: t.maxQuantity,
     tierPrice: parseFloat(t.tierPrice),
@@ -257,7 +246,7 @@ function removeTier(index: number) {
   editingTiers.value.splice(index, 1)
 }
 
-async function saveTiers(entry: PriceBookEntryWithTiers) {
+async function saveTiers(entry: PriceBookEntry) {
   // Validate tiers
   for (let i = 0; i < editingTiers.value.length; i++) {
     const tier = editingTiers.value[i]
@@ -294,7 +283,7 @@ async function saveTiers(entry: PriceBookEntryWithTiers) {
 }
 
 function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
-  return (entry as any).priceTiers || []
+  return entry.priceTiers || []
 }
 </script>
 
@@ -381,6 +370,7 @@ function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
               v-model="form.currencyId"
               placeholder="Use default"
               :items="currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))"
+              value-key="value"
             />
           </UFormField>
 
@@ -603,7 +593,7 @@ function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
                             <UInput v-model.number="tier.tierPrice" type="number" step="0.01" min="0" />
                           </UFormField>
                           <UFormField label="Type" class="w-32">
-                            <USelect v-model="tier.tierType" :items="tierTypeOptions" />
+                            <USelect v-model="tier.tierType" :items="tierTypeOptions" value-key="value" />
                           </UFormField>
                           <UButton
                             size="xs"
@@ -668,6 +658,7 @@ function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
                 v-model="newEntry.productId"
                 :items="availableProducts.map(p => ({ label: `${p.name} (${p.sku})`, value: p.id }))"
                 placeholder="Select a product"
+                value-key="value"
               />
             </UFormField>
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { ProductType, BillingFrequency } from '~/generated/prisma/client.js'
 
 const router = useRouter()
@@ -13,7 +14,7 @@ const initialFormState = {
   billingFrequency: 'ONE_TIME' as BillingFrequency,
   customBillingMonths: null as number | null,
   defaultTermMonths: null as number | null,
-  unitOfMeasureId: '' as string,
+  unitOfMeasureId: null as string | null,
 }
 
 const form = ref({ ...initialFormState })
@@ -47,7 +48,7 @@ const isRecurring = computed(() => form.value.billingFrequency !== 'ONE_TIME')
 const isCustomFrequency = computed(() => form.value.billingFrequency === 'CUSTOM')
 
 const unitOptions = computed(() => [
-  { label: 'No unit selected', value: '' },
+  { label: 'No unit selected', value: null },
   ...units.value.map((u) => ({ label: `${u.name} (${u.abbreviation})`, value: u.id })),
 ])
 
@@ -86,8 +87,8 @@ async function handleSubmit() {
     } else {
       error.value = productError.value || 'Failed to create product'
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create product'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create product')
   } finally {
     loading.value = false
   }
@@ -152,6 +153,7 @@ async function handleSubmit() {
             <USelect
               v-model="form.type"
               :items="productTypes"
+              value-key="value"
             />
           </UFormField>
 
@@ -170,6 +172,7 @@ async function handleSubmit() {
             <USelect
               v-model="form.billingFrequency"
               :items="billingFrequencies"
+              value-key="value"
             />
           </UFormField>
 
@@ -201,6 +204,7 @@ async function handleSubmit() {
             <USelect
               v-model="form.unitOfMeasureId"
               :items="unitOptions"
+              value-key="value"
             />
           </UFormField>
         </div>

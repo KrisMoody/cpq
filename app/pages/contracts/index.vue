@@ -125,7 +125,7 @@ function formatDate(date: string) {
                 <span v-else class="text-gray-400">-</span>
               </td>
               <td class="px-4 py-3">
-                <UBadge :color="getStatusColor(contract.status) as any" variant="subtle">
+                <UBadge :color="getStatusColor(contract.status)" variant="subtle">
                   {{ contract.status }}
                 </UBadge>
               </td>

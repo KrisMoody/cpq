@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { DiscountType, DiscountScope } from '~/generated/prisma/client.js'
 
 const router = useRouter()
@@ -90,8 +91,8 @@ async function handleSubmit() {
     if (discount) {
       router.push('/discounts')
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create discount'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create discount')
   } finally {
     loading.value = false
   }
@@ -138,7 +139,7 @@ async function handleSubmit() {
 
           <div class="grid grid-cols-2 gap-4">
             <UFormField label="Type">
-              <USelect v-model="form.type" :items="typeOptions" />
+              <USelect v-model="form.type" :items="typeOptions" value-key="value" />
             </UFormField>
 
             <UFormField :label="form.type === 'PERCENTAGE' ? 'Percentage' : 'Amount'">
@@ -152,7 +153,7 @@ async function handleSubmit() {
           </div>
 
           <UFormField label="Scope">
-            <USelect v-model="form.scope" :items="scopeOptions" />
+            <USelect v-model="form.scope" :items="scopeOptions" value-key="value" />
           </UFormField>
         </div>
 

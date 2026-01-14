@@ -1,4 +1,5 @@
 import type { DiscountType, DiscountScope } from '../generated/prisma/client.js'
+import { getErrorMessage } from '../utils/errors.js'
 
 export interface DiscountTier {
   id: string
@@ -41,8 +42,8 @@ export function useDiscounts() {
       const params = includeInactive ? '?includeInactive=true' : ''
       const data = await $fetch<Discount[]>(`/api/discounts${params}`)
       discounts.value = data
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch discounts'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch discounts')
     } finally {
       loading.value = false
     }
@@ -51,8 +52,8 @@ export function useDiscounts() {
   async function fetchDiscount(id: string): Promise<Discount | null> {
     try {
       return await $fetch<Discount>(`/api/discounts/${id}`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch discount'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch discount')
       return null
     }
   }
@@ -80,8 +81,8 @@ export function useDiscounts() {
       })
       await fetchDiscounts()
       return discount
-    } catch (e: any) {
-      error.value = e.message || 'Failed to create discount'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create discount')
       return null
     }
   }
@@ -112,8 +113,8 @@ export function useDiscounts() {
       })
       await fetchDiscounts()
       return discount
-    } catch (e: any) {
-      error.value = e.message || 'Failed to update discount'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update discount')
       return null
     }
   }
@@ -125,8 +126,8 @@ export function useDiscounts() {
       })
       await fetchDiscounts()
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to delete discount'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete discount')
       return false
     }
   }

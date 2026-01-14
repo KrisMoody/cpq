@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 const router = useRouter()
 const { units, fetchUnits, createUnit, error: unitError } = useUnits()
 
 const initialFormState = {
   name: '',
   abbreviation: '',
-  baseUnitId: '' as string,
+  baseUnitId: null as string | null,
   conversionFactor: 1,
 }
 
@@ -28,7 +29,7 @@ function handleCancel() {
 }
 
 const baseUnitOptions = computed(() => [
-  { label: 'None (base unit)', value: '' },
+  { label: 'None (base unit)', value: null },
   ...units.value.map((u) => ({ label: `${u.name} (${u.abbreviation})`, value: u.id })),
 ])
 
@@ -58,8 +59,8 @@ async function handleSubmit() {
     } else {
       error.value = unitError.value || 'Failed to create unit'
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create unit'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create unit')
   } finally {
     loading.value = false
   }
@@ -112,6 +113,7 @@ async function handleSubmit() {
             <USelect
               v-model="form.baseUnitId"
               :items="baseUnitOptions"
+              value-key="value"
             />
           </UFormField>
 

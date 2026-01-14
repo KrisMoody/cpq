@@ -1,4 +1,10 @@
+import type { Prisma } from '../../../app/generated/prisma/client.js'
+import { ContractStatus } from '../../../app/generated/prisma/client.js'
 import { usePrisma } from '../../utils/prisma'
+
+function isValidContractStatus(value: string): value is ContractStatus {
+  return Object.values(ContractStatus).includes(value as ContractStatus)
+}
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
@@ -6,9 +12,9 @@ export default defineEventHandler(async (event) => {
   const status = query.status as string | undefined
   const customerId = query.customerId as string | undefined
 
-  const where: any = {}
+  const where: Prisma.ContractWhereInput = {}
 
-  if (status) {
+  if (status && isValidContractStatus(status)) {
     where.status = status
   }
 

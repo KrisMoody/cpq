@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { CategoryWithProducts, CategoryAttribute } from '~/composables/useCategories'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const {
@@ -19,7 +20,7 @@ const {
 const { products: allProducts, fetchProducts } = useProducts()
 const { attributes: allAttributes, fetchAttributes } = useAttributes()
 
-const categoryId = computed(() => route.params.id as string)
+const categoryId = useRequiredParam('id')
 const category = ref<CategoryWithProducts | null>(null)
 const loading = ref(true)
 const saving = ref(false)
@@ -29,7 +30,7 @@ const isEditing = ref(false)
 const form = ref({
   name: '',
   description: '',
-  parentId: '',
+  parentId: undefined as string | undefined,
   sortOrder: 0,
   isActive: true,
 })
@@ -42,39 +43,36 @@ onMounted(async () => {
 })
 
 async function loadCategoryAttributes() {
-  categoryAttributes.value = await fetchCategoryAttributes(categoryId.value)
+  categoryAttributes.value = await fetchCategoryAttributes(categoryId)
 }
 
 async function loadCategory() {
   loading.value = true
   error.value = null
   try {
-    category.value = await fetchCategory(categoryId.value)
+    category.value = await fetchCategory(categoryId)
     if (category.value) {
       form.value = {
         name: category.value.name,
         description: category.value.description || '',
-        parentId: category.value.parentId || '',
+        parentId: category.value.parentId || undefined,
         sortOrder: category.value.sortOrder,
         isActive: category.value.isActive,
       }
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to load category'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to load category')
   } finally {
     loading.value = false
   }
 }
 
 const parentOptions = computed(() => {
-  const flat = flattenCategories(categories.value).filter((c) => c.id !== categoryId.value)
-  return [
-    { label: 'None (root category)', value: '' },
-    ...flat.map((c) => ({
-      label: '\u00A0'.repeat(c.depth * 4) + c.name,
-      value: c.id,
-    })),
-  ]
+  const flat = flattenCategories(categories.value).filter((c) => c.id !== categoryId)
+  return flat.map((c) => ({
+    label: '\u00A0'.repeat(c.depth * 4) + c.name,
+    value: c.id,
+  }))
 })
 
 const availableProducts = computed(() => {
@@ -93,7 +91,7 @@ async function handleSave() {
   error.value = null
 
   try {
-    await updateCategory(categoryId.value, {
+    await updateCategory(categoryId, {
       name: form.value.name.trim(),
       description: form.value.description.trim() || null,
       parentId: form.value.parentId || null,
@@ -103,8 +101,8 @@ async function handleSave() {
     await loadCategory()
     isEditing.value = false
     toast.add({ title: 'Category updated', color: 'success' })
-  } catch (e: any) {
-    error.value = e.message || 'Failed to update category'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to update category')
   } finally {
     saving.value = false
   }
@@ -113,7 +111,7 @@ async function handleSave() {
 async function handleDelete() {
   if (!category.value) return
   if (confirm(`Deactivate category "${category.value.name}"?`)) {
-    const success = await deleteCategory(categoryId.value)
+    const success = await deleteCategory(categoryId)
     if (success) {
       toast.add({ title: 'Category deactivated', color: 'success' })
       router.push('/categories')
@@ -124,7 +122,7 @@ async function handleDelete() {
 }
 
 async function handleRemoveProduct(productId: string) {
-  const success = await removeProductFromCategory(categoryId.value, productId)
+  const success = await removeProductFromCategory(categoryId, productId)
   if (success) {
     await loadCategory()
     toast.add({ title: 'Product removed from category', color: 'success' })
@@ -140,7 +138,7 @@ const { addProductToCategory } = useCategories()
 
 async function handleAddProduct() {
   if (!selectedProductId.value) return
-  const success = await addProductToCategory(categoryId.value, selectedProductId.value)
+  const success = await addProductToCategory(categoryId, selectedProductId.value)
   if (success) {
     await loadCategory()
     showAddProductModal.value = false
@@ -162,7 +160,7 @@ const availableAttributes = computed(() => {
 
 async function handleAddAttribute() {
   if (!selectedAttributeId.value) return
-  const success = await addAttributeToCategory(categoryId.value, selectedAttributeId.value)
+  const success = await addAttributeToCategory(categoryId, selectedAttributeId.value)
   if (success) {
     await loadCategoryAttributes()
     showAddAttributeModal.value = false
@@ -174,7 +172,7 @@ async function handleAddAttribute() {
 }
 
 async function handleRemoveAttribute(attributeId: string) {
-  const success = await removeAttributeFromCategory(categoryId.value, attributeId)
+  const success = await removeAttributeFromCategory(categoryId, attributeId)
   if (success) {
     await loadCategoryAttributes()
     toast.add({ title: 'Attribute removed from category', color: 'success' })
@@ -271,7 +269,7 @@ function getAttributeTypeLabel(type: string): string {
           </UFormField>
 
           <UFormField label="Parent Category">
-            <USelect v-model="form.parentId" :items="parentOptions" />
+            <USelect v-model="form.parentId" :items="parentOptions" value-key="value" placeholder="None (root category)" />
           </UFormField>
 
           <div class="grid grid-cols-2 gap-4">
@@ -424,6 +422,7 @@ function getAttributeTypeLabel(type: string): string {
                 v-model="selectedProductId"
                 :items="availableProducts.map(p => ({ label: `${p.name} (${p.sku})`, value: p.id }))"
                 placeholder="Select a product"
+                value-key="value"
               />
             </UFormField>
           </div>
@@ -452,6 +451,7 @@ function getAttributeTypeLabel(type: string): string {
                 v-model="selectedAttributeId"
                 :items="availableAttributes.map(a => ({ label: `${a.name} (${a.code})`, value: a.id }))"
                 placeholder="Select an attribute"
+                value-key="value"
               />
             </UFormField>
           </div>

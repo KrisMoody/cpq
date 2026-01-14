@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import type { AttributeType } from '~/generated/prisma/client.js'
 import type { Attribute } from '~/composables/useAttributes'
+import type { NumberConstraints, TextConstraints } from '~/types/domain'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const { groups, fetchGroups, fetchAttribute, updateAttribute, deleteAttribute, error } = useAttributes()
 
-const attributeId = route.params.id as string
+const attributeId = useRequiredParam('id')
 const attribute = ref<Attribute | null>(null)
 const loading = ref(true)
 const saving = ref(false)
@@ -47,6 +48,8 @@ function initForm() {
   if (!attribute.value) return
 
   const attr = attribute.value
+  const numConstraints = attr.constraints as NumberConstraints | null
+  const textConstraints = attr.constraints as TextConstraints | null
   form.value = {
     name: attr.name,
     code: attr.code,
@@ -56,10 +59,10 @@ function initForm() {
     sortOrder: attr.sortOrder,
     options: (attr.options as Array<{ label: string; value: string }>) || [{ label: '', value: '' }],
     constraints: {
-      min: (attr.constraints as any)?.min,
-      max: (attr.constraints as any)?.max,
-      minLength: (attr.constraints as any)?.minLength,
-      maxLength: (attr.constraints as any)?.maxLength,
+      min: numConstraints?.min,
+      max: numConstraints?.max,
+      minLength: textConstraints?.minLength,
+      maxLength: textConstraints?.maxLength,
     },
   }
   if (form.value.options.length === 0) {
@@ -75,14 +78,17 @@ const typeOptions = [
   { label: 'Date', value: 'DATE' },
 ]
 
-const groupOptions = computed(() => [
-  { label: 'No Group', value: '' },
-  ...groups.value.map((g) => ({ label: g.name, value: g.id })),
-])
+const groupOptions = computed(() =>
+  groups.value.map((g) => ({ label: g.name, value: g.id }))
+)
 
 const hasValues = computed(() => {
   return (attribute.value?._count?.productAttributes ?? 0) > 0
 })
+
+// Type-safe constraint accessors for templates
+const numberConstraints = computed(() => attribute.value?.constraints as NumberConstraints | null)
+const textConstraints = computed(() => attribute.value?.constraints as TextConstraints | null)
 
 function getTypeLabel(type: string): string {
   const labels: Record<string, string> = {
@@ -271,26 +277,26 @@ async function handleDelete() {
           </div>
 
           <!-- NUMBER Constraints -->
-          <div v-if="attribute.type === 'NUMBER' && attribute.constraints" class="grid grid-cols-2 gap-4">
-            <div v-if="(attribute.constraints as any).min !== undefined">
+          <div v-if="attribute.type === 'NUMBER' && numberConstraints" class="grid grid-cols-2 gap-4">
+            <div v-if="numberConstraints.min !== undefined">
               <label class="text-sm text-gray-500">Minimum</label>
-              <p class="font-medium">{{ (attribute.constraints as any).min }}</p>
+              <p class="font-medium">{{ numberConstraints.min }}</p>
             </div>
-            <div v-if="(attribute.constraints as any).max !== undefined">
+            <div v-if="numberConstraints.max !== undefined">
               <label class="text-sm text-gray-500">Maximum</label>
-              <p class="font-medium">{{ (attribute.constraints as any).max }}</p>
+              <p class="font-medium">{{ numberConstraints.max }}</p>
             </div>
           </div>
 
           <!-- TEXT Constraints -->
-          <div v-if="attribute.type === 'TEXT' && attribute.constraints" class="grid grid-cols-2 gap-4">
-            <div v-if="(attribute.constraints as any).minLength !== undefined">
+          <div v-if="attribute.type === 'TEXT' && textConstraints" class="grid grid-cols-2 gap-4">
+            <div v-if="textConstraints.minLength !== undefined">
               <label class="text-sm text-gray-500">Min Length</label>
-              <p class="font-medium">{{ (attribute.constraints as any).minLength }}</p>
+              <p class="font-medium">{{ textConstraints.minLength }}</p>
             </div>
-            <div v-if="(attribute.constraints as any).maxLength !== undefined">
+            <div v-if="textConstraints.maxLength !== undefined">
               <label class="text-sm text-gray-500">Max Length</label>
-              <p class="font-medium">{{ (attribute.constraints as any).maxLength }}</p>
+              <p class="font-medium">{{ textConstraints.maxLength }}</p>
             </div>
           </div>
         </div>
@@ -319,6 +325,7 @@ async function handleDelete() {
                 v-model="form.type"
                 :items="typeOptions"
                 :disabled="hasValues"
+                value-key="value"
               />
               <template v-if="hasValues" #hint>
                 <span class="text-warning-500">Cannot change type when values exist</span>
@@ -326,7 +333,7 @@ async function handleDelete() {
             </UFormField>
 
             <UFormField label="Group">
-              <USelect :model-value="form.groupId ?? undefined" :items="groupOptions" @update:model-value="form.groupId = $event || null" />
+              <USelect :model-value="form.groupId ?? undefined" :items="groupOptions" value-key="value" placeholder="No Group" @update:model-value="form.groupId = $event || null" />
             </UFormField>
           </div>
 

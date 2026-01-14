@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { QuoteWithLineItems, EvaluationSummary } from '~/composables/useQuotes'
 import type { Customer } from '~/composables/useCustomers'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const {
@@ -41,20 +42,21 @@ const showApplyDiscount = ref(false)
 const showManualDiscount = ref(false)
 const discountTargetLineId = ref<string | undefined>(undefined)
 
+const quoteId = useRequiredParam('id')
+
 onMounted(async () => {
   await Promise.all([loadQuote(), fetchProducts()])
 })
 
 async function loadQuote() {
-  const id = route.params.id as string
   loading.value = true
   try {
-    quote.value = await fetchQuote(id)
+    quote.value = await fetchQuote(quoteId)
     if (!quote.value) {
       error.value = 'Quote not found'
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to load quote'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to load quote')
   } finally {
     loading.value = false
   }
@@ -69,8 +71,8 @@ async function handleCalculate() {
       quote.value = result.quote
       evaluation.value = result.evaluation
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to calculate quote'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to calculate quote')
   } finally {
     calculating.value = false
   }
@@ -89,8 +91,8 @@ async function handleAddProduct() {
     showAddProduct.value = false
     selectedProductId.value = ''
     productQuantity.value = 1
-  } catch (e: any) {
-    error.value = e.message || 'Failed to add product'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to add product')
   } finally {
     addingProduct.value = false
   }
@@ -101,8 +103,8 @@ async function handleRemoveLine(lineId: string) {
   try {
     await removeLineItem(quote.value.id, lineId)
     await loadQuote()
-  } catch (e: any) {
-    error.value = e.message || 'Failed to remove line item'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to remove line item')
   }
 }
 
@@ -113,8 +115,8 @@ async function handleUpdateQuantity(lineId: string, quantity: number) {
     if (result) {
       quote.value = result
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to update quantity'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to update quantity')
   }
 }
 
@@ -124,8 +126,8 @@ async function handleCustomerSelect(customer: Customer | null) {
     await updateQuote(quote.value.id, { customerId: customer?.id ?? null })
     await loadQuote()
     showCustomerSelector.value = false
-  } catch (e: any) {
-    error.value = e.message || 'Failed to update customer'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to update customer')
   }
 }
 
@@ -150,8 +152,8 @@ async function handleRemoveDiscount(appliedDiscountId: string) {
     if (result) {
       quote.value = result
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to remove discount'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to remove discount')
   }
 }
 
@@ -160,8 +162,8 @@ async function handleSubmit() {
   try {
     await submitQuote(quote.value.id)
     await loadQuote()
-  } catch (e: any) {
-    error.value = e.message || 'Failed to submit quote'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to submit quote')
   }
 }
 
@@ -170,8 +172,8 @@ async function handleApprove() {
   try {
     await approveQuote(quote.value.id, 'Current User')
     await loadQuote()
-  } catch (e: any) {
-    error.value = e.message || 'Failed to approve quote'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to approve quote')
   }
 }
 
@@ -180,8 +182,8 @@ async function handleReject(_reason: string) {
   try {
     await rejectQuote(quote.value.id)
     await loadQuote()
-  } catch (e: any) {
-    error.value = e.message || 'Failed to reject quote'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to reject quote')
   }
 }
 
@@ -247,8 +249,8 @@ async function handleAddRecommendedProduct(productId: string) {
     await loadQuote()
     // Refresh recommendations after adding a product
     recommendationsRef.value?.refresh()
-  } catch (e: any) {
-    error.value = e.message || 'Failed to add product'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to add product')
   }
 }
 </script>
@@ -409,10 +411,10 @@ async function handleAddRecommendedProduct(productId: string) {
             :tax-amount="quote.taxAmount"
             :tax-breakdown="quote.taxBreakdown"
             :total="quote.total"
-            :one-time-total="(quote as any).oneTimeTotal"
-            :mrr="(quote as any).mrr"
-            :arr="(quote as any).arr"
-            :tcv="(quote as any).tcv"
+            :one-time-total="quote.oneTimeTotal"
+            :mrr="quote.mrr"
+            :arr="quote.arr"
+            :tcv="quote.tcv"
             :applied-discounts="quote.appliedDiscounts"
             :is-tax-exempt="quote.customer?.isTaxExempt"
             :editable="isEditable"

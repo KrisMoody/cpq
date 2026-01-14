@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { AffinityType, BillingFrequency } from '~/generated/prisma/client.js'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const { fetchAffinity, updateAffinity, deleteAffinity, error } = useAffinities()
@@ -15,32 +15,33 @@ const saving = ref(false)
 const form = ref({
   sourceType: 'product' as 'product' | 'category',
   targetType: 'product' as 'product' | 'category',
-  sourceProductId: '',
-  targetProductId: '',
-  sourceCategoryId: '',
-  targetCategoryId: '',
+  sourceProductId: undefined as string | undefined,
+  targetProductId: undefined as string | undefined,
+  sourceCategoryId: undefined as string | undefined,
+  targetCategoryId: undefined as string | undefined,
   type: 'CROSS_SELL' as AffinityType,
   priority: 100,
-  sourceBillingFrequency: '' as BillingFrequency | '',
-  targetBillingFrequency: '' as BillingFrequency | '',
+  sourceBillingFrequency: undefined as BillingFrequency | undefined,
+  targetBillingFrequency: undefined as BillingFrequency | undefined,
   isActive: true,
 })
 
+const affinityId = useRequiredParam('id')
+
 onMounted(async () => {
-  const id = route.params.id as string
   await Promise.all([fetchProducts(), fetchCategories()])
-  affinity.value = await fetchAffinity(id)
+  affinity.value = await fetchAffinity(affinityId)
   if (affinity.value) {
     form.value.sourceType = affinity.value.sourceProductId ? 'product' : 'category'
     form.value.targetType = affinity.value.targetProductId ? 'product' : 'category'
-    form.value.sourceProductId = affinity.value.sourceProductId || ''
-    form.value.targetProductId = affinity.value.targetProductId || ''
-    form.value.sourceCategoryId = affinity.value.sourceCategoryId || ''
-    form.value.targetCategoryId = affinity.value.targetCategoryId || ''
+    form.value.sourceProductId = affinity.value.sourceProductId || undefined
+    form.value.targetProductId = affinity.value.targetProductId || undefined
+    form.value.sourceCategoryId = affinity.value.sourceCategoryId || undefined
+    form.value.targetCategoryId = affinity.value.targetCategoryId || undefined
     form.value.type = affinity.value.type
     form.value.priority = affinity.value.priority
-    form.value.sourceBillingFrequency = affinity.value.sourceBillingFrequency || ''
-    form.value.targetBillingFrequency = affinity.value.targetBillingFrequency || ''
+    form.value.sourceBillingFrequency = affinity.value.sourceBillingFrequency || undefined
+    form.value.targetBillingFrequency = affinity.value.targetBillingFrequency || undefined
     form.value.isActive = affinity.value.isActive
   }
   loading.value = false
@@ -70,7 +71,6 @@ const typeOptions = [
 ]
 
 const billingFrequencyOptions = [
-  { label: 'Any', value: '' },
   { label: 'One-time', value: 'ONE_TIME' },
   { label: 'Monthly', value: 'MONTHLY' },
   { label: 'Quarterly', value: 'QUARTERLY' },
@@ -200,6 +200,7 @@ async function handleDelete() {
               <USelectMenu
                 v-model="form.sourceBillingFrequency"
                 :items="billingFrequencyOptions"
+                placeholder="Any"
                 value-key="value"
               />
             </UFormField>
@@ -246,6 +247,7 @@ async function handleDelete() {
               <USelectMenu
                 v-model="form.targetBillingFrequency"
                 :items="billingFrequencyOptions"
+                placeholder="Any"
                 value-key="value"
               />
             </UFormField>

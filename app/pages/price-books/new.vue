@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 const router = useRouter()
 const { createPriceBook } = usePricing()
 const { currencies, fetchCurrencies } = useCurrencies()
 
 const initialFormState = {
   name: '',
-  currencyId: '',
+  currencyId: undefined as string | undefined,
   isDefault: false,
   isActive: true,
   validFrom: '',
@@ -52,8 +53,8 @@ async function handleSubmit() {
     if (priceBook) {
       router.push(`/price-books/${priceBook.id}`)
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create price book'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create price book')
   } finally {
     loading.value = false
   }
@@ -92,8 +93,9 @@ async function handleSubmit() {
         <UFormField label="Currency" hint="Prices in this book will be in this currency">
           <USelect
             v-model="form.currencyId"
-            :items="[{ label: 'Use default currency', value: '' }, ...currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))]"
+            :items="currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))"
             placeholder="Select currency"
+            value-key="value"
           />
         </UFormField>
 

@@ -50,8 +50,9 @@ export default defineEventHandler(async (_event) => {
       },
     })
     results.expired = expiredContracts.count
-  } catch (e: any) {
-    results.errors.push(e.message || 'Unknown error during contract status transitions')
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : 'Unknown error during contract status transitions'
+    results.errors.push(message)
   }
 
   return {

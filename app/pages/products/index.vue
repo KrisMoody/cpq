@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ProductCategory } from '~/composables/useProducts'
+
 const { products, loading, error, fetchProducts } = useProducts()
 const { categories, fetchCategories, flattenCategories } = useCategories()
 
@@ -22,7 +24,7 @@ const filteredProducts = computed(() => {
   }
   if (filterCategoryId.value) {
     result = result.filter((p) =>
-      p.categories?.some((c: any) => c.id === filterCategoryId.value)
+      p.categories?.some((c: ProductCategory) => c.id === filterCategoryId.value)
     )
   }
   return result
@@ -82,6 +84,7 @@ const categoryOptions = computed(() => {
         :items="categoryOptions"
         placeholder="Filter by category"
         class="w-48"
+        value-key="value"
       />
 
       <UCheckbox v-model="showInactive" label="Show inactive" />

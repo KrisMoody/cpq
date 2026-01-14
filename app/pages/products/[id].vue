@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { ProductWithDetails, ProductFeature } from '~/composables/useProducts'
 import type { ProductType, BillingFrequency } from '~/generated/prisma/client.js'
 import type { Attribute } from '~/composables/useAttributes'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const {
@@ -27,7 +28,7 @@ const { createQuote, addLineItem } = useQuotes()
 const { attributes, groups, fetchAttributes, fetchGroups, setProductAttributes } = useAttributes()
 const { units, fetchUnits } = useUnits()
 
-const productId = route.params.id as string
+const productId = useRequiredParam('id')
 const product = ref<ProductWithDetails | null>(null)
 const loading = ref(true)
 const saving = ref(false)
@@ -44,7 +45,7 @@ const form = ref({
   customBillingMonths: null as number | null,
   defaultTermMonths: null as number | null,
   isActive: true,
-  unitOfMeasureId: '' as string,
+  unitOfMeasureId: null as string | null,
 })
 
 // Configuration state for bundles (view mode)
@@ -67,7 +68,7 @@ const editingOptionId = ref<string | null>(null)
 
 // Attribute editing state
 const showAttributesModal = ref(false)
-const attributeValues = ref<Record<string, any>>({})
+const attributeValues = ref<Record<string, string | number | boolean | null>>({})
 const savingAttributes = ref(false)
 
 // Drag-and-drop state
@@ -101,11 +102,11 @@ async function loadProduct() {
       sku: product.value.sku,
       description: product.value.description || '',
       type: product.value.type,
-      billingFrequency: (product.value as any).billingFrequency || 'ONE_TIME',
-      customBillingMonths: (product.value as any).customBillingMonths || null,
-      defaultTermMonths: (product.value as any).defaultTermMonths || null,
+      billingFrequency: product.value.billingFrequency || 'ONE_TIME',
+      customBillingMonths: product.value.customBillingMonths || null,
+      defaultTermMonths: product.value.defaultTermMonths || null,
       isActive: product.value.isActive,
-      unitOfMeasureId: product.value.unitOfMeasureId || '',
+      unitOfMeasureId: product.value.unitOfMeasureId || null,
     }
     // Initialize selected options with defaults
     if (product.value.features) {
@@ -116,8 +117,8 @@ async function loadProduct() {
         }
       })
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to load product'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to load product')
   } finally {
     loading.value = false
   }
@@ -179,8 +180,8 @@ async function handleSave() {
     } else {
       error.value = productError.value || 'Failed to update product'
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to update product'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to update product')
   } finally {
     saving.value = false
   }
@@ -194,11 +195,11 @@ function cancelEdit() {
       sku: product.value.sku,
       description: product.value.description || '',
       type: product.value.type,
-      billingFrequency: (product.value as any).billingFrequency || 'ONE_TIME',
-      customBillingMonths: (product.value as any).customBillingMonths || null,
-      defaultTermMonths: (product.value as any).defaultTermMonths || null,
+      billingFrequency: product.value.billingFrequency || 'ONE_TIME',
+      customBillingMonths: product.value.customBillingMonths || null,
+      defaultTermMonths: product.value.defaultTermMonths || null,
       isActive: product.value.isActive,
-      unitOfMeasureId: product.value.unitOfMeasureId || '',
+      unitOfMeasureId: product.value.unitOfMeasureId || null,
     }
   }
 }
@@ -213,8 +214,8 @@ async function handleDeactivate() {
     } else {
       error.value = productError.value || 'Failed to deactivate product'
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to deactivate product'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to deactivate product')
   }
 }
 
@@ -233,8 +234,8 @@ async function handleAddToQuote() {
       })
       router.push(`/quotes/${quote.id}`)
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create quote'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create quote')
   }
 }
 
@@ -263,8 +264,8 @@ async function handleBundleConfigure(options: Array<{ optionId: string; quantity
 
       router.push(`/quotes/${quote.id}`)
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to create quote with bundle configuration'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to create quote with bundle configuration')
   }
 }
 
@@ -302,8 +303,8 @@ async function handleSaveFeature() {
     }
     showFeatureModal.value = false
     await loadProduct()
-  } catch (e: any) {
-    error.value = e.message || 'Failed to save feature'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to save feature')
   } finally {
     saving.value = false
   }
@@ -315,8 +316,8 @@ async function handleDeleteFeature(featureId: string) {
   try {
     await deleteFeature(productId, featureId)
     await loadProduct()
-  } catch (e: any) {
-    error.value = e.message || 'Failed to delete feature'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to delete feature')
   }
 }
 
@@ -364,8 +365,8 @@ async function handleSaveOption() {
     }
     showOptionModal.value = false
     await loadProduct()
-  } catch (e: any) {
-    error.value = e.message || 'Failed to save option'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to save option')
   } finally {
     saving.value = false
   }
@@ -377,8 +378,8 @@ async function handleDeleteOption(featureId: string, optionId: string) {
   try {
     await deleteOption(productId, featureId, optionId)
     await loadProduct()
-  } catch (e: any) {
-    error.value = e.message || 'Failed to delete option'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to delete option')
   }
 }
 
@@ -513,23 +514,23 @@ function formatBillingFrequency(frequency: string): string {
 }
 
 const unitOptions = computed(() => [
-  { label: 'No unit selected', value: '' },
+  { label: 'No unit selected', value: null },
   ...units.value.map((u) => ({ label: `${u.name} (${u.abbreviation})`, value: u.id })),
 ])
 
 // Attribute helpers
 const productAttributes = computed(() => {
-  return (product.value as any)?.attributes || []
+  return product.value?.attributes || []
 })
 
 const groupedProductAttributes = computed(() => {
-  const grouped = new Map<string | null, Array<{ attribute: Attribute; value: any }>>()
+  const grouped = new Map<string | null, Array<{ attribute: Attribute; value: string | number | boolean | null }>>()
   for (const pa of productAttributes.value) {
     const groupId = pa.attribute.groupId
     if (!grouped.has(groupId)) {
       grouped.set(groupId, [])
     }
-    grouped.get(groupId)!.push({ attribute: pa.attribute, value: pa.value })
+    grouped.get(groupId)!.push({ attribute: pa.attribute as Attribute, value: pa.value })
   }
   return grouped
 })
@@ -540,29 +541,41 @@ function getGroupName(groupId: string | null): string {
   return group?.name || 'Unknown'
 }
 
-function formatAttributeValue(attr: Attribute, value: any): string {
+function formatAttributeValue(attr: Attribute, value: string | number | boolean | null): string {
   if (value === null || value === undefined || value === '') return '-'
   switch (attr.type) {
     case 'BOOLEAN':
       return value ? 'Yes' : 'No'
     case 'SELECT': {
       const opt = attr.options?.find((o) => o.value === value)
-      return opt?.label || value
+      return opt?.label || String(value)
     }
     case 'DATE':
-      return new Date(value).toLocaleDateString()
+      return new Date(String(value)).toLocaleDateString()
     default:
       return String(value)
   }
 }
 
 function openAttributesModal() {
-  // Initialize form with current attribute values
+  // Initialize form with current attribute values (default all to null, then set existing values)
   attributeValues.value = {}
+  for (const attr of attributes.value) {
+    attributeValues.value[attr.id] = null
+  }
   for (const pa of productAttributes.value) {
     attributeValues.value[pa.attribute.id] = pa.value
   }
   showAttributesModal.value = true
+}
+
+// Getter/setter for attribute values that handles undefined → null conversion
+function getAttributeValue(attrId: string): string | number | boolean | null {
+  return attributeValues.value[attrId] ?? null
+}
+
+function setAttributeValue(attrId: string, value: string | number | boolean | null) {
+  attributeValues.value[attrId] = value
 }
 
 async function handleSaveAttributes() {
@@ -629,12 +642,12 @@ async function handleSaveAttributes() {
             <span v-if="product.unitOfMeasure" class="ml-3">
               Unit: {{ product.unitOfMeasure.name }} ({{ product.unitOfMeasure.abbreviation }})
             </span>
-            <span v-if="(product as any).billingFrequency && (product as any).billingFrequency !== 'ONE_TIME'" class="ml-3">
+            <span v-if="product.billingFrequency && product.billingFrequency !== 'ONE_TIME'" class="ml-3">
               <UBadge color="primary" variant="subtle" size="xs">
-                {{ formatBillingFrequency((product as any).billingFrequency) }}
+                {{ formatBillingFrequency(product.billingFrequency) }}
               </UBadge>
-              <span v-if="(product as any).defaultTermMonths" class="text-xs ml-1">
-                ({{ (product as any).defaultTermMonths }}mo term)
+              <span v-if="product.defaultTermMonths" class="text-xs ml-1">
+                ({{ product.defaultTermMonths }}mo term)
               </span>
             </span>
           </p>
@@ -687,11 +700,11 @@ async function handleSaveAttributes() {
           </UFormField>
 
           <UFormField label="Type">
-            <USelect v-model="form.type" :items="productTypes" />
+            <USelect v-model="form.type" :items="productTypes" value-key="value" />
           </UFormField>
 
           <UFormField label="Billing Frequency" hint="How often this product is billed">
-            <USelect v-model="form.billingFrequency" :items="billingFrequencies" />
+            <USelect v-model="form.billingFrequency" :items="billingFrequencies" value-key="value" />
           </UFormField>
 
           <UFormField v-if="isCustomFrequency" label="Custom Billing Period (months)" required>
@@ -713,7 +726,7 @@ async function handleSaveAttributes() {
           </UFormField>
 
           <UFormField label="Unit of Measure" hint="How this product is measured and priced">
-            <USelect v-model="form.unitOfMeasureId" :items="unitOptions" />
+            <USelect v-model="form.unitOfMeasureId" :items="unitOptions" value-key="value" />
           </UFormField>
 
           <UCheckbox v-model="form.isActive" label="Active" />
@@ -978,6 +991,7 @@ async function handleSaveAttributes() {
                 v-model="optionForm.optionProductId"
                 :items="availableOptionProducts.map(p => ({ label: `${p.name} (${p.sku})`, value: p.id }))"
                 placeholder="Select a product"
+                value-key="value"
               />
             </UFormField>
 
@@ -1035,8 +1049,9 @@ async function handleSaveAttributes() {
                     :required="attr.isRequired"
                   >
                     <CpqAttributeInput
-                      v-model="attributeValues[attr.id]"
+                      :model-value="getAttributeValue(attr.id)"
                       :attribute="attr"
+                      @update:model-value="setAttributeValue(attr.id, $event)"
                     />
                   </UFormField>
                 </div>
@@ -1055,8 +1070,9 @@ async function handleSaveAttributes() {
                     :required="attr.isRequired"
                   >
                     <CpqAttributeInput
-                      v-model="attributeValues[attr.id]"
+                      :model-value="getAttributeValue(attr.id)"
                       :attribute="attr"
+                      @update:model-value="setAttributeValue(attr.id, $event)"
                     />
                   </UFormField>
                 </div>

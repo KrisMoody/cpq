@@ -1,12 +1,13 @@
 <script setup lang="ts">
-const route = useRoute()
+import { getErrorMessage } from '~/utils/errors'
+const _route = useRoute()
 const router = useRouter()
 const { fetchCustomer, updateCustomer, deleteCustomer } = useCustomers()
 const { priceBooks, fetchPriceBooks, formatPrice } = usePricing()
 const { contracts, fetchContracts, getStatusColor, isContractActive: _isContractActive } = useContracts()
 const { currencies, fetchCurrencies } = useCurrencies()
 
-const customerId = route.params.id as string
+const customerId = useRequiredParam('id')
 const customer = ref<Awaited<ReturnType<typeof fetchCustomer>> | null>(null)
 const loading = ref(true)
 const saving = ref(false)
@@ -74,8 +75,8 @@ async function loadCustomer() {
         isActive: customer.value.isActive,
       }
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to load customer'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to load customer')
   } finally {
     loading.value = false
   }
@@ -114,8 +115,8 @@ async function handleSave() {
       await loadCustomer()
       isEditing.value = false
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to update customer'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to update customer')
   } finally {
     saving.value = false
   }
@@ -127,8 +128,8 @@ async function handleDelete() {
   try {
     await deleteCustomer(customerId)
     router.push('/customers')
-  } catch (e: any) {
-    error.value = e.message || 'Failed to delete customer'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to delete customer')
   }
 }
 
@@ -272,6 +273,7 @@ function cancelEdit() {
                 v-model="form.currencyId"
                 placeholder="Use default"
                 :items="currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))"
+                value-key="value"
               />
             </UFormField>
 
@@ -280,6 +282,7 @@ function cancelEdit() {
                 v-model="form.priceBookId"
                 placeholder="Use default"
                 :items="priceBooks.map(pb => ({ label: pb.name, value: pb.id }))"
+                value-key="value"
               />
             </UFormField>
 
@@ -453,7 +456,7 @@ function cancelEdit() {
                 </p>
               </div>
               <div class="text-right">
-                <UBadge :color="getStatusColor(contract.status) as any" variant="subtle">
+                <UBadge :color="getStatusColor(contract.status)" variant="subtle">
                   {{ contract.status }}
                 </UBadge>
                 <p v-if="contract.discountPercent" class="text-sm text-gray-500 mt-1">

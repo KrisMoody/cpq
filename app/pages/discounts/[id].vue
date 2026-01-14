@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { getErrorMessage } from '~/utils/errors'
 import type { DiscountType, DiscountScope } from '~/generated/prisma/client.js'
 
-const route = useRoute()
+const _route = useRoute()
 const router = useRouter()
 const { fetchDiscount, updateDiscount, deleteDiscount } = useDiscounts()
 
-const discountId = route.params.id as string
+const discountId = useRequiredParam('id')
 const discount = ref<Awaited<ReturnType<typeof fetchDiscount>> | null>(null)
 const loading = ref(true)
 const saving = ref(false)
@@ -69,8 +70,8 @@ async function loadDiscount() {
         })),
       }
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to load discount'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to load discount')
   } finally {
     loading.value = false
   }
@@ -120,8 +121,8 @@ async function handleSave() {
     if (updated) {
       await loadDiscount()
     }
-  } catch (e: any) {
-    error.value = e.message || 'Failed to update discount'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to update discount')
   } finally {
     saving.value = false
   }
@@ -133,8 +134,8 @@ async function handleDelete() {
   try {
     await deleteDiscount(discountId)
     router.push('/discounts')
-  } catch (e: any) {
-    error.value = e.message || 'Failed to delete discount'
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to delete discount')
   }
 }
 
@@ -225,7 +226,7 @@ function cancelEdit() {
 
           <div class="grid grid-cols-2 gap-4">
             <UFormField label="Type">
-              <USelect v-model="form.type" :items="typeOptions" />
+              <USelect v-model="form.type" :items="typeOptions" value-key="value" />
             </UFormField>
 
             <UFormField :label="form.type === 'PERCENTAGE' ? 'Percentage' : 'Amount'">
@@ -234,7 +235,7 @@ function cancelEdit() {
           </div>
 
           <UFormField label="Scope">
-            <USelect v-model="form.scope" :items="scopeOptions" />
+            <USelect v-model="form.scope" :items="scopeOptions" value-key="value" />
           </UFormField>
         </div>
 

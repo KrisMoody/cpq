@@ -46,11 +46,16 @@ export function getNextQuestion(
     const lastQuestion = questionnaire.questions.find((q) => q.id === lastAnswer.questionId)
 
     if (lastQuestion?.branchLogic) {
-      const branchLogic = lastQuestion.branchLogic as Record<string, string>
+      const branchLogic = lastQuestion.branchLogic as unknown
       const answerValue = Array.isArray(lastAnswer.value) ? lastAnswer.value[0] : lastAnswer.value
-      const nextQuestionId = branchLogic[answerValue]
 
-      if (nextQuestionId) {
+      // Type guard for branch logic object
+      if (typeof branchLogic !== 'object' || branchLogic === null) {
+        return sortedQuestions.find((q) => !answeredIds.has(q.id)) || null
+      }
+      const nextQuestionId = (branchLogic as Record<string, unknown>)[answerValue]
+
+      if (typeof nextQuestionId === 'string') {
         const branchedQuestion = questionnaire.questions.find((q) => q.id === nextQuestionId)
         if (branchedQuestion && !answeredIds.has(branchedQuestion.id)) {
           return branchedQuestion
@@ -123,20 +128,30 @@ export function getQuestionnaireProgress(
 }
 
 /**
+ * Type guard for QuestionOption
+ */
+function isQuestionOption(obj: unknown): obj is QuestionOption {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    'label' in obj &&
+    typeof (obj as QuestionOption).label === 'string' &&
+    'value' in obj &&
+    typeof (obj as QuestionOption).value === 'string'
+  )
+}
+
+/**
  * Parse question options from JSON
  */
 export function parseQuestionOptions(question: Question): QuestionOption[] {
   if (!question.options) return []
 
-  try {
-    const options = question.options as unknown
-    if (Array.isArray(options)) {
-      return options as QuestionOption[]
-    }
-    return []
-  } catch {
-    return []
+  const options = question.options as unknown
+  if (Array.isArray(options) && options.every(isQuestionOption)) {
+    return options
   }
+  return []
 }
 
 /**

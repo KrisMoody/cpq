@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import type { Attribute } from '~/composables/useAttributes'
+import type { AttributeValue, NumberConstraints, TextConstraints } from '~/types/domain'
 
 const props = defineProps<{
   attribute: Attribute
-  modelValue: any
+  modelValue: AttributeValue
 }>()
 
 const emit = defineEmits<{
-  'update:modelValue': [value: any]
+  'update:modelValue': [value: AttributeValue]
 }>()
 
 const value = computed({
@@ -23,8 +24,30 @@ const selectOptions = computed(() => {
   }))
 })
 
-const constraints = computed(() => {
-  return props.attribute.constraints as Record<string, any> | null
+// Type-safe constraint accessors based on attribute type
+const textConstraints = computed((): TextConstraints | null => {
+  if (props.attribute.type === 'TEXT' && props.attribute.constraints) {
+    return props.attribute.constraints as TextConstraints
+  }
+  return null
+})
+
+const numberConstraints = computed((): NumberConstraints | null => {
+  if (props.attribute.type === 'NUMBER' && props.attribute.constraints) {
+    return props.attribute.constraints as NumberConstraints
+  }
+  return null
+})
+
+// Type-safe value accessors for component bindings
+const stringValue = computed({
+  get: () => (typeof props.modelValue === 'string' ? props.modelValue : ''),
+  set: (val: string) => emit('update:modelValue', val || null),
+})
+
+const booleanValue = computed({
+  get: () => props.modelValue === true,
+  set: (val: boolean) => emit('update:modelValue', val),
 })
 </script>
 
@@ -33,10 +56,10 @@ const constraints = computed(() => {
     <!-- TEXT -->
     <UInput
       v-if="attribute.type === 'TEXT'"
-      v-model="value"
+      v-model="stringValue"
       :placeholder="attribute.name"
-      :minlength="constraints?.minLength"
-      :maxlength="constraints?.maxLength"
+      :minlength="textConstraints?.minLength"
+      :maxlength="textConstraints?.maxLength"
     />
 
     <!-- NUMBER -->
@@ -45,30 +68,31 @@ const constraints = computed(() => {
       v-model.number="value"
       type="number"
       :placeholder="attribute.name"
-      :min="constraints?.min"
-      :max="constraints?.max"
+      :min="numberConstraints?.min"
+      :max="numberConstraints?.max"
       step="any"
     />
 
     <!-- BOOLEAN -->
     <UCheckbox
       v-else-if="attribute.type === 'BOOLEAN'"
-      v-model="value"
+      v-model="booleanValue"
       :label="attribute.name"
     />
 
     <!-- SELECT -->
     <USelect
       v-else-if="attribute.type === 'SELECT'"
-      v-model="value"
+      v-model="stringValue"
       :items="selectOptions"
       :placeholder="`Select ${attribute.name}`"
+      value-key="value"
     />
 
     <!-- DATE -->
     <UInput
       v-else-if="attribute.type === 'DATE'"
-      v-model="value"
+      v-model="stringValue"
       type="date"
       :placeholder="attribute.name"
     />

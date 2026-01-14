@@ -1,3 +1,4 @@
+import { getErrorMessage } from '../utils/errors.js'
 export interface Category {
   id: string
   name: string
@@ -60,8 +61,8 @@ export function useCategories() {
       const query = params.toString() ? `?${params.toString()}` : ''
       const data = await $fetch<Category[]>(`/api/categories${query}`)
       categories.value = data
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch categories'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch categories')
     } finally {
       loading.value = false
     }
@@ -70,8 +71,8 @@ export function useCategories() {
   async function fetchCategory(id: string): Promise<CategoryWithProducts | null> {
     try {
       return await $fetch<CategoryWithProducts>(`/api/categories/${id}`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch category'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch category')
       return null
     }
   }
@@ -89,8 +90,8 @@ export function useCategories() {
       })
       await fetchCategories()
       return category
-    } catch (e: any) {
-      error.value = e.message || 'Failed to create category'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to create category')
       return null
     }
   }
@@ -112,8 +113,8 @@ export function useCategories() {
       })
       await fetchCategories()
       return category
-    } catch (e: any) {
-      error.value = e.message || 'Failed to update category'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update category')
       return null
     }
   }
@@ -125,8 +126,8 @@ export function useCategories() {
       })
       await fetchCategories()
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to delete category'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to delete category')
       return false
     }
   }
@@ -138,8 +139,8 @@ export function useCategories() {
         body: { productId },
       })
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to add product to category'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to add product to category')
       return false
     }
   }
@@ -150,8 +151,8 @@ export function useCategories() {
         method: 'DELETE',
       })
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to remove product from category'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to remove product from category')
       return false
     }
   }
@@ -159,8 +160,8 @@ export function useCategories() {
   async function fetchCategoryAttributes(categoryId: string): Promise<CategoryAttribute[]> {
     try {
       return await $fetch<CategoryAttribute[]>(`/api/categories/${categoryId}/attributes`)
-    } catch (e: any) {
-      error.value = e.message || 'Failed to fetch category attributes'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch category attributes')
       return []
     }
   }
@@ -172,8 +173,8 @@ export function useCategories() {
         body: { attributeId },
       })
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to add attribute to category'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to add attribute to category')
       return false
     }
   }
@@ -184,8 +185,8 @@ export function useCategories() {
         method: 'DELETE',
       })
       return true
-    } catch (e: any) {
-      error.value = e.message || 'Failed to remove attribute from category'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to remove attribute from category')
       return false
     }
   }
