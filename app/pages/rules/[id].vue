@@ -181,11 +181,11 @@ function cancelEdit() {
 
           <div class="grid grid-cols-2 gap-4">
             <UFormField label="Type">
-              <USelect v-model="form.type" :items="typeOptions" />
+              <USelect v-model="form.type" :items="typeOptions" value-key="value" />
             </UFormField>
 
             <UFormField label="Trigger">
-              <USelect v-model="form.trigger" :items="triggerOptions" />
+              <USelect v-model="form.trigger" :items="triggerOptions" value-key="value" />
             </UFormField>
           </div>
 

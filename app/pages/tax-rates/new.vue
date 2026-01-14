@@ -126,6 +126,7 @@ const categoryOptions = computed(() => [
           <USelect
             v-model="form.categoryId"
             :items="categoryOptions"
+            value-key="value"
           />
           <template #hint>
             Apply this tax only to specific product category, or all products

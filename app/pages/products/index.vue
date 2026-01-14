@@ -82,6 +82,7 @@ const categoryOptions = computed(() => {
         :items="categoryOptions"
         placeholder="Filter by category"
         class="w-48"
+        value-key="value"
       />
 
       <UCheckbox v-model="showInactive" label="Show inactive" />

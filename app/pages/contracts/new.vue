@@ -129,6 +129,7 @@ async function handleSubmit() {
               v-model="form.customerId"
               placeholder="Select a customer"
               :items="customerOptions"
+              value-key="value"
             />
           </UFormField>
         </div>
@@ -169,7 +170,7 @@ async function handleSubmit() {
           <h3 class="text-sm font-medium text-gray-500 uppercase">Status</h3>
 
           <UFormField label="Contract Status">
-            <USelect v-model="form.status" :items="statusOptions" />
+            <USelect v-model="form.status" :items="statusOptions" value-key="value" />
           </UFormField>
         </div>
 

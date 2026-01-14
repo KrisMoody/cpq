@@ -381,6 +381,7 @@ function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
               v-model="form.currencyId"
               placeholder="Use default"
               :items="currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))"
+              value-key="value"
             />
           </UFormField>
 
@@ -603,7 +604,7 @@ function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
                             <UInput v-model.number="tier.tierPrice" type="number" step="0.01" min="0" />
                           </UFormField>
                           <UFormField label="Type" class="w-32">
-                            <USelect v-model="tier.tierType" :items="tierTypeOptions" />
+                            <USelect v-model="tier.tierType" :items="tierTypeOptions" value-key="value" />
                           </UFormField>
                           <UButton
                             size="xs"
@@ -668,6 +669,7 @@ function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
                 v-model="newEntry.productId"
                 :items="availableProducts.map(p => ({ label: `${p.name} (${p.sku})`, value: p.id }))"
                 placeholder="Select a product"
+                value-key="value"
               />
             </UFormField>
 

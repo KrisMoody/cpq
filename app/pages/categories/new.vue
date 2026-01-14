@@ -108,6 +108,7 @@ async function handleSubmit() {
             v-model="form.parentId"
             :items="parentOptions"
             placeholder="Select parent category"
+            value-key="value"
           />
         </UFormField>
 

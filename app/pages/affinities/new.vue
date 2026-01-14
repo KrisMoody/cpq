@@ -10,14 +10,14 @@ const { categories, fetchCategories } = useCategories()
 const form = ref({
   sourceType: 'product' as 'product' | 'category',
   targetType: 'product' as 'product' | 'category',
-  sourceProductId: '',
-  targetProductId: '',
-  sourceCategoryId: '',
-  targetCategoryId: '',
+  sourceProductId: undefined as string | undefined,
+  targetProductId: undefined as string | undefined,
+  sourceCategoryId: undefined as string | undefined,
+  targetCategoryId: undefined as string | undefined,
   type: 'CROSS_SELL' as AffinityType,
   priority: 100,
-  sourceBillingFrequency: '' as BillingFrequency | '',
-  targetBillingFrequency: '' as BillingFrequency | '',
+  sourceBillingFrequency: undefined as BillingFrequency | undefined,
+  targetBillingFrequency: undefined as BillingFrequency | undefined,
   isActive: true,
 })
 
@@ -52,7 +52,6 @@ const typeOptions = [
 ]
 
 const billingFrequencyOptions = [
-  { label: 'Any', value: '' },
   { label: 'One-time', value: 'ONE_TIME' },
   { label: 'Monthly', value: 'MONTHLY' },
   { label: 'Quarterly', value: 'QUARTERLY' },
@@ -170,6 +169,7 @@ async function handleSubmit() {
             <USelectMenu
               v-model="form.sourceBillingFrequency"
               :items="billingFrequencyOptions"
+              placeholder="Any"
               value-key="value"
             />
           </UFormField>
@@ -216,6 +216,7 @@ async function handleSubmit() {
             <USelectMenu
               v-model="form.targetBillingFrequency"
               :items="billingFrequencyOptions"
+              placeholder="Any"
               value-key="value"
             />
           </UFormField>

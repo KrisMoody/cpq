@@ -173,6 +173,7 @@ async function handleSubmit() {
             <USelect
               v-model="form.currencyId"
               :items="[{ label: 'Use default currency', value: '' }, ...currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))]"
+              value-key="value"
               placeholder="Select currency (optional)"
             />
           </UFormField>
@@ -181,6 +182,7 @@ async function handleSubmit() {
             <USelect
               v-model="form.priceBookId"
               :items="[{ label: 'Use default price book', value: '' }, ...priceBooks.map(pb => ({ label: pb.name, value: pb.id }))]"
+              value-key="value"
               placeholder="Select price book (optional)"
             />
           </UFormField>

@@ -63,6 +63,7 @@ const constraints = computed(() => {
       v-model="value"
       :items="selectOptions"
       :placeholder="`Select ${attribute.name}`"
+      value-key="value"
     />
 
     <!-- DATE -->

@@ -94,6 +94,7 @@ async function handleSubmit() {
             v-model="form.currencyId"
             :items="[{ label: 'Use default currency', value: '' }, ...currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))]"
             placeholder="Select currency"
+            value-key="value"
           />
         </UFormField>
 

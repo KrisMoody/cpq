@@ -44,7 +44,7 @@ const form = ref({
   customBillingMonths: null as number | null,
   defaultTermMonths: null as number | null,
   isActive: true,
-  unitOfMeasureId: '' as string,
+  unitOfMeasureId: null as string | null,
 })
 
 // Configuration state for bundles (view mode)
@@ -105,7 +105,7 @@ async function loadProduct() {
       customBillingMonths: (product.value as any).customBillingMonths || null,
       defaultTermMonths: (product.value as any).defaultTermMonths || null,
       isActive: product.value.isActive,
-      unitOfMeasureId: product.value.unitOfMeasureId || '',
+      unitOfMeasureId: product.value.unitOfMeasureId || null,
     }
     // Initialize selected options with defaults
     if (product.value.features) {
@@ -198,7 +198,7 @@ function cancelEdit() {
       customBillingMonths: (product.value as any).customBillingMonths || null,
       defaultTermMonths: (product.value as any).defaultTermMonths || null,
       isActive: product.value.isActive,
-      unitOfMeasureId: product.value.unitOfMeasureId || '',
+      unitOfMeasureId: product.value.unitOfMeasureId || null,
     }
   }
 }
@@ -513,7 +513,7 @@ function formatBillingFrequency(frequency: string): string {
 }
 
 const unitOptions = computed(() => [
-  { label: 'No unit selected', value: '' },
+  { label: 'No unit selected', value: null },
   ...units.value.map((u) => ({ label: `${u.name} (${u.abbreviation})`, value: u.id })),
 ])
 
@@ -687,11 +687,11 @@ async function handleSaveAttributes() {
           </UFormField>
 
           <UFormField label="Type">
-            <USelect v-model="form.type" :items="productTypes" />
+            <USelect v-model="form.type" :items="productTypes" value-key="value" />
           </UFormField>
 
           <UFormField label="Billing Frequency" hint="How often this product is billed">
-            <USelect v-model="form.billingFrequency" :items="billingFrequencies" />
+            <USelect v-model="form.billingFrequency" :items="billingFrequencies" value-key="value" />
           </UFormField>
 
           <UFormField v-if="isCustomFrequency" label="Custom Billing Period (months)" required>
@@ -713,7 +713,7 @@ async function handleSaveAttributes() {
           </UFormField>
 
           <UFormField label="Unit of Measure" hint="How this product is measured and priced">
-            <USelect v-model="form.unitOfMeasureId" :items="unitOptions" />
+            <USelect v-model="form.unitOfMeasureId" :items="unitOptions" value-key="value" />
           </UFormField>
 
           <UCheckbox v-model="form.isActive" label="Active" />
@@ -978,6 +978,7 @@ async function handleSaveAttributes() {
                 v-model="optionForm.optionProductId"
                 :items="availableOptionProducts.map(p => ({ label: `${p.name} (${p.sku})`, value: p.id }))"
                 placeholder="Select a product"
+                value-key="value"
               />
             </UFormField>
 

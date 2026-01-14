@@ -186,7 +186,7 @@ const categoryOptions = computed(() => [
         </div>
 
         <UFormField label="Product Category">
-          <USelect v-model="form.categoryId" :items="categoryOptions" />
+          <USelect v-model="form.categoryId" :items="categoryOptions" value-key="value" />
         </UFormField>
 
         <div class="grid grid-cols-2 gap-4">

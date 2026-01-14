@@ -334,6 +334,7 @@ function formatDate(date: string) {
               <USelect
                 v-model="form.customerId"
                 :items="customerOptions"
+                value-key="value"
               />
             </UFormField>
 
@@ -358,7 +359,7 @@ function formatDate(date: string) {
             </UFormField>
 
             <UFormField label="Status">
-              <USelect v-model="form.status" :items="statusOptions" />
+              <USelect v-model="form.status" :items="statusOptions" value-key="value" />
             </UFormField>
 
             <div class="flex justify-end gap-3 pt-4">
@@ -439,6 +440,7 @@ function formatDate(date: string) {
                 v-model="newPriceEntry.productId"
                 placeholder="Select a product"
                 :items="availableProducts"
+                value-key="value"
               />
             </UFormField>
             <UFormField label="Fixed Price">

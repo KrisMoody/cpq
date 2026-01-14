@@ -138,7 +138,7 @@ async function handleSubmit() {
 
           <div class="grid grid-cols-2 gap-4">
             <UFormField label="Type">
-              <USelect v-model="form.type" :items="typeOptions" />
+              <USelect v-model="form.type" :items="typeOptions" value-key="value" />
             </UFormField>
 
             <UFormField :label="form.type === 'PERCENTAGE' ? 'Percentage' : 'Amount'">
@@ -152,7 +152,7 @@ async function handleSubmit() {
           </div>
 
           <UFormField label="Scope">
-            <USelect v-model="form.scope" :items="scopeOptions" />
+            <USelect v-model="form.scope" :items="scopeOptions" value-key="value" />
           </UFormField>
         </div>
 

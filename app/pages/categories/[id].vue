@@ -271,7 +271,7 @@ function getAttributeTypeLabel(type: string): string {
           </UFormField>
 
           <UFormField label="Parent Category">
-            <USelect v-model="form.parentId" :items="parentOptions" />
+            <USelect v-model="form.parentId" :items="parentOptions" value-key="value" />
           </UFormField>
 
           <div class="grid grid-cols-2 gap-4">
@@ -424,6 +424,7 @@ function getAttributeTypeLabel(type: string): string {
                 v-model="selectedProductId"
                 :items="availableProducts.map(p => ({ label: `${p.name} (${p.sku})`, value: p.id }))"
                 placeholder="Select a product"
+                value-key="value"
               />
             </UFormField>
           </div>
@@ -452,6 +453,7 @@ function getAttributeTypeLabel(type: string): string {
                 v-model="selectedAttributeId"
                 :items="availableAttributes.map(a => ({ label: `${a.name} (${a.code})`, value: a.id }))"
                 placeholder="Select an attribute"
+                value-key="value"
               />
             </UFormField>
           </div>

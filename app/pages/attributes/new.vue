@@ -177,11 +177,11 @@ async function handleSubmit() {
 
         <div class="grid grid-cols-2 gap-4">
           <UFormField label="Type" required>
-            <USelect v-model="form.type" :items="typeOptions" />
+            <USelect v-model="form.type" :items="typeOptions" value-key="value" />
           </UFormField>
 
           <UFormField label="Group">
-            <USelect :model-value="form.groupId ?? undefined" :items="groupOptions" @update:model-value="form.groupId = $event || null" />
+            <USelect :model-value="form.groupId ?? undefined" :items="groupOptions" value-key="value" @update:model-value="form.groupId = $event || null" />
           </UFormField>
         </div>
 

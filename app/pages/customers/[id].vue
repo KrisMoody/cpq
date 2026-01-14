@@ -272,6 +272,7 @@ function cancelEdit() {
                 v-model="form.currencyId"
                 placeholder="Use default"
                 :items="currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))"
+                value-key="value"
               />
             </UFormField>
 
@@ -280,6 +281,7 @@ function cancelEdit() {
                 v-model="form.priceBookId"
                 placeholder="Use default"
                 :items="priceBooks.map(pb => ({ label: pb.name, value: pb.id }))"
+                value-key="value"
               />
             </UFormField>
 
