@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { lookupPrice, calculateTotalPrice, type PriceBookEntryWithTiers } from './priceLookup'
+import type { Decimal } from '../../app/generated/prisma/runtime/index-browser'
 
 /**
  * Tests for tier-based pricing calculations
@@ -24,19 +25,16 @@ function createEntry(
     id: 'entry-1',
     priceBookId: 'pb-1',
     productId: 'prod-1',
-    listPrice: listPrice as unknown as import('@prisma/client/runtime/library').Decimal,
-    cost: cost ? (cost as unknown as import('@prisma/client/runtime/library').Decimal) : null,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    listPrice: listPrice as unknown as Decimal,
+    cost: cost ? (cost as unknown as Decimal) : null,
+    minMargin: null,
     priceTiers: tiers.map((t, i) => ({
       id: `tier-${i}`,
       priceBookEntryId: 'entry-1',
       minQuantity: t.minQuantity,
       maxQuantity: t.maxQuantity,
-      tierPrice: t.tierPrice as unknown as import('@prisma/client/runtime/library').Decimal,
+      tierPrice: t.tierPrice as unknown as Decimal,
       tierType: t.tierType,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     })),
   }
 }

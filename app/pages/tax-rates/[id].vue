@@ -37,8 +37,8 @@ async function loadTaxRate() {
         country: taxRate.value.country,
         state: taxRate.value.state ?? '',
         categoryId: taxRate.value.categoryId ?? '',
-        validFrom: taxRate.value.validFrom ? taxRate.value.validFrom.split('T')[0] : '',
-        validTo: taxRate.value.validTo ? taxRate.value.validTo.split('T')[0] : '',
+        validFrom: taxRate.value.validFrom?.split('T')[0] ?? '',
+        validTo: taxRate.value.validTo?.split('T')[0] ?? '',
         isActive: taxRate.value.isActive,
       }
     }
@@ -94,8 +94,8 @@ function cancelEdit() {
       country: taxRate.value.country,
       state: taxRate.value.state ?? '',
       categoryId: taxRate.value.categoryId ?? '',
-      validFrom: taxRate.value.validFrom ? taxRate.value.validFrom.split('T')[0] : '',
-      validTo: taxRate.value.validTo ? taxRate.value.validTo.split('T')[0] : '',
+      validFrom: taxRate.value.validFrom?.split('T')[0] ?? '',
+      validTo: taxRate.value.validTo?.split('T')[0] ?? '',
       isActive: taxRate.value.isActive,
     }
   }

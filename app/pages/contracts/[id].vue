@@ -66,8 +66,8 @@ async function loadContract() {
       form.value = {
         name: contract.value.name,
         customerId: contract.value.customerId,
-        startDate: contract.value.startDate.split('T')[0],
-        endDate: contract.value.endDate.split('T')[0],
+        startDate: contract.value.startDate.split('T')[0] ?? '',
+        endDate: contract.value.endDate.split('T')[0] ?? '',
         status: contract.value.status,
         discountPercent: contract.value.discountPercent ? parseFloat(contract.value.discountPercent) : null,
       }
@@ -126,8 +126,8 @@ function cancelEdit() {
     form.value = {
       name: contract.value.name,
       customerId: contract.value.customerId,
-      startDate: contract.value.startDate.split('T')[0],
-      endDate: contract.value.endDate.split('T')[0],
+      startDate: contract.value.startDate.split('T')[0] ?? '',
+      endDate: contract.value.endDate.split('T')[0] ?? '',
       status: contract.value.status,
       discountPercent: contract.value.discountPercent ? parseFloat(contract.value.discountPercent) : null,
     }
@@ -200,8 +200,8 @@ function openRenewModal() {
 
   renewForm.value = {
     name: `${contract.value.name} (Renewed)`,
-    startDate: startDate.toISOString().split('T')[0],
-    endDate: endDate.toISOString().split('T')[0],
+    startDate: startDate.toISOString().split('T')[0] ?? '',
+    endDate: endDate.toISOString().split('T')[0] ?? '',
     discountPercent: contract.value.discountPercent ? parseFloat(contract.value.discountPercent) : null,
     copyPrices: true,
   }
