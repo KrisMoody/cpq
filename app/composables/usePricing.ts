@@ -1,10 +1,14 @@
+import type { Currency } from './useCurrencies'
+
 export interface PriceBook {
   id: string
   name: string
+  currencyId: string | null
   isDefault: boolean
   isActive: boolean
   validFrom: string | null
   validTo: string | null
+  currency?: Currency | null
   _count: {
     entries: number
   }
@@ -30,6 +34,7 @@ export interface PriceBookWithEntries extends PriceBook {
 
 export interface CreatePriceBookInput {
   name: string
+  currencyId?: string | null
   isDefault?: boolean
   isActive?: boolean
   validFrom?: string | null
@@ -38,6 +43,7 @@ export interface CreatePriceBookInput {
 
 export interface UpdatePriceBookInput {
   name?: string
+  currencyId?: string | null
   isDefault?: boolean
   isActive?: boolean
   validFrom?: string | null
@@ -195,12 +201,28 @@ export function usePricing() {
     return priceBooks.value.find((pb) => pb.isDefault)
   }
 
-  function formatPrice(price: string | number): string {
+  function formatPrice(
+    price: string | number,
+    currency?: { code: string; symbol: string } | null
+  ): string {
     const num = typeof price === 'string' ? parseFloat(price) : price
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(num)
+
+    if (!currency) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      }).format(num)
+    }
+
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency.code,
+      }).format(num)
+    } catch {
+      // Fallback for unsupported currency codes
+      return `${currency.symbol}${num.toFixed(2)}`
+    }
   }
 
   return {

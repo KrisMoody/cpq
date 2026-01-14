@@ -24,6 +24,19 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  // Validate currency exists if provided
+  if (body.currencyId) {
+    const currency = await prisma.currency.findUnique({
+      where: { id: body.currencyId },
+    })
+    if (!currency) {
+      throw createError({
+        statusCode: 400,
+        message: 'Invalid currency ID',
+      })
+    }
+  }
+
   const customer = await prisma.customer.create({
     data: {
       name: body.name,
@@ -36,6 +49,7 @@ export default defineEventHandler(async (event) => {
       postalCode: body.postalCode || null,
       country: body.country || null,
       priceBookId: body.priceBookId || null,
+      currencyId: body.currencyId || null,
       isTaxExempt: body.isTaxExempt || false,
       taxExemptReason: body.taxExemptReason || null,
       taxExemptCertificate: body.taxExemptCertificate || null,
@@ -44,6 +58,9 @@ export default defineEventHandler(async (event) => {
     include: {
       priceBook: {
         select: { id: true, name: true },
+      },
+      currency: {
+        select: { id: true, code: true, name: true, symbol: true },
       },
     },
   })

@@ -12,6 +12,38 @@ datasource db {
 }
 
 // ============================================================================
+// Currency Management
+// ============================================================================
+
+model Currency {
+  id        String   @id @default(cuid())
+  code      String   @unique // ISO 4217 code (e.g., USD, EUR, GBP)
+  name      String
+  symbol    String   // Currency symbol (e.g., $, €, £)
+  isBase    Boolean  @default(false) // Base currency for reporting
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  exchangeRates ExchangeRate[]
+  priceBooks    PriceBook[]
+  quotes        Quote[]
+  customers     Customer[]
+}
+
+model ExchangeRate {
+  id            String   @id @default(cuid())
+  currencyId    String
+  rate          Decimal  @db.Decimal(18, 8) // Exchange rate to base currency
+  effectiveDate DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  currency Currency @relation(fields: [currencyId], references: [id], onDelete: Cascade)
+
+  @@index([currencyId, effectiveDate(sort: Desc)])
+}
+
+// ============================================================================
 // Units of Measure
 // ============================================================================
 
@@ -215,6 +247,7 @@ model Customer {
   postalCode           String?
   country              String?
   priceBookId          String?
+  currencyId           String?   // Preferred currency for this customer
   isTaxExempt          Boolean   @default(false)
   taxExemptReason      String?
   taxExemptCertificate String?
@@ -224,6 +257,7 @@ model Customer {
   updatedAt            DateTime  @updatedAt
 
   priceBook PriceBook? @relation(fields: [priceBookId], references: [id])
+  currency  Currency?  @relation(fields: [currencyId], references: [id])
   quotes    Quote[]
   contracts Contract[]
 }
@@ -274,13 +308,15 @@ enum ContractStatus {
 // ============================================================================
 
 model PriceBook {
-  id        String    @id @default(cuid())
-  name      String
-  isDefault Boolean   @default(false)
-  isActive  Boolean   @default(true)
-  validFrom DateTime?
-  validTo   DateTime?
+  id         String    @id @default(cuid())
+  name       String
+  currencyId String?   // Currency for this price book
+  isDefault  Boolean   @default(false)
+  isActive   Boolean   @default(true)
+  validFrom  DateTime?
+  validTo    DateTime?
 
+  currency  Currency?        @relation(fields: [currencyId], references: [id])
   entries   PriceBookEntry[]
   quotes    Quote[]
   customers Customer[]
@@ -329,6 +365,7 @@ model Quote {
   customerId       String?
   status           QuoteStatus @default(DRAFT)
   priceBookId      String
+  currencyId       String?     // Currency for this quote
   validFrom        DateTime    @default(now())
   validTo          DateTime
   subtotal         Decimal     @default(0) @db.Decimal(10, 2)
@@ -336,6 +373,7 @@ model Quote {
   taxAmount        Decimal     @default(0) @db.Decimal(10, 2)
   taxBreakdown     Json?       // Array of { name, rate, amount } for each applied tax
   total            Decimal     @default(0) @db.Decimal(10, 2)
+  baseAmount       Decimal     @default(0) @db.Decimal(10, 2) // Total in base currency for reporting
   oneTimeTotal     Decimal     @default(0) @db.Decimal(10, 2) // Sum of one-time items
   mrr              Decimal     @default(0) @db.Decimal(10, 2) // Monthly Recurring Revenue
   arr              Decimal     @default(0) @db.Decimal(10, 2) // Annual Recurring Revenue (MRR * 12)
@@ -348,6 +386,7 @@ model Quote {
 
   customer         Customer?         @relation(fields: [customerId], references: [id])
   priceBook        PriceBook         @relation(fields: [priceBookId], references: [id])
+  currency         Currency?         @relation(fields: [currencyId], references: [id])
   lineItems        QuoteLineItem[]
   appliedDiscounts AppliedDiscount[]
 }

@@ -8,6 +8,14 @@ const props = defineProps<{
 
 const { formatPrice } = usePricing()
 
+// Get currency for formatting
+const currency = computed(() => props.quote.currency || null)
+
+// Helper to format price with quote's currency
+function formatQuotePrice(price: string | number): string {
+  return formatPrice(price, currency.value)
+}
+
 const quoteNumber = computed(() => props.quote.id.slice(0, 8).toUpperCase())
 
 const formattedValidFrom = computed(() => {
@@ -228,14 +236,14 @@ function formatBillingFrequency(frequency: string): string {
                     {{ item.product.unitOfMeasure.abbreviation }}
                   </span>
                 </td>
-                <td class="px-4 py-3 text-right text-gray-900 dark:text-white">{{ formatPrice(item.listPrice) }}</td>
+                <td class="px-4 py-3 text-right text-gray-900 dark:text-white">{{ formatQuotePrice(item.listPrice) }}</td>
                 <td class="px-4 py-3 text-right">
                   <span v-if="parseFloat(String(item.discount)) > 0" class="text-red-500">
-                    -{{ formatPrice(item.discount) }}
+                    -{{ formatQuotePrice(item.discount) }}
                   </span>
                   <span v-else class="text-gray-400">-</span>
                 </td>
-                <td class="px-4 py-3 text-right font-medium text-gray-900 dark:text-white">{{ formatPrice(item.netPrice) }}</td>
+                <td class="px-4 py-3 text-right font-medium text-gray-900 dark:text-white">{{ formatQuotePrice(item.netPrice) }}</td>
               </tr>
               <tr v-if="displayLineItems.length === 0">
                 <td colspan="5" class="px-4 py-8 text-center text-gray-500">
@@ -254,7 +262,7 @@ function formatBillingFrequency(frequency: string): string {
             <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-3">
               <div class="flex justify-between text-gray-600 dark:text-gray-400">
                 <span>Subtotal</span>
-                <span class="font-medium text-gray-900 dark:text-white">{{ formatPrice(subtotalNum) }}</span>
+                <span class="font-medium text-gray-900 dark:text-white">{{ formatQuotePrice(subtotalNum) }}</span>
               </div>
 
               <!-- Applied Discounts Breakdown -->
@@ -271,14 +279,14 @@ function formatBillingFrequency(frequency: string): string {
                       ({{ discount.type === 'PERCENTAGE' ? `${discount.value}%` : 'Fixed' }})
                     </span>
                   </span>
-                  <span class="text-red-500">-{{ formatPrice(discount.calculatedAmount) }}</span>
+                  <span class="text-red-500">-{{ formatQuotePrice(discount.calculatedAmount) }}</span>
                 </div>
               </div>
 
               <!-- Total Discount -->
               <div v-if="discountTotalNum > 0" class="flex justify-between text-red-500 border-t border-gray-200 dark:border-gray-700 pt-3">
                 <span>Total Discount</span>
-                <span class="font-medium">-{{ formatPrice(discountTotalNum) }}</span>
+                <span class="font-medium">-{{ formatQuotePrice(discountTotalNum) }}</span>
               </div>
 
               <!-- Tax Section -->
@@ -286,7 +294,7 @@ function formatBillingFrequency(frequency: string): string {
                 <span class="flex items-center gap-1">
                   Tax Exempt
                 </span>
-                <span class="font-medium">$0.00</span>
+                <span class="font-medium">{{ formatQuotePrice(0) }}</span>
               </div>
 
               <div v-else-if="taxBreakdown.length > 0" class="space-y-2 border-t border-gray-200 dark:border-gray-700 pt-3">
@@ -300,18 +308,18 @@ function formatBillingFrequency(frequency: string): string {
                     {{ tax.name }}
                     <span class="text-xs text-gray-400">({{ formatTaxRate(tax.rate) }})</span>
                   </span>
-                  <span class="text-gray-900 dark:text-white">{{ formatPrice(tax.amount) }}</span>
+                  <span class="text-gray-900 dark:text-white">{{ formatQuotePrice(tax.amount) }}</span>
                 </div>
               </div>
 
               <div v-else-if="taxAmountNum > 0" class="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-3">
                 <span class="text-gray-600 dark:text-gray-400">Tax</span>
-                <span class="font-medium text-gray-900 dark:text-white">{{ formatPrice(taxAmountNum) }}</span>
+                <span class="font-medium text-gray-900 dark:text-white">{{ formatQuotePrice(taxAmountNum) }}</span>
               </div>
 
               <div class="flex justify-between text-lg border-t-2 border-gray-300 dark:border-gray-600 pt-3">
                 <span class="font-semibold text-gray-900 dark:text-white">Total</span>
-                <span class="font-bold text-primary-600">{{ formatPrice(totalNum) }}</span>
+                <span class="font-bold text-primary-600">{{ formatQuotePrice(totalNum) }}</span>
               </div>
 
               <!-- Recurring Revenue Metrics -->
@@ -320,22 +328,22 @@ function formatBillingFrequency(frequency: string): string {
 
                 <div v-if="oneTimeTotalNum > 0" class="flex justify-between text-sm">
                   <span class="text-gray-600 dark:text-gray-400">One-Time Charges</span>
-                  <span class="font-medium text-gray-900 dark:text-white">{{ formatPrice(oneTimeTotalNum) }}</span>
+                  <span class="font-medium text-gray-900 dark:text-white">{{ formatQuotePrice(oneTimeTotalNum) }}</span>
                 </div>
 
                 <div class="flex justify-between text-sm">
                   <span class="text-gray-600 dark:text-gray-400">MRR (Monthly)</span>
-                  <span class="font-medium text-blue-600">{{ formatPrice(mrrNum) }}/mo</span>
+                  <span class="font-medium text-blue-600">{{ formatQuotePrice(mrrNum) }}/mo</span>
                 </div>
 
                 <div class="flex justify-between text-sm">
                   <span class="text-gray-600 dark:text-gray-400">ARR (Annual)</span>
-                  <span class="font-medium text-blue-600">{{ formatPrice(arrNum) }}/yr</span>
+                  <span class="font-medium text-blue-600">{{ formatQuotePrice(arrNum) }}/yr</span>
                 </div>
 
                 <div class="flex justify-between text-sm">
                   <span class="text-gray-600 dark:text-gray-400">Total Contract Value</span>
-                  <span class="font-bold text-green-600">{{ formatPrice(tcvNum) }}</span>
+                  <span class="font-bold text-green-600">{{ formatQuotePrice(tcvNum) }}</span>
                 </div>
               </div>
             </div>
@@ -350,7 +358,7 @@ function formatBillingFrequency(frequency: string): string {
           <p>1. This quote is valid until the expiration date indicated above.</p>
           <p>2. Prices are subject to change after the validity period.</p>
           <p>3. Payment terms: Net 30 days from invoice date.</p>
-          <p>4. All prices are in USD unless otherwise specified.</p>
+          <p>4. All prices are in {{ currency?.code || 'USD' }} unless otherwise specified.</p>
           <p>5. Delivery terms and timelines to be confirmed upon order placement.</p>
           <p class="text-xs text-gray-400 mt-4 italic">
             These terms and conditions are customizable. Contact your administrator to update the default terms.
