@@ -1,5 +1,5 @@
 import { usePrisma } from '../utils/prisma'
-import type { Currency } from '../../app/generated/prisma/client.js'
+import type { Currency } from '../../app/generated/prisma/client'
 
 export interface CurrencyWithRate extends Currency {
   currentRate?: number

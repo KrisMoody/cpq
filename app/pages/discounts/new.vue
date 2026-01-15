@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getErrorMessage } from '~/utils/errors'
-import type { DiscountType, DiscountScope } from '~/generated/prisma/client.js'
+import type { DiscountType, DiscountScope } from '~/generated/prisma/client'
 
 const router = useRouter()
 const { createDiscount } = useDiscounts()

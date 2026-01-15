@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { QuestionType } from '~/generated/prisma/client.js'
+import type { QuestionType } from '~/generated/prisma/client'
 
 const _route = useRoute()
 const router = useRouter()

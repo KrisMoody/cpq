@@ -1,6 +1,6 @@
-import type { RuleType, RuleTrigger } from '../generated/prisma/client.js'
-import type { ConditionExpression, RuleAction } from '../types/domain.js'
-import { getErrorMessage } from '../utils/errors.js'
+import type { RuleType, RuleTrigger } from '../generated/prisma/client'
+import type { ConditionExpression, RuleAction } from '../types/domain'
+import { getErrorMessage } from '../utils/errors'
 
 export interface Rule {
   id: string

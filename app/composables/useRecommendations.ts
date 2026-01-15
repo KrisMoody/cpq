@@ -1,5 +1,5 @@
-import type { AffinityType, BillingFrequency } from '../generated/prisma/client.js'
-import { getErrorMessage } from '../utils/errors.js'
+import type { AffinityType, BillingFrequency } from '../generated/prisma/client'
+import { getErrorMessage } from '../utils/errors'
 
 export interface Recommendation {
   productId: string

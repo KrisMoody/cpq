@@ -1,4 +1,4 @@
-import { AffinityType } from '../../../app/generated/prisma/client.js'
+import { AffinityType } from '../../../app/generated/prisma/client'
 import { usePrisma } from '../../utils/prisma'
 
 function isValidAffinityType(value: string): value is AffinityType {

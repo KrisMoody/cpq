@@ -1,6 +1,6 @@
-import type { Rule, RuleTrigger, RuleType, Prisma } from '../../app/generated/prisma/client.js'
-import type { AttributeValue } from '../../app/types/domain.js'
-import { getErrorMessage } from '../../app/utils/errors.js'
+import type { Rule, RuleTrigger, RuleType, Prisma } from '../../app/generated/prisma/client'
+import type { AttributeValue } from '../../app/types/domain'
+import { getErrorMessage } from '../../app/utils/errors'
 
 type JsonValue = Prisma.JsonValue
 

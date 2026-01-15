@@ -12,7 +12,7 @@ import {
   BillingFrequency,
   AffinityType,
   QuestionType,
-} from '../app/generated/prisma/client.js'
+} from '../app/generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
 

@@ -2,7 +2,7 @@ import { usePrisma } from '../utils/prisma'
 import { calculateQuoteTax, type TaxBreakdownItem } from './taxEngine'
 import { lookupPrice, calculateTotalPrice } from './priceLookup'
 import { convertToBaseCurrency } from './currencyService'
-import type { TierType, BillingFrequency } from '../../app/generated/prisma/client.js'
+import type { TierType, BillingFrequency } from '../../app/generated/prisma/client'
 
 /**
  * Result of line price calculation with tier information

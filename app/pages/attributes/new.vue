@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AttributeType } from '~/generated/prisma/client.js'
+import type { AttributeType } from '~/generated/prisma/client'
 
 const router = useRouter()
 const toast = useToast()

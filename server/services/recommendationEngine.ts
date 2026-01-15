@@ -8,7 +8,7 @@ import type {
   Category,
   Contract,
   ContractPriceEntry,
-} from '../../app/generated/prisma/client.js'
+} from '../../app/generated/prisma/client'
 
 export interface ProductWithDetails extends Product {
   categories?: Array<{ category: Category }>

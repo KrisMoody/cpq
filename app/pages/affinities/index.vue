@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AffinityType } from '~/generated/prisma/client.js'
+import type { AffinityType } from '~/generated/prisma/client'
 
 const { affinities, loading, error, fetchAffinities, deleteAffinity } = useAffinities()
 
