@@ -29,9 +29,6 @@ yarn-error.log*
 .env.*
 !.env.example
 
-# Public assets (generated)
-public/
-
 # Prisma
 /app/generated/prisma
 *.db
