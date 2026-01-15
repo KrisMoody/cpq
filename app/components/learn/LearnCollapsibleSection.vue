@@ -42,6 +42,7 @@ function toggle() {
       <div
         class="grid transition-[grid-template-rows] duration-300 ease-out"
         :class="isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
+        :inert="isOpen ? undefined : true"
       >
         <div :class="isOpen ? 'overflow-visible' : 'overflow-hidden'">
           <slot />
