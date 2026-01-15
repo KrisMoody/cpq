@@ -1,9 +1,16 @@
 <script setup lang="ts">
+interface Helper {
+  icon: string
+  label: string
+  tooltip: string
+}
+
 interface Step {
   icon: string
   title: string
   description: string
   phase?: 'setup' | 'build' | 'submit' | 'complete'
+  helpers?: Helper[]
 }
 
 interface BranchStep {
@@ -19,12 +26,26 @@ const mainSteps: Step[] = [
     title: 'Create Quote',
     description: 'Select customer and price book',
     phase: 'setup',
+    helpers: [
+      {
+        icon: 'i-heroicons-document-check',
+        label: 'Contract',
+        tooltip: 'Contract pricing applies automatically for customers with active contracts',
+      },
+    ],
   },
   {
     icon: 'i-heroicons-squares-plus',
     title: 'Add Products',
     description: 'Browse and add to quote',
     phase: 'build',
+    helpers: [
+      {
+        icon: 'i-heroicons-sparkles',
+        label: 'Guided',
+        tooltip: 'Use questionnaires and product affinities for smart recommendations',
+      },
+    ],
   },
   {
     icon: 'i-heroicons-adjustments-horizontal',
@@ -37,12 +58,26 @@ const mainSteps: Step[] = [
     title: 'Apply Pricing',
     description: 'Discounts and rules',
     phase: 'build',
+    helpers: [
+      {
+        icon: 'i-heroicons-currency-dollar',
+        label: 'Currency',
+        tooltip: 'Multi-currency support with automatic conversion to base currency',
+      },
+    ],
   },
   {
     icon: 'i-heroicons-paper-airplane',
     title: 'Submit',
     description: 'Rules evaluation',
     phase: 'submit',
+    helpers: [
+      {
+        icon: 'i-heroicons-eye',
+        label: 'Preview',
+        tooltip: 'Preview quote as a professional document before sending',
+      },
+    ],
   },
 ]
 
@@ -120,6 +155,21 @@ const variantClasses = {
           </div>
           <h4 class="font-medium text-sm">{{ step.title }}</h4>
           <p class="text-xs text-gray-500 mt-0.5">{{ step.description }}</p>
+          <!-- Helper badges -->
+          <div v-if="step.helpers?.length" class="flex gap-1 mt-2">
+            <UTooltip
+              v-for="helper in step.helpers"
+              :key="helper.label"
+              :text="helper.tooltip"
+            >
+              <div
+                class="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-[10px] cursor-help hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              >
+                <UIcon :name="helper.icon" class="w-3 h-3" />
+                <span>{{ helper.label }}</span>
+              </div>
+            </UTooltip>
+          </div>
         </div>
         <div v-if="index < mainSteps.length - 1" class="flex-shrink-0 px-1">
           <UIcon
