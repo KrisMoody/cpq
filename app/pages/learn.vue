@@ -826,34 +826,34 @@ const activeTab = ref('interactive')
         icon="i-heroicons-book-open"
       >
         <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <UButton
-                v-if="!compareMode"
-                variant="outline"
-                size="sm"
-                icon="i-heroicons-arrows-right-left"
-                @click="compareMode = true"
-              >
-                Compare Terms
-              </UButton>
-              <UButton
-                v-else
-                variant="soft"
-                color="error"
-                size="sm"
-                icon="i-heroicons-x-mark"
-                @click="exitCompareMode"
-              >
-                Exit Compare
-              </UButton>
-              <UInput
-                v-model="searchQuery"
-                placeholder="Search terms..."
-                icon="i-heroicons-magnifying-glass"
-                class="w-64"
-              />
-            </div>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+            <UButton
+              v-if="!compareMode"
+              variant="outline"
+              size="sm"
+              icon="i-heroicons-arrows-right-left"
+              class="w-full sm:w-auto"
+              @click="compareMode = true"
+            >
+              Compare Terms
+            </UButton>
+            <UButton
+              v-else
+              variant="soft"
+              color="error"
+              size="sm"
+              icon="i-heroicons-x-mark"
+              class="w-full sm:w-auto"
+              @click="exitCompareMode"
+            >
+              Exit Compare
+            </UButton>
+            <UInput
+              v-model="searchQuery"
+              placeholder="Search terms..."
+              icon="i-heroicons-magnifying-glass"
+              class="w-full sm:w-64"
+            />
           </div>
 
           <!-- Compare mode hint -->

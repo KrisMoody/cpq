@@ -191,12 +191,12 @@ function isValueHighlighted(value: string, description: string): boolean {
 
 <template>
   <div class="space-y-4">
-    <div class="flex items-center gap-4">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
       <UInput
         v-model="searchQuery"
         placeholder="Search enums or values..."
         icon="i-heroicons-magnifying-glass"
-        class="w-64"
+        class="w-full sm:w-64"
       />
       <span class="text-sm text-gray-500 dark:text-gray-400">
         {{ filteredEnums.length }} of {{ enums.length }} enums

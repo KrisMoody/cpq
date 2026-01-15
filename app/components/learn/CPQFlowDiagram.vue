@@ -138,14 +138,15 @@ const variantClasses = {
 </script>
 
 <template>
-  <div class="py-8">
+  <div class="py-4 md:py-8">
     <h3 class="text-lg font-semibold text-center mb-2">CPQ Workflow</h3>
-    <p class="text-sm text-gray-500 text-center mb-8">
+    <p class="text-sm text-gray-500 text-center mb-6 md:mb-8">
       Complete flow from quote creation to finalization
     </p>
 
-    <!-- Main Flow -->
-    <div class="flex items-center justify-between max-w-5xl mx-auto mb-8">
+    <!-- Main Flow - Desktop: Horizontal, Mobile: Vertical -->
+    <!-- Desktop Layout -->
+    <div class="hidden md:flex items-center justify-between max-w-5xl mx-auto mb-8">
       <template v-for="(step, index) in mainSteps" :key="step.title">
         <div class="flex flex-col items-center text-center flex-1">
           <div
@@ -180,6 +181,53 @@ const variantClasses = {
       </template>
     </div>
 
+    <!-- Mobile Layout - Vertical Timeline -->
+    <div class="md:hidden relative mb-6">
+      <!-- Vertical line -->
+      <div class="absolute left-6 top-6 bottom-6 w-0.5 bg-gray-200 dark:bg-gray-700" />
+
+      <div class="space-y-4">
+        <div
+          v-for="(step, index) in mainSteps"
+          :key="step.title"
+          class="relative flex items-start gap-4 pl-2"
+        >
+          <!-- Step circle -->
+          <div
+            class="relative z-10 w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0"
+          >
+            <UIcon :name="step.icon" class="w-5 h-5 text-primary-600" />
+          </div>
+          <!-- Step content -->
+          <div class="flex-1 pb-2">
+            <h4 class="font-medium text-sm">{{ step.title }}</h4>
+            <p class="text-xs text-gray-500 mt-0.5">{{ step.description }}</p>
+            <!-- Helper badges -->
+            <div v-if="step.helpers?.length" class="flex flex-wrap gap-1 mt-2">
+              <UTooltip
+                v-for="helper in step.helpers"
+                :key="helper.label"
+                :text="helper.tooltip"
+              >
+                <div
+                  class="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-[10px] cursor-help"
+                >
+                  <UIcon :name="helper.icon" class="w-3 h-3" />
+                  <span>{{ helper.label }}</span>
+                </div>
+              </UTooltip>
+            </div>
+          </div>
+          <!-- Arrow indicator (except last) -->
+          <UIcon
+            v-if="index < mainSteps.length - 1"
+            name="i-heroicons-arrow-down"
+            class="absolute left-[18px] -bottom-1 w-4 h-4 text-gray-300 dark:text-gray-600"
+          />
+        </div>
+      </div>
+    </div>
+
     <!-- Branching Section -->
     <div class="max-w-5xl mx-auto">
       <div class="flex justify-center mb-4">
@@ -189,10 +237,11 @@ const variantClasses = {
         />
       </div>
 
-      <div class="grid grid-cols-2 gap-8">
+      <!-- Desktop: 2-column grid, Mobile: Stacked -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
         <!-- Auto-Approve Path -->
-        <div class="border border-green-200 dark:border-green-800 rounded-lg p-4 bg-green-50/50 dark:bg-green-950/20">
-          <div class="flex items-center gap-2 mb-4">
+        <div class="border border-green-200 dark:border-green-800 rounded-lg p-3 md:p-4 bg-green-50/50 dark:bg-green-950/20">
+          <div class="flex items-center gap-2 mb-3 md:mb-4">
             <UIcon name="i-heroicons-bolt" class="w-4 h-4 text-green-600" />
             <span class="text-xs font-medium text-green-700 dark:text-green-400">
               Auto-Approve (no rules triggered)
@@ -203,19 +252,19 @@ const variantClasses = {
               <div class="flex flex-col items-center text-center">
                 <div
                   :class="[
-                    'w-12 h-12 rounded-full flex items-center justify-center mb-2',
+                    'w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-1 md:mb-2',
                     variantClasses[step.variant].bg,
                   ]"
                 >
                   <UIcon
                     :name="step.icon"
-                    :class="['w-6 h-6', variantClasses[step.variant].icon]"
+                    :class="['w-5 h-5 md:w-6 md:h-6', variantClasses[step.variant].icon]"
                   />
                 </div>
                 <h4 class="font-medium text-xs">{{ step.title }}</h4>
-                <p class="text-xs text-gray-500">{{ step.description }}</p>
+                <p class="text-xs text-gray-500 hidden sm:block">{{ step.description }}</p>
               </div>
-              <div v-if="index < completionSteps.length - 1" class="px-2">
+              <div v-if="index < completionSteps.length - 1" class="px-1 md:px-2">
                 <UIcon
                   name="i-heroicons-arrow-right"
                   class="w-4 h-4 text-green-400"
@@ -226,14 +275,15 @@ const variantClasses = {
         </div>
 
         <!-- Approval Required Path -->
-        <div class="border border-amber-200 dark:border-amber-800 rounded-lg p-4 bg-amber-50/50 dark:bg-amber-950/20">
-          <div class="flex items-center gap-2 mb-4">
+        <div class="border border-amber-200 dark:border-amber-800 rounded-lg p-3 md:p-4 bg-amber-50/50 dark:bg-amber-950/20">
+          <div class="flex items-center gap-2 mb-3 md:mb-4">
             <UIcon name="i-heroicons-shield-check" class="w-4 h-4 text-amber-600" />
             <span class="text-xs font-medium text-amber-700 dark:text-amber-400">
               Approval Required (rules triggered)
             </span>
           </div>
-          <div class="flex items-center justify-around">
+          <!-- Desktop: Horizontal flow -->
+          <div class="hidden sm:flex items-center justify-around">
             <template v-for="(step, index) in approvalBranch" :key="step.title">
               <div class="flex flex-col items-center text-center">
                 <div
@@ -279,8 +329,45 @@ const variantClasses = {
               <p class="text-xs text-gray-500">Complete</p>
             </div>
           </div>
+          <!-- Mobile: Compact horizontal with smaller icons -->
+          <div class="sm:hidden flex items-center justify-between px-2">
+            <template v-for="step in approvalBranch" :key="step.title">
+              <div class="flex flex-col items-center text-center">
+                <div
+                  :class="[
+                    'w-10 h-10 rounded-full flex items-center justify-center mb-1',
+                    variantClasses[step.variant].bg,
+                  ]"
+                >
+                  <UIcon
+                    :name="step.icon"
+                    :class="['w-5 h-5', variantClasses[step.variant].icon]"
+                  />
+                </div>
+                <h4 class="font-medium text-[10px]">{{ step.title }}</h4>
+              </div>
+              <UIcon
+                name="i-heroicons-arrow-right"
+                class="w-3 h-3 text-amber-400 flex-shrink-0"
+              />
+            </template>
+            <div class="flex flex-col items-center text-center">
+              <div
+                :class="[
+                  'w-10 h-10 rounded-full flex items-center justify-center mb-1',
+                  variantClasses.success.bg,
+                ]"
+              >
+                <UIcon
+                  name="i-heroicons-flag"
+                  :class="['w-5 h-5', variantClasses.success.icon]"
+                />
+              </div>
+              <h4 class="font-medium text-[10px]">Finalized</h4>
+            </div>
+          </div>
           <!-- Rejected indicator -->
-          <div class="mt-4 pt-3 border-t border-amber-200 dark:border-amber-700">
+          <div class="mt-3 md:mt-4 pt-2 md:pt-3 border-t border-amber-200 dark:border-amber-700">
             <div class="flex items-center justify-center gap-2">
               <UIcon name="i-heroicons-arrow-turn-down-right" class="w-4 h-4 text-red-400" />
               <div

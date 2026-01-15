@@ -31,7 +31,7 @@ const emit = defineEmits<{
       </div>
     </template>
 
-    <div class="grid gap-4" :class="terms.length === 2 ? 'grid-cols-2' : 'grid-cols-3'">
+    <div class="grid gap-4 grid-cols-1 sm:grid-cols-2" :class="terms.length === 3 ? 'lg:grid-cols-3' : ''">
       <div
         v-for="term in terms"
         :key="term.term"

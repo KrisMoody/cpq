@@ -198,8 +198,19 @@ onMounted(() => {
 
 <template>
   <div class="space-y-4">
+    <!-- Mobile notice -->
+    <div class="md:hidden p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+      <div class="flex items-start gap-3">
+        <UIcon name="i-heroicons-device-phone-mobile" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+        <div>
+          <p class="text-sm font-medium text-blue-800 dark:text-blue-200">Best viewed on larger screens</p>
+          <p class="text-xs text-blue-600 dark:text-blue-300 mt-1">This interactive diagram works best on tablet or desktop. You can still scroll and pinch-to-zoom on mobile.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Controls -->
-    <div class="flex flex-wrap items-center gap-4">
+    <div class="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 sm:gap-4">
       <div class="flex items-center gap-2">
         <UButton
           :variant="showFull ? 'solid' : 'outline'"
@@ -215,7 +226,7 @@ onMounted(() => {
         placeholder="Search entities..."
         icon="i-heroicons-magnifying-glass"
         size="sm"
-        class="w-48"
+        class="w-full sm:w-48"
       />
 
       <div class="flex flex-wrap gap-1">
@@ -235,7 +246,7 @@ onMounted(() => {
     </div>
 
     <!-- Diagram Container -->
-    <div class="relative h-[500px] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-900">
+    <div class="relative h-[350px] sm:h-[500px] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-900">
       <VueFlow
         :nodes="nodes"
         :edges="edges"
@@ -273,7 +284,7 @@ onMounted(() => {
       >
         <div
           v-if="selectedEntity && selectedEntityData"
-          class="absolute right-0 top-0 bottom-0 w-72 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 shadow-xl p-4 overflow-y-auto"
+          class="absolute right-0 top-0 bottom-0 w-full sm:w-72 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 shadow-xl p-4 overflow-y-auto"
         >
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-semibold" :style="{ color: selectedEntityData.color }">
