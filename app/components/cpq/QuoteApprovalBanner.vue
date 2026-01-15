@@ -37,9 +37,17 @@ const bannerConfig = computed(() => {
           title: 'Approval Required',
           message: 'This quote requires approval before it can be finalized.',
           showSubmit: true,
+          submitLabel: 'Submit for Approval',
         }
       }
-      return null
+      return {
+        color: 'info' as const,
+        icon: 'i-heroicons-document-check',
+        title: 'Ready to Submit',
+        message: 'This quote is ready to be submitted.',
+        showSubmit: true,
+        submitLabel: 'Submit Quote',
+      }
 
     case 'PENDING_APPROVAL':
       return {
@@ -101,7 +109,7 @@ const bannerConfig = computed(() => {
               icon="i-heroicons-paper-airplane"
               @click="emit('submit')"
             >
-              Submit for Approval
+              {{ bannerConfig.submitLabel }}
             </UButton>
           </div>
 
