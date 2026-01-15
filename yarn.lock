@@ -888,6 +888,13 @@
   dependencies:
     "@iconify/types" "*"
 
+"@iconify-json/lucide@^1.2.85":
+  version "1.2.85"
+  resolved "https://registry.yarnpkg.com/@iconify-json/lucide/-/lucide-1.2.85.tgz#0074b64f50798da4b89f9f74e4db5a4e56c640b1"
+  integrity sha512-VXUWT6KRDiVK4Ty/7Ypu+U0KnSbHzDAOOiSgLLPhU8u3ES5IusP1X7ahZb1iwiVKGWRG6gkKywaRUIZLgYWXyA==
+  dependencies:
+    "@iconify/types" "*"
+
 "@iconify/collections@^1.0.636":
   version "1.0.638"
   resolved "https://registry.yarnpkg.com/@iconify/collections/-/collections-1.0.638.tgz#406aa2e0d7cc581368b4f3e38aee8a2c95ec4374"
