@@ -141,3 +141,10 @@ The Quote Editor page SHALL display a submission banner for quotes in DRAFT stat
 - **AND** show a "Submit for Approval" button
 - **AND** clicking the button submits the quote and transitions status to PENDING_APPROVAL
 
+#### Scenario: Display submission error
+- **GIVEN** a quote is in DRAFT status
+- **WHEN** user clicks the submit button
+- **AND** the API returns an error (e.g., customer not assigned, validation failure)
+- **THEN** display an error alert with the API error message
+- **AND** the quote remains in DRAFT status
+

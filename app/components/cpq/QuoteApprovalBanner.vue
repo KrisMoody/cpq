@@ -4,11 +4,14 @@ const props = defineProps<{
     id: string
     status: string
     requiresApproval: boolean
+    customerId?: string | null
     approvedBy?: string | null
     approvedAt?: string | null
   }
   approvalReasons?: string[]
 }>()
+
+const canSubmit = computed(() => !!props.quote.customerId)
 
 const emit = defineEmits<{
   'approve': []
@@ -30,6 +33,15 @@ function handleReject() {
 const bannerConfig = computed(() => {
   switch (props.quote.status) {
     case 'DRAFT':
+      if (!canSubmit.value) {
+        return {
+          color: 'warning' as const,
+          icon: 'i-heroicons-exclamation-triangle',
+          title: 'Customer Required',
+          message: 'A customer must be assigned before this quote can be submitted.',
+          showSubmit: false,
+        }
+      }
       if (props.quote.requiresApproval) {
         return {
           color: 'warning' as const,
