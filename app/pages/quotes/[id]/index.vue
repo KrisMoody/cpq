@@ -3,7 +3,11 @@ import { getErrorMessage } from '~/utils/errors'
 import type { QuoteWithLineItems, EvaluationSummary } from '~/composables/useQuotes'
 import type { Customer } from '~/composables/useCustomers'
 
-const _route = useRoute()
+definePageMeta({
+  key: (route) => route.fullPath,
+})
+
+const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const {
@@ -44,9 +48,24 @@ const discountTargetLineId = ref<string | undefined>(undefined)
 
 const quoteId = useRequiredParam('id')
 
-onMounted(async () => {
-  await Promise.all([loadQuote(), fetchProducts()])
-})
+// Load data on mount and when route changes (e.g., returning from preview)
+const initialLoadDone = ref(false)
+
+watch(
+  () => route.path,
+  async (newPath) => {
+    // Only load if we're on the exact quote page (not preview or other sub-routes)
+    if (newPath === `/quotes/${quoteId}`) {
+      if (!initialLoadDone.value) {
+        initialLoadDone.value = true
+        await Promise.all([loadQuote(), fetchProducts()])
+      } else {
+        await loadQuote()
+      }
+    }
+  },
+  { immediate: true }
+)
 
 async function loadQuote() {
   loading.value = true
@@ -299,7 +318,7 @@ async function handleAddRecommendedProduct(productId: string) {
             Delete
           </UButton>
           <UButton
-            :to="`/quotes/${quote.id}/preview`"
+            :to="`/quotes/preview-${quote.id}`"
             variant="soft"
             icon="i-heroicons-eye"
           >

@@ -3,7 +3,7 @@ import type { QuoteWithLineItems } from '~/composables/useQuotes'
 import type { QuoteLayout } from '~/types/quote-layout'
 
 definePageMeta({
-  layout: 'blank',
+  key: (route) => route.fullPath,
 })
 
 const route = useRoute()
@@ -16,7 +16,7 @@ const { data: quote, status, error } = await useFetch<QuoteWithLineItems>(
 const loading = computed(() => status.value === 'pending')
 
 // Layout selection
-const selectedLayoutId = ref<string>('')
+const selectedLayoutId = ref<string | undefined>(undefined)
 const selectedLayout = ref<QuoteLayout | null>(null)
 
 // Fetch layouts on mount
@@ -39,29 +39,31 @@ watch(selectedLayoutId, async (newId) => {
 
 // Layout options for dropdown
 const layoutOptions = computed(() => {
-  return [
-    { label: 'Default Layout', value: '' },
-    ...templateLayouts.value.map((l) => ({
-      label: l.name,
-      value: l.id,
-    })),
-  ]
+  return templateLayouts.value.map((l) => ({
+    label: l.name,
+    value: l.id,
+  }))
 })
 
 function handlePrint() {
   window.print()
 }
+
+async function goBack() {
+  await navigateTo(`/quotes/${route.params.id}`)
+}
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100 dark:bg-gray-950">
+  <!-- Full-screen overlay to cover sidebar -->
+  <div class="fixed inset-0 z-50 bg-gray-100 dark:bg-gray-950 overflow-auto">
     <!-- Navigation Bar (hidden when printing) -->
     <div class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 print:hidden">
       <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
         <UButton
-          :to="`/quotes/${route.params.id}`"
           variant="ghost"
           icon="i-heroicons-arrow-left"
+          @click="goBack"
         >
           Back to Editor
         </UButton>
@@ -82,6 +84,7 @@ function handlePrint() {
           <UButton
             variant="soft"
             icon="i-heroicons-printer"
+            class="cursor-pointer"
             @click="handlePrint"
           >
             Print / Save PDF

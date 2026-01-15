@@ -29,18 +29,13 @@ const navigation: NavItem[] = [
     id: 'sales-section',
     type: 'section',
     label: 'Sales',
+    to: '/sales',
   },
   {
     id: 'quotes',
     label: 'Quotes',
     icon: 'i-heroicons-document-text',
     to: '/quotes',
-  },
-  {
-    id: 'quote-layouts',
-    label: 'Quote Layouts',
-    icon: 'i-heroicons-squares-2x2',
-    to: '/quote-layouts',
   },
   {
     id: 'customers',
@@ -58,12 +53,14 @@ const navigation: NavItem[] = [
     id: 'admin-section',
     type: 'section',
     label: 'Admin',
+    to: '/admin',
   },
   {
     id: 'catalog',
     type: 'group',
     label: 'Catalog',
     icon: 'i-heroicons-squares-2x2',
+    to: '/admin/catalog',
     children: [
       {
         id: 'products',
@@ -102,6 +99,7 @@ const navigation: NavItem[] = [
     type: 'group',
     label: 'Configuration',
     icon: 'i-heroicons-cog-6-tooth',
+    to: '/admin/configuration',
     children: [
       {
         id: 'rules',
@@ -138,6 +136,12 @@ const navigation: NavItem[] = [
         label: 'Questionnaires',
         icon: 'i-heroicons-clipboard-document-list',
         to: '/questionnaires',
+      },
+      {
+        id: 'quote-layouts',
+        label: 'Quote Layouts',
+        icon: 'i-heroicons-squares-2x2',
+        to: '/quote-layouts',
       },
     ],
   },
