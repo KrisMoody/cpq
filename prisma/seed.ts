@@ -1084,7 +1084,7 @@ async function main() {
     },
   })
 
-  const _startupXyz = await prisma.customer.create({
+  const startupXyz = await prisma.customer.create({
     data: {
       name: 'StartupXYZ',
       email: 'founder@startupxyz.io',
@@ -1461,6 +1461,1186 @@ async function main() {
   })
 
   console.log('  ✓ Created example quote with line items')
+
+  // ============================================================================
+  // Historical Quotes for AI Training Data
+  // ============================================================================
+
+  // Helper function to create dates in the past
+  const daysAgo = (days: number) => {
+    const date = new Date()
+    date.setDate(date.getDate() - days)
+    return date
+  }
+
+  const validToOffset = (createdDate: Date, days: number) => {
+    const date = new Date(createdDate)
+    date.setDate(date.getDate() + days)
+    return date
+  }
+
+  // --------------------------------------------------------------------------
+  // Enterprise Customer Quotes (TechGiant, Global Enterprises)
+  // Large deals ($5k+), higher discounts (15-25%)
+  // --------------------------------------------------------------------------
+
+  // Quote 1: TechGiant - Enterprise software + implementation + premium support
+  // Pattern: Enterprise software requires implementation service
+  // Status: ACCEPTED, Large deal ~$87k, 20% discount
+  const tgQuote1Created = daysAgo(180)
+  const tgQuote1 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-TG-001',
+      customerId: techGiant.id,
+      status: QuoteStatus.ACCEPTED,
+      priceBookId: enterprisePriceBook.id,
+      validTo: validToOffset(tgQuote1Created, 30),
+      createdAt: tgQuote1Created,
+      subtotal: 109780.0,
+      discountTotal: 21956.0,
+      total: 87824.0,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: tgQuote1.id,
+        productId: softwareLicenseEnterprise.id,
+        quantity: 50,
+        listPrice: 1299.0, // Enterprise price book
+        discount: 259.8, // 20%
+        netPrice: 1039.2,
+        sortOrder: 0,
+      },
+      {
+        quoteId: tgQuote1.id,
+        productId: implementationService.id,
+        quantity: 80, // 80 hours
+        listPrice: 225.0, // Enterprise price
+        discount: 45.0, // 20%
+        netPrice: 180.0,
+        sortOrder: 1,
+      },
+      {
+        quoteId: tgQuote1.id,
+        productId: supportPremium.id,
+        quantity: 1,
+        listPrice: 4499.0, // Enterprise price
+        discount: 899.8, // 20%
+        netPrice: 3599.2,
+        sortOrder: 2,
+      },
+    ],
+  })
+
+  // Quote 2: TechGiant - Multiple developer laptops with high-end config
+  // Pattern: Large quantity laptop orders with premium specs
+  // Status: ACCEPTED, ~$17k, 15% discount
+  const tgQuote2Created = daysAgo(150)
+  const tgQuote2 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-TG-002',
+      customerId: techGiant.id,
+      status: QuoteStatus.ACCEPTED,
+      priceBookId: enterprisePriceBook.id,
+      validTo: validToOffset(tgQuote2Created, 30),
+      createdAt: tgQuote2Created,
+      subtotal: 19790.0,
+      discountTotal: 2968.5,
+      total: 16821.5,
+    },
+  })
+  const tgQuote2Parent = await prisma.quoteLineItem.create({
+    data: {
+      quoteId: tgQuote2.id,
+      productId: developerLaptop.id,
+      quantity: 10,
+      listPrice: 899.0, // Enterprise price
+      discount: 134.85, // 15%
+      netPrice: 764.15,
+      sortOrder: 0,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: tgQuote2.id,
+        parentLineId: tgQuote2Parent.id,
+        productId: i9.id,
+        quantity: 10,
+        listPrice: 450.0,
+        discount: 67.5,
+        netPrice: 382.5,
+        sortOrder: 1,
+      },
+      {
+        quoteId: tgQuote2.id,
+        parentLineId: tgQuote2Parent.id,
+        productId: ram64.id,
+        quantity: 10,
+        listPrice: 360.0,
+        discount: 54.0,
+        netPrice: 306.0,
+        sortOrder: 2,
+      },
+      {
+        quoteId: tgQuote2.id,
+        parentLineId: tgQuote2Parent.id,
+        productId: ssd2tb.id,
+        quantity: 10,
+        listPrice: 225.0,
+        discount: 33.75,
+        netPrice: 191.25,
+        sortOrder: 3,
+      },
+    ],
+  })
+
+  // Quote 3: TechGiant - Cloud hosting expansion with support
+  // Pattern: Cloud hosting + support plan bundle
+  // Status: ACCEPTED, ~$7k, 18% discount
+  const tgQuote3Created = daysAgo(120)
+  const tgQuote3 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-TG-003',
+      customerId: techGiant.id,
+      status: QuoteStatus.ACCEPTED,
+      priceBookId: enterprisePriceBook.id,
+      validTo: validToOffset(tgQuote3Created, 30),
+      createdAt: tgQuote3Created,
+      subtotal: 7047.0,
+      discountTotal: 1268.46,
+      total: 5778.54,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: tgQuote3.id,
+        productId: cloudHostingPro.id,
+        quantity: 12, // 12 months
+        listPrice: 179.0, // Enterprise price
+        discount: 32.22, // 18%
+        netPrice: 146.78,
+        sortOrder: 0,
+      },
+      {
+        quoteId: tgQuote3.id,
+        productId: supportBasic.id,
+        quantity: 1,
+        listPrice: 899.0,
+        discount: 161.82, // 18%
+        netPrice: 737.18,
+        sortOrder: 1,
+      },
+    ],
+  })
+
+  // Quote 4: TechGiant - Training package deal
+  // Pattern: Training + implementation services
+  // Status: FINALIZED, ~$11k, 15% discount
+  const tgQuote4Created = daysAgo(90)
+  const tgQuote4 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-TG-004',
+      customerId: techGiant.id,
+      status: QuoteStatus.FINALIZED,
+      priceBookId: enterprisePriceBook.id,
+      validTo: validToOffset(tgQuote4Created, 30),
+      createdAt: tgQuote4Created,
+      subtotal: 13500.0,
+      discountTotal: 2025.0,
+      total: 11475.0,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: tgQuote4.id,
+        productId: trainingPackage.id,
+        quantity: 5, // 5 days
+        listPrice: 1800.0, // Enterprise price
+        discount: 270.0, // 15%
+        netPrice: 1530.0,
+        sortOrder: 0,
+      },
+      {
+        quoteId: tgQuote4.id,
+        productId: implementationService.id,
+        quantity: 20, // 20 hours follow-up
+        listPrice: 225.0,
+        discount: 33.75, // 15%
+        netPrice: 191.25,
+        sortOrder: 1,
+      },
+    ],
+  })
+
+  // Quote 5: TechGiant - Mixed deal rejected (price too high)
+  // Pattern: Large mixed deal without adequate discount
+  // Status: REJECTED, ~$58k, only 10% discount - customer wanted 20%+
+  const tgQuote5Created = daysAgo(60)
+  const tgQuote5 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-TG-005',
+      customerId: techGiant.id,
+      status: QuoteStatus.REJECTED,
+      priceBookId: enterprisePriceBook.id,
+      validTo: validToOffset(tgQuote5Created, 30),
+      createdAt: tgQuote5Created,
+      subtotal: 64450.0,
+      discountTotal: 6445.0,
+      total: 58005.0,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: tgQuote5.id,
+        productId: softwareLicenseEnterprise.id,
+        quantity: 30,
+        listPrice: 1299.0,
+        discount: 129.9, // Only 10%
+        netPrice: 1169.1,
+        sortOrder: 0,
+      },
+      {
+        quoteId: tgQuote5.id,
+        productId: supportPremium.id,
+        quantity: 2, // 2 years
+        listPrice: 4499.0,
+        discount: 449.9, // Only 10%
+        netPrice: 4049.1,
+        sortOrder: 1,
+      },
+      {
+        quoteId: tgQuote5.id,
+        productId: cloudHostingPro.id,
+        quantity: 24, // 2 years
+        listPrice: 179.0,
+        discount: 17.9, // Only 10%
+        netPrice: 161.1,
+        sortOrder: 2,
+      },
+    ],
+  })
+
+  // Quote 6: Global Enterprises - Enterprise software + cloud bundle
+  // Pattern: Software + cloud hosting cross-sell
+  // Status: ACCEPTED, ~$42k, 22% discount
+  const geQuote1Created = daysAgo(170)
+  const geQuote1 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-GE-001',
+      customerId: globalEnterprises.id,
+      status: QuoteStatus.ACCEPTED,
+      priceBookId: enterprisePriceBook.id,
+      validTo: validToOffset(geQuote1Created, 45),
+      createdAt: geQuote1Created,
+      subtotal: 53820.0,
+      discountTotal: 11840.4,
+      total: 41979.6,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: geQuote1.id,
+        productId: softwareLicenseEnterprise.id,
+        quantity: 25,
+        listPrice: 1299.0,
+        discount: 285.78, // 22%
+        netPrice: 1013.22,
+        sortOrder: 0,
+      },
+      {
+        quoteId: geQuote1.id,
+        productId: cloudHostingPro.id,
+        quantity: 24, // 2 years
+        listPrice: 179.0,
+        discount: 39.38, // 22%
+        netPrice: 139.62,
+        sortOrder: 1,
+      },
+      {
+        quoteId: geQuote1.id,
+        productId: implementationService.id,
+        quantity: 40,
+        listPrice: 225.0,
+        discount: 49.5, // 22%
+        netPrice: 175.5,
+        sortOrder: 2,
+      },
+    ],
+  })
+
+  // Quote 7: Global Enterprises - Large laptop order with monitors
+  // Pattern: Laptop + Monitor affinity
+  // Status: ACCEPTED, ~$28k, 25% discount
+  const geQuote2Created = daysAgo(140)
+  const geQuote2 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-GE-002',
+      customerId: globalEnterprises.id,
+      status: QuoteStatus.ACCEPTED,
+      priceBookId: enterprisePriceBook.id,
+      validTo: validToOffset(geQuote2Created, 30),
+      createdAt: geQuote2Created,
+      subtotal: 37305.0,
+      discountTotal: 9326.25,
+      total: 27978.75,
+    },
+  })
+  const geQuote2Parent = await prisma.quoteLineItem.create({
+    data: {
+      quoteId: geQuote2.id,
+      productId: developerLaptop.id,
+      quantity: 15,
+      listPrice: 899.0,
+      discount: 224.75, // 25%
+      netPrice: 674.25,
+      sortOrder: 0,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: geQuote2.id,
+        parentLineId: geQuote2Parent.id,
+        productId: i7.id,
+        quantity: 15,
+        listPrice: 180.0,
+        discount: 45.0, // 25%
+        netPrice: 135.0,
+        sortOrder: 1,
+      },
+      {
+        quoteId: geQuote2.id,
+        parentLineId: geQuote2Parent.id,
+        productId: ram32.id,
+        quantity: 15,
+        listPrice: 135.0,
+        discount: 33.75,
+        netPrice: 101.25,
+        sortOrder: 2,
+      },
+      {
+        quoteId: geQuote2.id,
+        parentLineId: geQuote2Parent.id,
+        productId: ssd1tb.id,
+        quantity: 15,
+        listPrice: 90.0,
+        discount: 22.5,
+        netPrice: 67.5,
+        sortOrder: 3,
+      },
+      {
+        quoteId: geQuote2.id,
+        parentLineId: geQuote2Parent.id,
+        productId: monitor27.id,
+        quantity: 15,
+        listPrice: 269.0,
+        discount: 67.25, // 25%
+        netPrice: 201.75,
+        sortOrder: 4,
+      },
+      {
+        quoteId: geQuote2.id,
+        parentLineId: geQuote2Parent.id,
+        productId: laptopStand.id,
+        quantity: 15,
+        listPrice: 71.0,
+        discount: 17.75,
+        netPrice: 53.25,
+        sortOrder: 5,
+      },
+    ],
+  })
+
+  // Quote 8: Global Enterprises - Support renewal
+  // Pattern: Support plan renewal
+  // Status: FINALIZED, ~$8.5k, 15% discount
+  const geQuote3Created = daysAgo(100)
+  const geQuote3 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-GE-003',
+      customerId: globalEnterprises.id,
+      status: QuoteStatus.FINALIZED,
+      priceBookId: enterprisePriceBook.id,
+      validTo: validToOffset(geQuote3Created, 30),
+      createdAt: geQuote3Created,
+      subtotal: 9998.0,
+      discountTotal: 1499.7,
+      total: 8498.3,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: geQuote3.id,
+        productId: supportPremium.id,
+        quantity: 2, // 2 years
+        listPrice: 4499.0,
+        discount: 674.85, // 15%
+        netPrice: 3824.15,
+        sortOrder: 0,
+      },
+      {
+        quoteId: geQuote3.id,
+        productId: supportBasic.id,
+        quantity: 1, // Additional basic for secondary team
+        listPrice: 899.0,
+        discount: 134.85, // 15%
+        netPrice: 764.15,
+        sortOrder: 1,
+      },
+    ],
+  })
+
+  // Quote 9: Global Enterprises - Rejected deal (price negotiation)
+  // Pattern: Initial offer rejected, customer negotiating
+  // Status: REJECTED, ~$35k, only 5% discount offered
+  const geQuote4Created = daysAgo(45)
+  const geQuote4 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-GE-004',
+      customerId: globalEnterprises.id,
+      status: QuoteStatus.REJECTED,
+      priceBookId: enterprisePriceBook.id,
+      validTo: validToOffset(geQuote4Created, 30),
+      createdAt: geQuote4Created,
+      subtotal: 37197.0,
+      discountTotal: 1859.85,
+      total: 35337.15,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: geQuote4.id,
+        productId: softwareLicenseEnterprise.id,
+        quantity: 20,
+        listPrice: 1299.0,
+        discount: 64.95, // Only 5%
+        netPrice: 1234.05,
+        sortOrder: 0,
+      },
+      {
+        quoteId: geQuote4.id,
+        productId: cloudHostingPro.id,
+        quantity: 12,
+        listPrice: 179.0,
+        discount: 8.95, // Only 5%
+        netPrice: 170.05,
+        sortOrder: 1,
+      },
+      {
+        quoteId: geQuote4.id,
+        productId: supportBasic.id,
+        quantity: 2,
+        listPrice: 899.0,
+        discount: 44.95, // Only 5%
+        netPrice: 854.05,
+        sortOrder: 2,
+      },
+    ],
+  })
+
+  // Quote 10: Global Enterprises - Follow-up accepted deal
+  // Pattern: Revised pricing after rejection leads to acceptance
+  // Status: ACCEPTED, ~$30k, 18% discount
+  const geQuote5Created = daysAgo(30)
+  const geQuote5 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-GE-005',
+      customerId: globalEnterprises.id,
+      status: QuoteStatus.ACCEPTED,
+      priceBookId: enterprisePriceBook.id,
+      validTo: validToOffset(geQuote5Created, 30),
+      createdAt: geQuote5Created,
+      subtotal: 37197.0,
+      discountTotal: 6695.46,
+      total: 30501.54,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: geQuote5.id,
+        productId: softwareLicenseEnterprise.id,
+        quantity: 20,
+        listPrice: 1299.0,
+        discount: 233.82, // 18%
+        netPrice: 1065.18,
+        sortOrder: 0,
+      },
+      {
+        quoteId: geQuote5.id,
+        productId: cloudHostingPro.id,
+        quantity: 12,
+        listPrice: 179.0,
+        discount: 32.22, // 18%
+        netPrice: 146.78,
+        sortOrder: 1,
+      },
+      {
+        quoteId: geQuote5.id,
+        productId: supportBasic.id,
+        quantity: 2,
+        listPrice: 899.0,
+        discount: 161.82, // 18%
+        netPrice: 737.18,
+        sortOrder: 2,
+      },
+    ],
+  })
+
+  console.log('  ✓ Created 10 enterprise customer historical quotes')
+
+  // --------------------------------------------------------------------------
+  // Startup/SMB Customer Quotes (StartupXYZ, Acme Corp)
+  // Smaller deals (<$1k to $5k), minimal discounts (0-10%)
+  // --------------------------------------------------------------------------
+
+  // Quote 11: StartupXYZ - Basic software subscription
+  // Pattern: Price-sensitive startup choosing basic tier
+  // Status: ACCEPTED, ~$750, 5% discount
+  const suQuote1Created = daysAgo(160)
+  const suQuote1 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-SU-001',
+      customerId: startupXyz.id,
+      status: QuoteStatus.ACCEPTED,
+      priceBookId: standardPriceBook.id,
+      validTo: validToOffset(suQuote1Created, 30),
+      createdAt: suQuote1Created,
+      subtotal: 1740.0,
+      discountTotal: 87.0,
+      total: 1653.0,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: suQuote1.id,
+        productId: softwareLicenseBasic.id,
+        quantity: 60, // 5 seats x 12 months
+        listPrice: 29.0,
+        discount: 1.45, // 5%
+        netPrice: 27.55,
+        sortOrder: 0,
+      },
+    ],
+  })
+
+  // Quote 12: StartupXYZ - Pro upgrade
+  // Pattern: Upsell from basic to pro
+  // Status: ACCEPTED, ~$8.7k, 8% discount
+  const suQuote2Created = daysAgo(130)
+  const suQuote2 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-SU-002',
+      customerId: startupXyz.id,
+      status: QuoteStatus.ACCEPTED,
+      priceBookId: standardPriceBook.id,
+      validTo: validToOffset(suQuote2Created, 30),
+      createdAt: suQuote2Created,
+      subtotal: 9480.0,
+      discountTotal: 758.4,
+      total: 8721.6,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: suQuote2.id,
+        productId: softwareLicensePro.id,
+        quantity: 120, // 10 seats x 12 months
+        listPrice: 79.0,
+        discount: 6.32, // 8%
+        netPrice: 72.68,
+        sortOrder: 0,
+      },
+    ],
+  })
+
+  // Quote 13: StartupXYZ - Cloud hosting starter
+  // Pattern: New cloud customer - starter tier
+  // Status: ACCEPTED, ~$300, no discount
+  const suQuote3Created = daysAgo(110)
+  const suQuote3 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-SU-003',
+      customerId: startupXyz.id,
+      status: QuoteStatus.ACCEPTED,
+      priceBookId: standardPriceBook.id,
+      validTo: validToOffset(suQuote3Created, 30),
+      createdAt: suQuote3Created,
+      subtotal: 294.0,
+      discountTotal: 0.0,
+      total: 294.0,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: suQuote3.id,
+        productId: cloudHostingBasic.id,
+        quantity: 6,
+        listPrice: 49.0,
+        discount: 0.0, // No discount for starter
+        netPrice: 49.0,
+        sortOrder: 0,
+      },
+    ],
+  })
+
+  // Quote 14: StartupXYZ - Accessories order
+  // Pattern: Hardware accessories for remote team
+  // Status: ACCEPTED, ~$850, no discount
+  const suQuote4Created = daysAgo(80)
+  const suQuote4 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-SU-004',
+      customerId: startupXyz.id,
+      status: QuoteStatus.ACCEPTED,
+      priceBookId: standardPriceBook.id,
+      validTo: validToOffset(suQuote4Created, 30),
+      createdAt: suQuote4Created,
+      subtotal: 854.0,
+      discountTotal: 0.0,
+      total: 854.0,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: suQuote4.id,
+        productId: monitor27.id,
+        quantity: 2,
+        listPrice: 299.0,
+        discount: 0.0,
+        netPrice: 299.0,
+        sortOrder: 0,
+      },
+      {
+        quoteId: suQuote4.id,
+        productId: laptopStand.id,
+        quantity: 2,
+        listPrice: 79.0,
+        discount: 0.0,
+        netPrice: 79.0,
+        sortOrder: 1,
+      },
+      {
+        quoteId: suQuote4.id,
+        productId: usbHub.id,
+        quantity: 2,
+        listPrice: 49.0,
+        discount: 0.0,
+        netPrice: 49.0,
+        sortOrder: 2,
+      },
+    ],
+  })
+
+  // Quote 15: StartupXYZ - Basic support
+  // Pattern: First-time support purchase
+  // Status: FINALIZED, $999, no discount
+  const suQuote5Created = daysAgo(50)
+  const suQuote5 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-SU-005',
+      customerId: startupXyz.id,
+      status: QuoteStatus.FINALIZED,
+      priceBookId: standardPriceBook.id,
+      validTo: validToOffset(suQuote5Created, 30),
+      createdAt: suQuote5Created,
+      subtotal: 999.0,
+      discountTotal: 0.0,
+      total: 999.0,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: suQuote5.id,
+        productId: supportBasic.id,
+        quantity: 1,
+        listPrice: 999.0,
+        discount: 0.0,
+        netPrice: 999.0,
+        sortOrder: 0,
+      },
+    ],
+  })
+
+  // Quote 16: StartupXYZ - Rejected (over budget)
+  // Pattern: Startup couldn't afford full package
+  // Status: REJECTED, ~$5k, no discount offered
+  const suQuote6Created = daysAgo(40)
+  const suQuote6 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-SU-006',
+      customerId: startupXyz.id,
+      status: QuoteStatus.REJECTED,
+      priceBookId: standardPriceBook.id,
+      validTo: validToOffset(suQuote6Created, 30),
+      createdAt: suQuote6Created,
+      subtotal: 4897.0,
+      discountTotal: 0.0,
+      total: 4897.0,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: suQuote6.id,
+        productId: softwareLicensePro.id,
+        quantity: 24, // 2 seats x 12 months
+        listPrice: 79.0,
+        discount: 0.0,
+        netPrice: 79.0,
+        sortOrder: 0,
+      },
+      {
+        quoteId: suQuote6.id,
+        productId: cloudHostingPro.id,
+        quantity: 12,
+        listPrice: 199.0,
+        discount: 0.0,
+        netPrice: 199.0,
+        sortOrder: 1,
+      },
+      {
+        quoteId: suQuote6.id,
+        productId: supportBasic.id,
+        quantity: 1,
+        listPrice: 999.0,
+        discount: 0.0,
+        netPrice: 999.0,
+        sortOrder: 2,
+      },
+    ],
+  })
+
+  // Quote 17: Acme Corp - Single laptop bundle
+  // Pattern: Individual workstation purchase
+  // Status: ACCEPTED, ~$1.6k, 5% discount
+  const acQuote1Created = daysAgo(135)
+  const acQuote1 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-AC-001',
+      customerId: acmeCorp.id,
+      status: QuoteStatus.ACCEPTED,
+      priceBookId: standardPriceBook.id,
+      validTo: validToOffset(acQuote1Created, 30),
+      createdAt: acQuote1Created,
+      subtotal: 1677.0,
+      discountTotal: 83.85,
+      total: 1593.15,
+    },
+  })
+  const acQuote1Parent = await prisma.quoteLineItem.create({
+    data: {
+      quoteId: acQuote1.id,
+      productId: developerLaptop.id,
+      quantity: 1,
+      listPrice: 999.0,
+      discount: 49.95, // 5%
+      netPrice: 949.05,
+      sortOrder: 0,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: acQuote1.id,
+        parentLineId: acQuote1Parent.id,
+        productId: i7.id,
+        quantity: 1,
+        listPrice: 200.0,
+        discount: 10.0,
+        netPrice: 190.0,
+        sortOrder: 1,
+      },
+      {
+        quoteId: acQuote1.id,
+        parentLineId: acQuote1Parent.id,
+        productId: ram32.id,
+        quantity: 1,
+        listPrice: 150.0,
+        discount: 7.5,
+        netPrice: 142.5,
+        sortOrder: 2,
+      },
+      {
+        quoteId: acQuote1.id,
+        parentLineId: acQuote1Parent.id,
+        productId: ssd1tb.id,
+        quantity: 1,
+        listPrice: 100.0,
+        discount: 5.0,
+        netPrice: 95.0,
+        sortOrder: 3,
+      },
+      {
+        quoteId: acQuote1.id,
+        parentLineId: acQuote1Parent.id,
+        productId: usbHub.id,
+        quantity: 1,
+        listPrice: 49.0,
+        discount: 2.45,
+        netPrice: 46.55,
+        sortOrder: 4,
+      },
+      {
+        quoteId: acQuote1.id,
+        parentLineId: acQuote1Parent.id,
+        productId: laptopStand.id,
+        quantity: 1,
+        listPrice: 79.0,
+        discount: 3.95,
+        netPrice: 75.05,
+        sortOrder: 5,
+      },
+    ],
+  })
+
+  // Quote 18: Acme Corp - Pro software + cloud combo
+  // Pattern: Software + cloud hosting bundle
+  // Status: ACCEPTED, ~$2.6k, 10% discount
+  const acQuote2Created = daysAgo(105)
+  const acQuote2 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-AC-002',
+      customerId: acmeCorp.id,
+      status: QuoteStatus.ACCEPTED,
+      priceBookId: standardPriceBook.id,
+      validTo: validToOffset(acQuote2Created, 30),
+      createdAt: acQuote2Created,
+      subtotal: 2886.0,
+      discountTotal: 288.6,
+      total: 2597.4,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: acQuote2.id,
+        productId: softwareLicensePro.id,
+        quantity: 24, // 2 seats x 12 months
+        listPrice: 79.0,
+        discount: 7.9, // 10%
+        netPrice: 71.1,
+        sortOrder: 0,
+      },
+      {
+        quoteId: acQuote2.id,
+        productId: cloudHostingBasic.id,
+        quantity: 12,
+        listPrice: 49.0,
+        discount: 4.9, // 10%
+        netPrice: 44.1,
+        sortOrder: 1,
+      },
+    ],
+  })
+
+  // Quote 19: Acme Corp - Small laptop order
+  // Pattern: Team expansion hardware
+  // Status: ACCEPTED, ~$4.2k, 5% discount
+  const acQuote3Created = daysAgo(75)
+  const acQuote3 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-AC-003',
+      customerId: acmeCorp.id,
+      status: QuoteStatus.ACCEPTED,
+      priceBookId: standardPriceBook.id,
+      validTo: validToOffset(acQuote3Created, 30),
+      createdAt: acQuote3Created,
+      subtotal: 4377.0,
+      discountTotal: 218.85,
+      total: 4158.15,
+    },
+  })
+  const acQuote3Parent = await prisma.quoteLineItem.create({
+    data: {
+      quoteId: acQuote3.id,
+      productId: developerLaptop.id,
+      quantity: 3,
+      listPrice: 999.0,
+      discount: 49.95, // 5%
+      netPrice: 949.05,
+      sortOrder: 0,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: acQuote3.id,
+        parentLineId: acQuote3Parent.id,
+        productId: i5.id,
+        quantity: 3,
+        listPrice: 0.0, // Base included
+        discount: 0.0,
+        netPrice: 0.0,
+        sortOrder: 1,
+      },
+      {
+        quoteId: acQuote3.id,
+        parentLineId: acQuote3Parent.id,
+        productId: ram16.id,
+        quantity: 3,
+        listPrice: 0.0, // Base included
+        discount: 0.0,
+        netPrice: 0.0,
+        sortOrder: 2,
+      },
+      {
+        quoteId: acQuote3.id,
+        parentLineId: acQuote3Parent.id,
+        productId: ssd1tb.id,
+        quantity: 3,
+        listPrice: 100.0,
+        discount: 5.0, // 5%
+        netPrice: 95.0,
+        sortOrder: 3,
+      },
+      {
+        quoteId: acQuote3.id,
+        parentLineId: acQuote3Parent.id,
+        productId: monitor27.id,
+        quantity: 3,
+        listPrice: 299.0,
+        discount: 14.95, // 5%
+        netPrice: 284.05,
+        sortOrder: 4,
+      },
+    ],
+  })
+
+  // Quote 20: Acme Corp - Cancelled project
+  // Pattern: Quote cancelled due to project cancellation
+  // Status: CANCELLED, ~$2.5k, 5% discount
+  const acQuote4Created = daysAgo(55)
+  const acQuote4 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-AC-004',
+      customerId: acmeCorp.id,
+      status: QuoteStatus.CANCELLED,
+      priceBookId: standardPriceBook.id,
+      validTo: validToOffset(acQuote4Created, 30),
+      createdAt: acQuote4Created,
+      subtotal: 2547.0,
+      discountTotal: 127.35,
+      total: 2419.65,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: acQuote4.id,
+        productId: softwareLicensePro.id,
+        quantity: 24, // 2 seats x 12 months
+        listPrice: 79.0,
+        discount: 3.95, // 5%
+        netPrice: 75.05,
+        sortOrder: 0,
+      },
+      {
+        quoteId: acQuote4.id,
+        productId: cloudHostingBasic.id,
+        quantity: 6,
+        listPrice: 49.0,
+        discount: 2.45,
+        netPrice: 46.55,
+        sortOrder: 1,
+      },
+      {
+        quoteId: acQuote4.id,
+        productId: trainingPackage.id,
+        quantity: 1,
+        listPrice: 2000.0,
+        discount: 100.0,
+        netPrice: 1900.0,
+        sortOrder: 2,
+      },
+    ],
+  })
+
+  // Quote 21: Acme Corp - Medium software deal
+  // Pattern: Growing team software needs
+  // Status: ACCEPTED, ~$3.6k, 8% discount
+  const acQuote5Created = daysAgo(35)
+  const acQuote5 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-AC-005',
+      customerId: acmeCorp.id,
+      status: QuoteStatus.ACCEPTED,
+      priceBookId: standardPriceBook.id,
+      validTo: validToOffset(acQuote5Created, 30),
+      createdAt: acQuote5Created,
+      subtotal: 3948.0,
+      discountTotal: 315.84,
+      total: 3632.16,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: acQuote5.id,
+        productId: softwareLicensePro.id,
+        quantity: 48, // 4 seats x 12 months
+        listPrice: 79.0,
+        discount: 6.32, // 8%
+        netPrice: 72.68,
+        sortOrder: 0,
+      },
+      {
+        quoteId: acQuote5.id,
+        productId: supportBasic.id,
+        quantity: 1,
+        listPrice: 999.0,
+        discount: 79.92, // 8%
+        netPrice: 919.08,
+        sortOrder: 1,
+      },
+    ],
+  })
+
+  // Quote 22: Acme Corp - Cloud upgrade with support
+  // Pattern: Infrastructure upgrade
+  // Status: FINALIZED, ~$3.2k, 10% discount
+  const acQuote6Created = daysAgo(20)
+  const acQuote6 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-AC-006',
+      customerId: acmeCorp.id,
+      status: QuoteStatus.FINALIZED,
+      priceBookId: standardPriceBook.id,
+      validTo: validToOffset(acQuote6Created, 30),
+      createdAt: acQuote6Created,
+      subtotal: 3588.0,
+      discountTotal: 358.8,
+      total: 3229.2,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: acQuote6.id,
+        productId: cloudHostingPro.id,
+        quantity: 12,
+        listPrice: 199.0,
+        discount: 19.9, // 10%
+        netPrice: 179.1,
+        sortOrder: 0,
+      },
+      {
+        quoteId: acQuote6.id,
+        productId: supportBasic.id,
+        quantity: 1,
+        listPrice: 999.0,
+        discount: 99.9, // 10%
+        netPrice: 899.1,
+        sortOrder: 1,
+      },
+    ],
+  })
+
+  // Quote 23: StartupXYZ - Rejected Pro software (went with competitor)
+  // Pattern: Price comparison resulted in loss
+  // Status: REJECTED, ~$4.7k, 5% discount wasn't enough
+  const suQuote7Created = daysAgo(25)
+  const suQuote7 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-SU-007',
+      customerId: startupXyz.id,
+      status: QuoteStatus.REJECTED,
+      priceBookId: standardPriceBook.id,
+      validTo: validToOffset(suQuote7Created, 30),
+      createdAt: suQuote7Created,
+      subtotal: 4998.0,
+      discountTotal: 249.9,
+      total: 4748.1,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: suQuote7.id,
+        productId: softwareLicensePro.id,
+        quantity: 60, // 5 seats x 12 months
+        listPrice: 79.0,
+        discount: 3.95, // Only 5%
+        netPrice: 75.05,
+        sortOrder: 0,
+      },
+      {
+        quoteId: suQuote7.id,
+        productId: supportBasic.id,
+        quantity: 1,
+        listPrice: 999.0,
+        discount: 49.95, // Only 5%
+        netPrice: 949.05,
+        sortOrder: 1,
+      },
+    ],
+  })
+
+  // Quote 24: Acme Corp - Accessories with laptops
+  // Pattern: Complete workstation bundle
+  // Status: ACCEPTED, ~$2.1k, 5% discount
+  const acQuote7Created = daysAgo(15)
+  const acQuote7 = await prisma.quote.create({
+    data: {
+      name: 'Q-2024-AC-007',
+      customerId: acmeCorp.id,
+      status: QuoteStatus.ACCEPTED,
+      priceBookId: standardPriceBook.id,
+      validTo: validToOffset(acQuote7Created, 30),
+      createdAt: acQuote7Created,
+      subtotal: 2156.0,
+      discountTotal: 107.8,
+      total: 2048.2,
+    },
+  })
+  await prisma.quoteLineItem.createMany({
+    data: [
+      {
+        quoteId: acQuote7.id,
+        productId: monitor27.id,
+        quantity: 4,
+        listPrice: 299.0,
+        discount: 14.95, // 5%
+        netPrice: 284.05,
+        sortOrder: 0,
+      },
+      {
+        quoteId: acQuote7.id,
+        productId: laptopStand.id,
+        quantity: 4,
+        listPrice: 79.0,
+        discount: 3.95,
+        netPrice: 75.05,
+        sortOrder: 1,
+      },
+      {
+        quoteId: acQuote7.id,
+        productId: usbHub.id,
+        quantity: 4,
+        listPrice: 49.0,
+        discount: 2.45,
+        netPrice: 46.55,
+        sortOrder: 2,
+      },
+    ],
+  })
+
+  console.log('  ✓ Created 14 startup/SMB customer historical quotes')
+  console.log('  ✓ Total historical quotes: 24 (plus 1 example = 25)')
+  console.log('    Status distribution: 15 ACCEPTED (60%), 5 REJECTED (20%), 4 FINALIZED (16%), 1 CANCELLED (4%)')
 
   // ============================================================================
   // Contracts
@@ -1968,7 +3148,11 @@ async function main() {
   console.log(`   - 4 customers (1 tax-exempt)`)
   console.log(`   - 5 rules (2 configuration, 3 pricing)`)
   console.log(`   - 5 discounts (including 1 with tiers)`)
-  console.log(`   - 1 example quote with 6 line items`)
+  console.log(`   - 25 quotes total for AI training data:`)
+  console.log(`     - 1 example quote (DRAFT)`)
+  console.log(`     - 10 enterprise quotes (TechGiant, Global Enterprises) - large deals, 15-25% discounts`)
+  console.log(`     - 14 startup/SMB quotes (StartupXYZ, Acme Corp) - smaller deals, 0-10% discounts`)
+  console.log(`     - Status distribution: 15 ACCEPTED (60%), 5 REJECTED (20%), 4 FINALIZED (16%), 1 CANCELLED (4%)`)
   console.log(`   - 3 contracts (1 active, 1 draft, 1 expired)`)
   console.log(`   - 8 product affinities (cross-sell, upsell, required, accessory)`)
   console.log(`   - 2 questionnaires (Developer Tools Finder, Hardware Configuration Helper)`)
