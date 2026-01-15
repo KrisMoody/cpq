@@ -7,6 +7,7 @@ const { categories, fetchCategories, flattenCategories } = useCategories()
 const showInactive = ref(false)
 const filterType = ref<'ALL' | 'STANDALONE' | 'BUNDLE'>('ALL')
 const filterCategoryId = ref<string | undefined>(undefined)
+const viewMode = useState<'table' | 'card'>('products-view-mode', () => 'table')
 
 onMounted(() => {
   fetchProducts(showInactive.value)
@@ -92,6 +93,23 @@ const categoryOptions = computed(() => {
       <span class="text-sm text-gray-500">
         {{ filteredProducts.length }} product{{ filteredProducts.length !== 1 ? 's' : '' }}
       </span>
+
+      <div class="ml-auto inline-flex rounded-md shadow-sm">
+        <UButton
+          :variant="viewMode === 'table' ? 'solid' : 'ghost'"
+          size="sm"
+          icon="i-heroicons-table-cells"
+          class="rounded-r-none"
+          @click="viewMode = 'table'"
+        />
+        <UButton
+          :variant="viewMode === 'card' ? 'solid' : 'ghost'"
+          size="sm"
+          icon="i-heroicons-squares-2x2"
+          class="rounded-l-none"
+          @click="viewMode = 'card'"
+        />
+      </div>
     </div>
 
     <!-- Loading State -->
@@ -112,7 +130,10 @@ const categoryOptions = computed(() => {
       <UButton to="/products/new" variant="soft">Create your first product</UButton>
     </div>
 
-    <!-- Products Grid -->
+    <!-- Products Table View -->
+    <TablesProductsTable v-else-if="viewMode === 'table'" :products="filteredProducts" />
+
+    <!-- Products Card View -->
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <NuxtLink
         v-for="product in filteredProducts"

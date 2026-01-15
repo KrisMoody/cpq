@@ -7,30 +7,38 @@ import {
   getFilteredRowModel,
   FlexRender,
 } from '@tanstack/vue-table'
-import type { Product } from '~/composables/useProducts'
+import type { Currency } from '~/composables/useCurrencies'
 
 const props = defineProps<{
-  products: Product[]
+  currencies: Currency[]
 }>()
 
-const columnHelper = createColumnHelper<Product>()
+const emit = defineEmits<{
+  delete: [id: string]
+}>()
+
+const columnHelper = createColumnHelper<Currency>()
 
 const columns = [
+  columnHelper.accessor('code', {
+    header: 'Code',
+    cell: (info) => info.getValue(),
+  }),
   columnHelper.accessor('name', {
     header: 'Name',
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor('sku', {
-    header: 'SKU',
+  columnHelper.accessor('symbol', {
+    header: 'Symbol',
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor('type', {
-    header: 'Type',
-    cell: (info) => info.getValue() === 'BUNDLE' ? 'Bundle' : 'Standalone',
-  }),
-  columnHelper.accessor('description', {
-    header: 'Description',
-    cell: (info) => info.getValue() || '—',
+  columnHelper.accessor('currentRate', {
+    header: 'Exchange Rate',
+    cell: (info) => {
+      const currency = info.row.original
+      if (currency.isBase) return 'Base'
+      return info.getValue()?.toFixed(4) ?? '—'
+    },
   }),
   columnHelper.accessor('isActive', {
     header: 'Status',
@@ -47,7 +55,7 @@ const globalFilter = ref('')
 
 const table = useVueTable({
   get data() {
-    return props.products
+    return props.currencies
   },
   columns,
   getCoreRowModel: getCoreRowModel(),
@@ -68,7 +76,7 @@ const table = useVueTable({
   <div class="space-y-4">
     <UInput
       v-model="globalFilter"
-      placeholder="Search products..."
+      placeholder="Search currencies..."
       icon="i-heroicons-magnifying-glass"
       class="max-w-sm"
     />
@@ -114,39 +122,42 @@ const table = useVueTable({
               class="px-4 py-3 whitespace-nowrap text-sm"
             >
               <template v-if="cell.column.id === 'actions'">
-                <UButton
-                  :to="`/products/${cell.getValue()}`"
-                  variant="ghost"
-                  size="xs"
-                  icon="i-heroicons-pencil-square"
-                />
+                <div class="flex gap-1">
+                  <UButton
+                    :to="`/currencies/${row.original.id}`"
+                    variant="ghost"
+                    size="xs"
+                    icon="i-heroicons-pencil-square"
+                  />
+                  <UButton
+                    v-if="row.original.isActive && !row.original.isBase"
+                    variant="ghost"
+                    size="xs"
+                    color="error"
+                    icon="i-heroicons-trash"
+                    @click="emit('delete', row.original.id)"
+                  />
+                </div>
               </template>
-              <template v-else-if="cell.column.id === 'name'">
+              <template v-else-if="cell.column.id === 'code'">
                 <NuxtLink
-                  :to="`/products/${row.original.id}`"
+                  :to="`/currencies/${row.original.id}`"
                   class="text-primary-600 dark:text-primary-400 hover:underline font-medium"
                 >
                   {{ cell.getValue() }}
                 </NuxtLink>
               </template>
-              <template v-else-if="cell.column.id === 'type'">
-                <UBadge
-                  :color="cell.getValue() === 'Bundle' ? 'primary' : 'neutral'"
-                  variant="subtle"
-                >
-                  {{ cell.getValue() }}
-                </UBadge>
+              <template v-else-if="cell.column.id === 'symbol'">
+                <span class="font-mono">{{ cell.getValue() }}</span>
               </template>
-              <template v-else-if="cell.column.id === 'description'">
-                <span class="text-gray-500 dark:text-gray-400 truncate max-w-xs block">
-                  {{ cell.getValue() }}
-                </span>
+              <template v-else-if="cell.column.id === 'currentRate'">
+                <template v-if="row.original.isBase">
+                  <UBadge color="primary" variant="subtle" size="xs">Base</UBadge>
+                </template>
+                <span v-else class="font-mono">{{ row.original.currentRate?.toFixed(4) ?? '—' }}</span>
               </template>
               <template v-else-if="cell.column.id === 'isActive'">
-                <UBadge
-                  :color="row.original.isActive ? 'success' : 'neutral'"
-                  variant="subtle"
-                >
+                <UBadge :color="row.original.isActive ? 'success' : 'warning'" variant="subtle">
                   {{ row.original.isActive ? 'Active' : 'Inactive' }}
                 </UBadge>
               </template>
@@ -163,7 +174,7 @@ const table = useVueTable({
     </div>
 
     <p v-if="table.getRowModel().rows.length === 0" class="text-center text-gray-500 py-4">
-      No products found
+      No currencies found
     </p>
   </div>
 </template>

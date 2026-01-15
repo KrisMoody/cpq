@@ -99,12 +99,22 @@ The system SHALL provide REST API endpoints for product management:
 - **THEN** return 404 error
 
 ### Requirement: Products List Page
-The system SHALL provide a products list page at `/products` displaying all products in a sortable, filterable grid with management actions.
+The system SHALL provide a products list page at `/products` displaying all products in a sortable, filterable view with management actions. Users can switch between table and card views, with table view as the default.
 
-#### Scenario: View products grid
+#### Scenario: View products in table view (default)
 - **WHEN** user navigates to /products
-- **THEN** display product cards with Name, SKU, Type, Active status
-- **AND** grid supports filtering by product type
+- **THEN** display products in a TanStack Table with columns: Name, SKU, Type, Description, Status, Actions
+- **AND** table supports sorting by clicking column headers
+- **AND** table supports global search filtering
+
+#### Scenario: View products in card view
+- **WHEN** user clicks the card view toggle button
+- **THEN** display product cards with Name, SKU, Type, Active status in a responsive grid
+
+#### Scenario: Switch between views
+- **WHEN** user clicks the view toggle button
+- **THEN** switch between table and card views
+- **AND** persist the preference for future visits
 
 #### Scenario: Create new product action
 - **WHEN** user clicks "New Product" button
@@ -112,7 +122,7 @@ The system SHALL provide a products list page at `/products` displaying all prod
 
 #### Scenario: Show inactive products
 - **WHEN** user enables "Show inactive" filter
-- **THEN** display both active and inactive products
+- **THEN** display both active and inactive products in either view
 
 ### Requirement: Product Detail Page
 The system SHALL provide a product detail page at `/products/[id]` showing product information with edit and delete capabilities, and bundle configuration UI for BUNDLE products.

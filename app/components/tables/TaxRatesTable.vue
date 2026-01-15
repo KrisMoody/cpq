@@ -7,30 +7,38 @@ import {
   getFilteredRowModel,
   FlexRender,
 } from '@tanstack/vue-table'
-import type { Product } from '~/composables/useProducts'
+import type { TaxRate } from '~/composables/useTaxRates'
 
 const props = defineProps<{
-  products: Product[]
+  taxRates: TaxRate[]
 }>()
 
-const columnHelper = createColumnHelper<Product>()
+const emit = defineEmits<{
+  delete: [id: string]
+}>()
+
+const { formatRate } = useTaxRates()
+
+const columnHelper = createColumnHelper<TaxRate>()
 
 const columns = [
   columnHelper.accessor('name', {
     header: 'Name',
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor('sku', {
-    header: 'SKU',
+  columnHelper.accessor('rate', {
+    header: 'Rate',
+    cell: (info) => formatRate(info.getValue()),
+  }),
+  columnHelper.accessor((row) => row.state ? `${row.state}, ${row.country}` : row.country, {
+    id: 'jurisdiction',
+    header: 'Jurisdiction',
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor('type', {
-    header: 'Type',
-    cell: (info) => info.getValue() === 'BUNDLE' ? 'Bundle' : 'Standalone',
-  }),
-  columnHelper.accessor('description', {
-    header: 'Description',
-    cell: (info) => info.getValue() || '—',
+  columnHelper.accessor((row) => row.category?.name ?? 'All products', {
+    id: 'category',
+    header: 'Category',
+    cell: (info) => info.getValue(),
   }),
   columnHelper.accessor('isActive', {
     header: 'Status',
@@ -47,7 +55,7 @@ const globalFilter = ref('')
 
 const table = useVueTable({
   get data() {
-    return props.products
+    return props.taxRates
   },
   columns,
   getCoreRowModel: getCoreRowModel(),
@@ -68,7 +76,7 @@ const table = useVueTable({
   <div class="space-y-4">
     <UInput
       v-model="globalFilter"
-      placeholder="Search products..."
+      placeholder="Search tax rates..."
       icon="i-heroicons-magnifying-glass"
       class="max-w-sm"
     />
@@ -114,39 +122,41 @@ const table = useVueTable({
               class="px-4 py-3 whitespace-nowrap text-sm"
             >
               <template v-if="cell.column.id === 'actions'">
-                <UButton
-                  :to="`/products/${cell.getValue()}`"
-                  variant="ghost"
-                  size="xs"
-                  icon="i-heroicons-pencil-square"
-                />
+                <div class="flex gap-1">
+                  <UButton
+                    :to="`/tax-rates/${row.original.id}`"
+                    variant="ghost"
+                    size="xs"
+                    icon="i-heroicons-pencil-square"
+                  />
+                  <UButton
+                    v-if="row.original.isActive"
+                    variant="ghost"
+                    size="xs"
+                    color="error"
+                    icon="i-heroicons-trash"
+                    @click="emit('delete', row.original.id)"
+                  />
+                </div>
               </template>
               <template v-else-if="cell.column.id === 'name'">
                 <NuxtLink
-                  :to="`/products/${row.original.id}`"
+                  :to="`/tax-rates/${row.original.id}`"
                   class="text-primary-600 dark:text-primary-400 hover:underline font-medium"
                 >
                   {{ cell.getValue() }}
                 </NuxtLink>
               </template>
-              <template v-else-if="cell.column.id === 'type'">
-                <UBadge
-                  :color="cell.getValue() === 'Bundle' ? 'primary' : 'neutral'"
-                  variant="subtle"
-                >
-                  {{ cell.getValue() }}
-                </UBadge>
+              <template v-else-if="cell.column.id === 'rate'">
+                <span class="font-mono">{{ cell.getValue() }}</span>
               </template>
-              <template v-else-if="cell.column.id === 'description'">
-                <span class="text-gray-500 dark:text-gray-400 truncate max-w-xs block">
+              <template v-else-if="cell.column.id === 'category'">
+                <span :class="row.original.category ? '' : 'text-gray-400'">
                   {{ cell.getValue() }}
                 </span>
               </template>
               <template v-else-if="cell.column.id === 'isActive'">
-                <UBadge
-                  :color="row.original.isActive ? 'success' : 'neutral'"
-                  variant="subtle"
-                >
+                <UBadge :color="row.original.isActive ? 'success' : 'warning'" variant="subtle">
                   {{ row.original.isActive ? 'Active' : 'Inactive' }}
                 </UBadge>
               </template>
@@ -163,7 +173,7 @@ const table = useVueTable({
     </div>
 
     <p v-if="table.getRowModel().rows.length === 0" class="text-center text-gray-500 py-4">
-      No products found
+      No tax rates found
     </p>
   </div>
 </template>

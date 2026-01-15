@@ -7,30 +7,39 @@ import {
   getFilteredRowModel,
   FlexRender,
 } from '@tanstack/vue-table'
-import type { Product } from '~/composables/useProducts'
+import type { UnitOfMeasure } from '~/composables/useUnits'
 
 const props = defineProps<{
-  products: Product[]
+  units: UnitOfMeasure[]
 }>()
 
-const columnHelper = createColumnHelper<Product>()
+const emit = defineEmits<{
+  delete: [id: string]
+}>()
+
+const columnHelper = createColumnHelper<UnitOfMeasure>()
+
+function formatConversion(unit: UnitOfMeasure): string {
+  if (!unit.baseUnit) return '—'
+  const factor = typeof unit.conversionFactor === 'string'
+    ? parseFloat(unit.conversionFactor)
+    : unit.conversionFactor
+  return `1 = ${factor} ${unit.baseUnit.abbreviation}`
+}
 
 const columns = [
   columnHelper.accessor('name', {
     header: 'Name',
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor('sku', {
-    header: 'SKU',
+  columnHelper.accessor('abbreviation', {
+    header: 'Abbreviation',
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor('type', {
-    header: 'Type',
-    cell: (info) => info.getValue() === 'BUNDLE' ? 'Bundle' : 'Standalone',
-  }),
-  columnHelper.accessor('description', {
-    header: 'Description',
-    cell: (info) => info.getValue() || '—',
+  columnHelper.accessor((row) => formatConversion(row), {
+    id: 'conversion',
+    header: 'Base Unit Conversion',
+    cell: (info) => info.getValue(),
   }),
   columnHelper.accessor('isActive', {
     header: 'Status',
@@ -47,7 +56,7 @@ const globalFilter = ref('')
 
 const table = useVueTable({
   get data() {
-    return props.products
+    return props.units
   },
   columns,
   getCoreRowModel: getCoreRowModel(),
@@ -62,13 +71,18 @@ const table = useVueTable({
     globalFilter.value = value as string
   },
 })
+
+function handleDelete(id: string) {
+  if (!confirm('Are you sure you want to deactivate this unit?')) return
+  emit('delete', id)
+}
 </script>
 
 <template>
   <div class="space-y-4">
     <UInput
       v-model="globalFilter"
-      placeholder="Search products..."
+      placeholder="Search units..."
       icon="i-heroicons-magnifying-glass"
       class="max-w-sm"
     />
@@ -114,39 +128,36 @@ const table = useVueTable({
               class="px-4 py-3 whitespace-nowrap text-sm"
             >
               <template v-if="cell.column.id === 'actions'">
-                <UButton
-                  :to="`/products/${cell.getValue()}`"
-                  variant="ghost"
-                  size="xs"
-                  icon="i-heroicons-pencil-square"
-                />
+                <div class="flex justify-end gap-2">
+                  <UButton
+                    :to="`/units/${row.original.id}`"
+                    variant="ghost"
+                    size="xs"
+                    icon="i-heroicons-pencil-square"
+                  />
+                  <UButton
+                    v-if="row.original.isActive"
+                    variant="ghost"
+                    size="xs"
+                    color="error"
+                    icon="i-heroicons-trash"
+                    @click="handleDelete(row.original.id)"
+                  />
+                </div>
               </template>
               <template v-else-if="cell.column.id === 'name'">
                 <NuxtLink
-                  :to="`/products/${row.original.id}`"
+                  :to="`/units/${row.original.id}`"
                   class="text-primary-600 dark:text-primary-400 hover:underline font-medium"
                 >
                   {{ cell.getValue() }}
                 </NuxtLink>
               </template>
-              <template v-else-if="cell.column.id === 'type'">
-                <UBadge
-                  :color="cell.getValue() === 'Bundle' ? 'primary' : 'neutral'"
-                  variant="subtle"
-                >
-                  {{ cell.getValue() }}
-                </UBadge>
-              </template>
-              <template v-else-if="cell.column.id === 'description'">
-                <span class="text-gray-500 dark:text-gray-400 truncate max-w-xs block">
-                  {{ cell.getValue() }}
-                </span>
+              <template v-else-if="cell.column.id === 'abbreviation'">
+                <span class="font-mono">{{ cell.getValue() }}</span>
               </template>
               <template v-else-if="cell.column.id === 'isActive'">
-                <UBadge
-                  :color="row.original.isActive ? 'success' : 'neutral'"
-                  variant="subtle"
-                >
+                <UBadge :color="row.original.isActive ? 'success' : 'warning'" variant="subtle">
                   {{ row.original.isActive ? 'Active' : 'Inactive' }}
                 </UBadge>
               </template>
@@ -163,7 +174,7 @@ const table = useVueTable({
     </div>
 
     <p v-if="table.getRowModel().rows.length === 0" class="text-center text-gray-500 py-4">
-      No products found
+      No units found
     </p>
   </div>
 </template>
