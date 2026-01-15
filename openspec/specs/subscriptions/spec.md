@@ -49,6 +49,12 @@ The system SHALL calculate recurring and one-time revenue separately.
 - **THEN** Total Contract Value = MRR * term months
 - **AND** this is displayed alongside recurring totals
 
+#### Scenario: Calculate on recalculate action
+- **WHEN** user clicks "Recalculate Pricing" on a quote
+- **THEN** the system calculates and persists oneTimeTotal, mrr, arr, and tcv
+- **AND** these values are returned in the API response
+- **AND** the Quote Summary displays the recurring revenue section
+
 ### Requirement: Quote Line Item Recurring Display
 The system SHALL clearly display recurring pricing on line items.
 
