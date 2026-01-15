@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AffinityType, BillingFrequency } from '~/generated/prisma/client.js'
+import type { AffinityType, BillingFrequency } from '~/generated/prisma/client'
 
 const _route = useRoute()
 const router = useRouter()

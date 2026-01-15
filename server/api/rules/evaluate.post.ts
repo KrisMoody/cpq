@@ -1,6 +1,6 @@
 import { usePrisma } from '../../utils/prisma'
 import { evaluateRules, type RuleContext } from '../../services/ruleEngine'
-import type { RuleTrigger, RuleType } from '../../../app/generated/prisma/client.js'
+import type { RuleTrigger, RuleType } from '../../../app/generated/prisma/client'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()

@@ -1,6 +1,6 @@
-import type { AttributeType } from '../generated/prisma/client.js'
-import type { AttributeValue, AttributeConstraints, AttributeOption } from '../types/domain.js'
-import { getErrorMessage } from '../utils/errors.js'
+import type { AttributeType } from '../generated/prisma/client'
+import type { AttributeValue, AttributeConstraints, AttributeOption } from '../types/domain'
+import { getErrorMessage } from '../utils/errors'
 
 export interface AttributeGroup {
   id: string

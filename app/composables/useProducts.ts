@@ -1,5 +1,5 @@
-import type { ProductType, BillingFrequency } from '../generated/prisma/client.js'
-import { getErrorMessage } from '../utils/errors.js'
+import type { ProductType, BillingFrequency } from '../generated/prisma/client'
+import { getErrorMessage } from '../utils/errors'
 import type { UnitOfMeasure } from './useUnits'
 
 export interface ProductCategory {

@@ -1,4 +1,4 @@
-import type { Discount, DiscountTier, DiscountType } from '../../app/generated/prisma/client.js'
+import type { Discount, DiscountTier, DiscountType } from '../../app/generated/prisma/client'
 
 export interface DiscountWithTiers extends Discount {
   tiers: DiscountTier[]

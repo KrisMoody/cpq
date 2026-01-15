@@ -1,5 +1,5 @@
-import type { QuestionType } from '../generated/prisma/client.js'
-import { getErrorMessage } from '../utils/errors.js'
+import type { QuestionType } from '../generated/prisma/client'
+import { getErrorMessage } from '../utils/errors'
 import type { ProductSummary } from '../types/cpq'
 
 export interface QuestionOption {

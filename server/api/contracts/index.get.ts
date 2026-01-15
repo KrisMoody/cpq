@@ -1,5 +1,5 @@
-import type { Prisma } from '../../../app/generated/prisma/client.js'
-import { ContractStatus } from '../../../app/generated/prisma/client.js'
+import type { Prisma } from '../../../app/generated/prisma/client'
+import { ContractStatus } from '../../../app/generated/prisma/client'
 import { usePrisma } from '../../utils/prisma'
 
 function isValidContractStatus(value: string): value is ContractStatus {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getErrorMessage } from '~/utils/errors'
-import type { RuleType, RuleTrigger } from '~/generated/prisma/client.js'
+import type { RuleType, RuleTrigger } from '~/generated/prisma/client'
 
 const router = useRouter()
 const { createRule } = useRules()

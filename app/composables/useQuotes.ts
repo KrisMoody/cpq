@@ -1,5 +1,5 @@
-import type { QuoteStatus } from '../generated/prisma/client.js'
-import { getErrorMessage } from '../utils/errors.js'
+import type { QuoteStatus } from '../generated/prisma/client'
+import { getErrorMessage } from '../utils/errors'
 import type { TaxBreakdownItem } from './useTaxRates'
 import type { Currency } from './useCurrencies'
 

@@ -1,4 +1,4 @@
-import { RuleType } from '../../../app/generated/prisma/client.js'
+import { RuleType } from '../../../app/generated/prisma/client'
 import { usePrisma } from '../../utils/prisma'
 
 function isValidRuleType(value: string): value is RuleType {

@@ -4,7 +4,7 @@ import type {
   QuestionProductMapping,
   Product,
   QuestionType,
-} from '../../app/generated/prisma/client.js'
+} from '../../app/generated/prisma/client'
 
 export interface QuestionWithMappings extends Question {
   productMappings: Array<QuestionProductMapping & { product: Product }>

@@ -1,4 +1,4 @@
-import { getErrorMessage } from '../utils/errors.js'
+import { getErrorMessage } from '../utils/errors'
 export interface Currency {
   id: string
   code: string

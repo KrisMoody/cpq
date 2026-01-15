@@ -1,4 +1,4 @@
-import type { Prisma } from '../../../app/generated/prisma/client.js'
+import type { Prisma } from '../../../app/generated/prisma/client'
 import { usePrisma } from '../../utils/prisma'
 
 export default defineEventHandler(async (event) => {

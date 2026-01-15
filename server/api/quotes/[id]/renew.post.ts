@@ -1,5 +1,5 @@
 import { usePrisma } from '../../../utils/prisma'
-import { QuoteStatus } from '../../../../app/generated/prisma/client.js'
+import { QuoteStatus } from '../../../../app/generated/prisma/client'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()

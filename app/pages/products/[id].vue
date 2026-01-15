@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getErrorMessage } from '~/utils/errors'
 import type { ProductWithDetails, ProductFeature } from '~/composables/useProducts'
-import type { ProductType, BillingFrequency } from '~/generated/prisma/client.js'
+import type { ProductType, BillingFrequency } from '~/generated/prisma/client'
 import type { Attribute } from '~/composables/useAttributes'
 
 const _route = useRoute()

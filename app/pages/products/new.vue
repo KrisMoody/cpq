@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getErrorMessage } from '~/utils/errors'
-import type { ProductType, BillingFrequency } from '~/generated/prisma/client.js'
+import type { ProductType, BillingFrequency } from '~/generated/prisma/client'
 
 const router = useRouter()
 const { createProduct, error: productError } = useProducts()

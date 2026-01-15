@@ -1,5 +1,5 @@
-import type { AffinityType, BillingFrequency } from '../generated/prisma/client.js'
-import { getErrorMessage } from '../utils/errors.js'
+import type { AffinityType, BillingFrequency } from '../generated/prisma/client'
+import { getErrorMessage } from '../utils/errors'
 import type { ProductSummary, CategorySummary } from '../types/cpq'
 
 export interface ProductAffinity {

@@ -1,5 +1,5 @@
 import type { Currency } from './useCurrencies'
-import { getErrorMessage } from '../utils/errors.js'
+import { getErrorMessage } from '../utils/errors'
 
 export interface PriceBook {
   id: string

@@ -1,4 +1,4 @@
-import type { AttributeValue } from '../../../../app/types/domain.js'
+import type { AttributeValue } from '../../../../app/types/domain'
 import { usePrisma } from '../../../utils/prisma'
 
 interface AttributeInput {
