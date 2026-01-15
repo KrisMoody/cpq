@@ -46,8 +46,8 @@
   - `server/api/discounts/[id].put.ts` - fix tier mapping
   - `server/api/discounts/index.post.ts` - fix tier mapping
 
-- [ ] 3.3 Update product attribute API route
-  - `server/api/products/[id]/attributes.put.ts` - type attribute values properly (remaining warnings)
+- [x] 3.3 Update product attribute API route
+  - `server/api/products/[id]/attributes.put.ts` - properly typed with `AttributeValue` and `AttributeInput` interface
 
 - [x] 3.4 Replace `catch (e: any)` in API routes
   - `server/api/cron/contracts.post.ts`
@@ -129,11 +129,11 @@
   - `app/components/cpq/ApplyDiscountModal.vue` - catch block updated
   - `app/components/cpq/AttributeInput.vue` - fix `modelValue: any`, constraints
 
-- [ ] 6.2 Update table components
-  - `app/components/tables/*.vue` - no changes needed for type safety
+- [x] 6.2 Update table components
+  - `app/components/tables/*.vue` - reviewed, no `any` types present
 
-- [ ] 6.3 Update learn/diagram components
-  - `app/components/learn/EntityHierarchy.vue` - no type issues found
+- [x] 6.3 Update learn/diagram components
+  - `app/components/learn/EntityHierarchy.vue` - documented with ASSERTION comment for third-party library limitation
 
 ## Phase 7: Enforcement
 
