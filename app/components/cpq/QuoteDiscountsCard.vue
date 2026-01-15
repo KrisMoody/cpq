@@ -16,7 +16,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'apply-discount': []
-  'apply-manual-discount': []
   'remove-discount': [appliedDiscountId: string]
 }>()
 
@@ -42,24 +41,15 @@ function formatDiscountValue(discount: { type: string; value: string | number })
     <template #header>
       <div class="flex items-center justify-between">
         <h3 class="font-semibold">Discounts</h3>
-        <div v-if="editable" class="flex items-center gap-1">
-          <UButton
-            variant="ghost"
-            size="xs"
-            icon="i-heroicons-tag"
-            @click="emit('apply-discount')"
-          >
-            Apply
-          </UButton>
-          <UButton
-            variant="ghost"
-            size="xs"
-            icon="i-heroicons-pencil-square"
-            @click="emit('apply-manual-discount')"
-          >
-            Manual
-          </UButton>
-        </div>
+        <UButton
+          v-if="editable"
+          variant="ghost"
+          size="xs"
+          icon="i-heroicons-plus"
+          @click="emit('apply-discount')"
+        >
+          Add
+        </UButton>
       </div>
     </template>
 

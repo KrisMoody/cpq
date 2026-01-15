@@ -41,9 +41,8 @@ const addingProduct = ref(false)
 // Customer selection modal
 const showCustomerSelector = ref(false)
 
-// Discount modals
-const showApplyDiscount = ref(false)
-const showManualDiscount = ref(false)
+// Discount modal
+const showDiscountModal = ref(false)
 const discountTargetLineId = ref<string | undefined>(undefined)
 
 const quoteId = useRequiredParam('id')
@@ -150,14 +149,9 @@ async function handleCustomerSelect(customer: Customer | null) {
   }
 }
 
-function openApplyDiscount(lineItemId?: string) {
+function openDiscountModal(lineItemId?: string) {
   discountTargetLineId.value = lineItemId
-  showApplyDiscount.value = true
-}
-
-function openManualDiscount(lineItemId?: string) {
-  discountTargetLineId.value = lineItemId
-  showManualDiscount.value = true
+  showDiscountModal.value = true
 }
 
 async function handleDiscountApplied() {
@@ -395,7 +389,7 @@ async function handleAddRecommendedProduct(productId: string) {
                 :contract-info="evaluation?.contractPricing?.lineItems?.[line.id]"
                 @remove="handleRemoveLine"
                 @update-quantity="handleUpdateQuantity"
-                @apply-discount="openApplyDiscount"
+                @apply-discount="openDiscountModal"
               />
             </div>
           </UCard>
@@ -418,8 +412,7 @@ async function handleAddRecommendedProduct(productId: string) {
           <CpqQuoteDiscountsCard
             :applied-discounts="quote.appliedDiscounts || []"
             :editable="isEditable"
-            @apply-discount="openApplyDiscount()"
-            @apply-manual-discount="openManualDiscount()"
+            @apply-discount="openDiscountModal()"
             @remove-discount="handleRemoveDiscount"
           />
 
@@ -437,7 +430,7 @@ async function handleAddRecommendedProduct(productId: string) {
             :applied-discounts="quote.appliedDiscounts"
             :is-tax-exempt="quote.customer?.isTaxExempt"
             :editable="isEditable"
-            @apply-discount="openApplyDiscount()"
+            @apply-discount="openDiscountModal()"
           />
 
           <UButton
@@ -539,22 +532,13 @@ async function handleAddRecommendedProduct(productId: string) {
       </template>
     </UModal>
 
-    <!-- Apply Discount Modal -->
-    <CpqApplyDiscountModal
+    <!-- Discount Modal (Catalog + Manual) -->
+    <CpqDiscountModal
       v-if="quote"
-      v-model:open="showApplyDiscount"
+      v-model:open="showDiscountModal"
       :quote-id="quote.id"
       :line-item-id="discountTargetLineId"
       :subtotal="quoteSubtotal"
-      @applied="handleDiscountApplied"
-    />
-
-    <!-- Manual Discount Modal -->
-    <CpqManualDiscountModal
-      v-if="quote"
-      v-model:open="showManualDiscount"
-      :quote-id="quote.id"
-      :line-item-id="discountTargetLineId"
       @applied="handleDiscountApplied"
     />
   </div>

@@ -161,6 +161,22 @@ export default defineEventHandler(async (event) => {
   })
   const subtotal = updatedLineItems.reduce((sum, item) => sum + Number(item.netPrice), 0)
 
+  // Calculate gross subtotal (sum of listPrice × quantity before discounts)
+  const grossSubtotal = updatedLineItems.reduce(
+    (sum, item) => sum + Number(item.listPrice) * item.quantity,
+    0
+  )
+
+  // Calculate per-line discount percentages and find the maximum
+  const lineDiscountPercents = updatedLineItems.map((item) => {
+    const lineGross = Number(item.listPrice) * item.quantity
+    if (lineGross === 0) return 0
+    return (Number(item.discount) / lineGross) * 100
+  })
+  const maxLineDiscountPercent = lineDiscountPercents.length > 0
+    ? Math.max(...lineDiscountPercents)
+    : 0
+
   // Recalculate quote-level discounts
   for (const discount of quote.appliedDiscounts) {
     if (discount.type === 'PERCENTAGE') {
@@ -184,6 +200,11 @@ export default defineEventHandler(async (event) => {
 
   // Calculate total
   const total = Math.max(0, subtotal - discountTotal)
+
+  // Calculate aggregate discount percent (total discount as % of gross subtotal)
+  const discountPercent = grossSubtotal > 0
+    ? ((grossSubtotal - total) / grossSubtotal) * 100
+    : 0
 
   // Evaluate rules
   const rules = await prisma.rule.findMany({
@@ -217,6 +238,8 @@ export default defineEventHandler(async (event) => {
       total,
       lineItemCount: updatedLineItems.length,
       totalQuantity: updatedLineItems.reduce((sum, li) => sum + li.quantity, 0),
+      maxLineDiscountPercent,
+      discountPercent,
     },
     customer: quote.customer,
     lineItems: updatedLineItems,

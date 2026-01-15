@@ -1195,24 +1195,45 @@ async function main() {
     },
   })
 
-  // Pricing rule: Large discount approval
+  // Pricing rule: Large discount approval (checks max line-item discount)
   await prisma.rule.create({
     data: {
       name: 'Large discount approval',
-      description: 'Discounts over 25% require approval',
+      description: 'Line-item discounts over 25% require approval',
       type: RuleType.PRICING,
       trigger: RuleTrigger.ON_QUOTE_SAVE,
       priority: 20,
       condition: {
-        type: 'OR',
-        conditions: [
-          { field: 'quote.discountPercent', operator: 'greaterThan', value: 25 },
-        ],
+        field: 'quote.maxLineDiscountPercent',
+        operator: '>',
+        value: 25,
       },
       action: {
         type: 'REQUIRE_APPROVAL',
         approverRole: 'sales-director',
-        message: 'Discounts exceeding 25% require sales director approval',
+        message: 'Line-item discounts exceeding 25% require sales director approval',
+      },
+      isActive: true,
+    },
+  })
+
+  // Pricing rule: Heavy quote discount approval (checks aggregate discount)
+  await prisma.rule.create({
+    data: {
+      name: 'Heavy quote discount approval',
+      description: 'Quotes with total discount over 40% require approval',
+      type: RuleType.PRICING,
+      trigger: RuleTrigger.ON_QUOTE_SAVE,
+      priority: 21,
+      condition: {
+        field: 'quote.discountPercent',
+        operator: '>',
+        value: 40,
+      },
+      action: {
+        type: 'REQUIRE_APPROVAL',
+        approverRole: 'sales-manager',
+        message: 'Quote total discount exceeding 40% requires sales manager approval',
       },
       isActive: true,
     },
