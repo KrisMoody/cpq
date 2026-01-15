@@ -57,8 +57,10 @@ The system SHALL display units of measure on quote line items.
 The system SHALL provide management for units of measure.
 
 #### Scenario: List units
-- **WHEN** user navigates to units page (or settings)
+- **WHEN** user navigates to units page
 - **THEN** all units are listed with name, abbreviation, and conversion info
+- **AND** the table supports sorting by any column
+- **AND** the table supports searching/filtering units by name or abbreviation
 
 #### Scenario: Create custom unit
 - **WHEN** user creates a new unit

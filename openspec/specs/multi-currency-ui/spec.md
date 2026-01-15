@@ -4,13 +4,15 @@
 TBD - created by archiving change add-multicurrency-ui. Update Purpose after archive.
 ## Requirements
 ### Requirement: Currency Management Page
-The system SHALL provide a page to manage currencies and exchange rates.
+The system SHALL provide a page to manage currencies and exchange rates with sortable columns and search functionality.
 
 #### Scenario: List currencies
 - **WHEN** user navigates to `/currencies`
-- **THEN** all currencies are displayed in a table
+- **THEN** all currencies are displayed in a TanStack Table with columns: Code, Name, Symbol, Exchange Rate, Status, Actions
 - **AND** each row shows code, name, symbol, current rate, and base indicator
 - **AND** base currency is visually distinguished
+- **AND** table supports sorting by clicking column headers
+- **AND** table supports global search filtering
 
 #### Scenario: Create currency
 - **WHEN** user clicks "Add Currency" on the currencies page

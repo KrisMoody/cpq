@@ -85,11 +85,13 @@ The system SHALL include tax information on the quote document preview.
 - **AND** customer tax exemption status is noted if applicable
 
 ### Requirement: Tax Rate Management UI
-The system SHALL provide a user interface for managing tax rates.
+The system SHALL provide a user interface for managing tax rates with sortable columns and search functionality.
 
 #### Scenario: List tax rates
 - **WHEN** user navigates to tax settings
-- **THEN** all tax rates are listed with jurisdiction and rate info
+- **THEN** all tax rates are listed in a TanStack Table with columns: Name, Rate, Jurisdiction, Category, Status, Actions
+- **AND** table supports sorting by clicking column headers
+- **AND** table supports global search filtering
 
 #### Scenario: Create tax rate
 - **WHEN** user creates a new tax rate

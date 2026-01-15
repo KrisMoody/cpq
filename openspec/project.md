@@ -20,6 +20,7 @@ A learning project to build a Configure, Price, Quote (CPQ) system. The goal is 
 - Use `<script setup>` syntax for Vue components
 - Prefer composables for reusable logic
 - Use PascalCase for components, camelCase for functions/variables
+- All data tables must use TanStack Table (`@tanstack/vue-table`)
 
 ### Architecture Patterns
 - File-based routing via Nuxt
