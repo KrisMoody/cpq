@@ -81,7 +81,7 @@ export class AIServiceError extends Error {
   constructor(
     message: string,
     public readonly code: 'NOT_CONFIGURED' | 'API_ERROR' | 'VALIDATION_ERROR' | 'RATE_LIMITED',
-    public readonly cause?: Error
+    public override readonly cause?: Error
   ) {
     super(message)
     this.name = 'AIServiceError'
@@ -636,8 +636,10 @@ async function executeApplyDiscount(input: z.infer<typeof applyDiscountInputSche
 
   // Calculate discount amount
   let baseAmount: number
-  if (lineItemId && quote.lineItems && quote.lineItems.length > 0) {
-    baseAmount = Number(quote.lineItems[0].netPrice)
+  const lineItems = quote.lineItems
+  const firstLineItem = lineItems && Array.isArray(lineItems) ? lineItems[0] : undefined
+  if (lineItemId && firstLineItem) {
+    baseAmount = Number(firstLineItem.netPrice)
   } else {
     baseAmount = Number(quote.subtotal)
   }
