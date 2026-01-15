@@ -317,7 +317,7 @@ export function useQuotes() {
       return quote
     } catch (e: unknown) {
       error.value = getErrorMessage(e, 'Failed to submit quote')
-      return null
+      throw e
     }
   }
 
@@ -331,7 +331,7 @@ export function useQuotes() {
       return quote
     } catch (e: unknown) {
       error.value = getErrorMessage(e, 'Failed to approve quote')
-      return null
+      throw e
     }
   }
 
@@ -344,7 +344,7 @@ export function useQuotes() {
       return quote
     } catch (e: unknown) {
       error.value = getErrorMessage(e, 'Failed to reject quote')
-      return null
+      throw e
     }
   }
 
