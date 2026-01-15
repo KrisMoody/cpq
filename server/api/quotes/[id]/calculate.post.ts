@@ -1,5 +1,6 @@
 import { usePrisma } from '../../../utils/prisma'
 import { lookupPriceWithContract, type ContractWithPrices, type ContractPriceInfo } from '../../../services/priceLookup'
+import { calculateQuoteTotal } from '../../../services/pricingEngine'
 
 interface RuleCondition {
   field: string
@@ -253,13 +254,13 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  // Update quote with calculated totals and approval status
+  // Calculate full quote totals including recurring revenue metrics (MRR, ARR, TCV)
+  await calculateQuoteTotal(quoteId)
+
+  // Update approval status based on rules evaluation
   const updatedQuote = await prisma.quote.update({
     where: { id: quoteId },
     data: {
-      subtotal,
-      discountTotal,
-      total,
       requiresApproval: evaluationSummary.requiresApproval,
     },
     include: {
@@ -304,6 +305,11 @@ export default defineEventHandler(async (event) => {
 
 function evaluateCondition(condition: RuleCondition, context: Record<string, unknown>): boolean {
   const { field, operator, value } = condition
+
+  // Guard against invalid conditions
+  if (!field) {
+    return false
+  }
 
   // Parse field path (e.g., "quote.total" or "lineItems.length")
   const fieldParts = field.split('.')
