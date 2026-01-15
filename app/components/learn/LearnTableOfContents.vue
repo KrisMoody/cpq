@@ -16,6 +16,21 @@ const emit = defineEmits<{
 }>()
 
 const isMobileMenuOpen = ref(false)
+const isXlScreen = ref(false)
+
+onMounted(() => {
+  const mediaQuery = window.matchMedia('(min-width: 1280px)')
+  isXlScreen.value = mediaQuery.matches
+
+  const handler = (e: MediaQueryListEvent) => {
+    isXlScreen.value = e.matches
+  }
+  mediaQuery.addEventListener('change', handler)
+
+  onUnmounted(() => {
+    mediaQuery.removeEventListener('change', handler)
+  })
+})
 
 function handleNavigate(sectionId: string) {
   emit('navigate', sectionId)
@@ -104,7 +119,10 @@ function handleNavigate(sectionId: string) {
   </div>
 
   <!-- Desktop sticky left sidebar (≥1280px) - positioned after main app sidebar (lg:w-64 = 16rem) -->
-  <aside class="hidden xl:block fixed left-[17rem] top-20 w-56 max-h-[calc(100vh-6rem)] overflow-y-auto z-20">
+  <aside
+    class="hidden xl:block fixed left-[17rem] top-20 w-56 max-h-[calc(100vh-6rem)] overflow-y-auto z-20"
+    :inert="isXlScreen ? undefined : true"
+  >
     <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 shadow-sm">
       <h3 class="font-semibold text-sm mb-3 text-gray-500 dark:text-gray-400 uppercase tracking-wider">
         Contents

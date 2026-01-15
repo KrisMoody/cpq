@@ -573,6 +573,7 @@ const sections: TocSection[] = [
   { id: 'glossary', label: 'Glossary', icon: 'i-heroicons-book-open' },
   { id: 'enums', label: 'Enums', icon: 'i-heroicons-list-bullet' },
   { id: 'relationships', label: 'Relationships', icon: 'i-heroicons-arrows-right-left' },
+  { id: 'quiz', label: 'Quiz', icon: 'i-heroicons-academic-cap' },
   { id: 'tips', label: 'Tips', icon: 'i-heroicons-light-bulb' },
 ]
 
@@ -585,6 +586,7 @@ const sectionStates = ref<Record<string, boolean>>({
   'glossary': true,
   'enums': true,
   'relationships': true,
+  'quiz': true,
   'tips': true,
 })
 
@@ -923,6 +925,16 @@ const activeTab = ref('interactive')
         icon="i-heroicons-arrows-right-left"
       >
         <LearnRelationshipCards />
+      </LearnCollapsibleSection>
+
+      <!-- Quiz -->
+      <LearnCollapsibleSection
+        id="quiz"
+        v-model="sectionStates['quiz']"
+        title="Test Your Knowledge"
+        icon="i-heroicons-academic-cap"
+      >
+        <LearnQuiz />
       </LearnCollapsibleSection>
 
       <!-- Quick Tips -->
