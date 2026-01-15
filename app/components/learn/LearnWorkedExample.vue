@@ -112,13 +112,13 @@ function prevStep() {
     </p>
 
     <div class="flex flex-col lg:flex-row gap-6">
-      <!-- Step Navigation -->
-      <div class="lg:w-56 flex-shrink-0">
-        <div class="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0">
+      <!-- Step Navigation - Hidden on mobile, shown on lg+ -->
+      <div class="hidden lg:block lg:w-56 flex-shrink-0">
+        <div class="flex flex-col gap-2">
           <button
             v-for="(step, i) in steps"
             :key="i"
-            class="relative flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left min-w-[160px] lg:min-w-0 cursor-pointer"
+            class="relative flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left cursor-pointer"
             :class="i === currentStep
               ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300'
               : i < currentStep
@@ -137,8 +137,26 @@ function prevStep() {
               <UIcon v-if="i < currentStep" name="i-heroicons-check" class="w-4 h-4" />
               <span v-else>{{ i + 1 }}</span>
             </div>
-            <span class="text-sm font-medium truncate">{{ step.title }}</span>
+            <span class="text-sm font-medium">{{ step.title }}</span>
           </button>
+        </div>
+      </div>
+
+      <!-- Mobile Step Indicator -->
+      <div class="lg:hidden flex items-center justify-between bg-gray-100 dark:bg-gray-800 rounded-lg p-3">
+        <span class="text-sm font-medium">Step {{ currentStep + 1 }} of {{ steps.length }}</span>
+        <div class="flex gap-1">
+          <button
+            v-for="(_, i) in steps"
+            :key="i"
+            class="w-2 h-2 rounded-full transition-colors"
+            :class="i === currentStep
+              ? 'bg-primary-500'
+              : i < currentStep
+                ? 'bg-green-500'
+                : 'bg-gray-300 dark:bg-gray-600'"
+            @click="currentStep = i"
+          />
         </div>
       </div>
 
@@ -172,10 +190,10 @@ function prevStep() {
             </div>
 
             <!-- Calculation -->
-            <div v-if="currentStepData.calculation" class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
-              <div class="flex items-center gap-2 text-blue-700 dark:text-blue-300">
-                <UIcon name="i-heroicons-calculator" class="w-4 h-4" />
-                <code class="text-sm font-mono">{{ currentStepData.calculation }}</code>
+            <div v-if="currentStepData.calculation" class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 overflow-hidden">
+              <div class="flex items-start gap-2 text-blue-700 dark:text-blue-300">
+                <UIcon name="i-heroicons-calculator" class="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <code class="text-sm font-mono break-words overflow-wrap-anywhere">{{ currentStepData.calculation }}</code>
               </div>
             </div>
 

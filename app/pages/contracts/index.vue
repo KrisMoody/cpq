@@ -30,28 +30,28 @@ function formatDate(date: string) {
 
 <template>
   <div class="space-y-6">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold">Contracts</h1>
         <p class="text-gray-500">Manage customer pricing contracts</p>
       </div>
-      <UButton to="/contracts/new" icon="i-heroicons-plus">
+      <UButton to="/contracts/new" icon="i-heroicons-plus" class="w-full sm:w-auto">
         New Contract
       </UButton>
     </div>
 
     <!-- Filters -->
-    <div class="flex items-center gap-4">
-      <div class="inline-flex rounded-md shadow-sm">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+      <div class="flex flex-wrap gap-1 sm:gap-0 sm:inline-flex sm:rounded-md sm:shadow-sm">
         <UButton
           v-for="(option, index) in statusOptions"
           :key="option.value"
           :variant="statusFilter === option.value ? 'solid' : 'ghost'"
           size="sm"
           :class="[
-            index === 0 ? 'rounded-r-none' : '',
-            index === statusOptions.length - 1 ? 'rounded-l-none' : '',
-            index !== 0 && index !== statusOptions.length - 1 ? 'rounded-none' : ''
+            'sm:rounded-none',
+            index === 0 ? 'sm:rounded-l-md' : '',
+            index === statusOptions.length - 1 ? 'sm:rounded-r-md' : ''
           ]"
           @click="statusFilter = option.value"
         >
@@ -81,9 +81,9 @@ function formatDate(date: string) {
       <UButton to="/contracts/new" variant="soft">Create your first contract</UButton>
     </div>
 
-    <!-- Contracts Table -->
-    <UCard v-else>
-      <div class="overflow-x-auto">
+    <!-- Contracts Table - Desktop -->
+    <template v-else>
+      <div class="hidden md:block overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
           <thead class="bg-gray-50 dark:bg-gray-900">
             <tr>
@@ -150,6 +150,61 @@ function formatDate(date: string) {
           </tbody>
         </table>
       </div>
-    </UCard>
+
+      <!-- Contracts Card List - Mobile -->
+      <div class="md:hidden space-y-3">
+        <div
+          v-for="contract in contracts"
+          :key="contract.id"
+          class="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-4"
+        >
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0 flex-1">
+              <NuxtLink
+                :to="`/contracts/${contract.id}`"
+                class="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+              >
+                {{ contract.name }}
+              </NuxtLink>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                <NuxtLink :to="`/customers/${contract.customer.id}`" class="hover:underline">
+                  {{ contract.customer.name }}
+                </NuxtLink>
+                <span v-if="contract.customer.company"> · {{ contract.customer.company }}</span>
+              </p>
+            </div>
+            <div class="flex gap-1">
+              <UButton
+                :to="`/contracts/${contract.id}`"
+                variant="ghost"
+                size="xs"
+                icon="i-heroicons-pencil"
+              />
+              <UButton
+                variant="ghost"
+                size="xs"
+                color="error"
+                icon="i-heroicons-trash"
+                @click="handleDelete(contract.id)"
+              />
+            </div>
+          </div>
+          <div class="mt-3 text-sm text-gray-600 dark:text-gray-400">
+            <p>{{ formatDate(contract.startDate) }} - {{ formatDate(contract.endDate) }}</p>
+            <p v-if="contract.discountPercent" class="mt-1">
+              Discount: <span class="font-medium">{{ contract.discountPercent }}%</span>
+            </p>
+            <p v-if="contract.priceEntryCount" class="text-xs text-gray-500 mt-1">
+              {{ contract.priceEntryCount }} custom price{{ contract.priceEntryCount !== 1 ? 's' : '' }}
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 mt-3">
+            <UBadge :color="getStatusColor(contract.status)" variant="subtle">
+              {{ contract.status }}
+            </UBadge>
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
 </template>

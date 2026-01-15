@@ -34,34 +34,34 @@ const statusOptions = computed(() => [
 
 <template>
   <div class="space-y-6">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold">Quotes</h1>
         <p class="text-gray-500">Manage sales quotes</p>
       </div>
 
       <div class="flex items-center gap-2">
-        <UButton to="/quote-layouts" variant="ghost" icon="i-heroicons-squares-2x2">
+        <UButton to="/quote-layouts" variant="ghost" icon="i-heroicons-squares-2x2" class="flex-1 sm:flex-none">
           Manage Layouts
         </UButton>
-        <UButton to="/quotes/new" icon="i-heroicons-plus">
+        <UButton to="/quotes/new" icon="i-heroicons-plus" class="flex-1 sm:flex-none">
           New Quote
         </UButton>
       </div>
     </div>
 
     <!-- Filters -->
-    <div class="flex items-center gap-4">
-      <div class="inline-flex rounded-md shadow-sm">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+      <div class="flex flex-wrap gap-1 sm:gap-0 sm:inline-flex sm:rounded-md sm:shadow-sm">
         <UButton
           v-for="(option, index) in statusOptions"
           :key="option.value"
           :variant="statusFilter === option.value ? 'solid' : 'ghost'"
           size="sm"
           :class="[
-            index === 0 ? 'rounded-r-none' : '',
-            index === statusOptions.length - 1 ? 'rounded-l-none' : '',
-            index !== 0 && index !== statusOptions.length - 1 ? 'rounded-none' : ''
+            'sm:rounded-none',
+            index === 0 ? 'sm:rounded-l-md' : '',
+            index === statusOptions.length - 1 ? 'sm:rounded-r-md' : ''
           ]"
           @click="statusFilter = option.value as typeof statusFilter"
         >
@@ -69,11 +69,13 @@ const statusOptions = computed(() => [
         </UButton>
       </div>
 
-      <span class="text-sm text-gray-500">
-        {{ filteredQuotes.length }} quote{{ filteredQuotes.length !== 1 ? 's' : '' }}
-      </span>
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-gray-500">
+          {{ filteredQuotes.length }} quote{{ filteredQuotes.length !== 1 ? 's' : '' }}
+        </span>
 
-      <UCheckbox v-model="showCancelled" label="Show cancelled" />
+        <UCheckbox v-model="showCancelled" label="Show cancelled" />
+      </div>
     </div>
 
     <!-- Loading State -->

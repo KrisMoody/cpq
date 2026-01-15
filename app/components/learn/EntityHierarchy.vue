@@ -5,6 +5,20 @@ const ApexChart = defineAsyncComponent(() =>
   import('vue3-apexcharts').then((m) => m.default)
 )
 
+// Detect mobile viewport
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
+const isMobile = computed(() => windowWidth.value < 640)
+
+onMounted(() => {
+  const handleResize = () => {
+    windowWidth.value = window.innerWidth
+  }
+  window.addEventListener('resize', handleResize)
+  onUnmounted(() => {
+    window.removeEventListener('resize', handleResize)
+  })
+})
+
 // ASSERTION: vue3-apexcharts type definitions don't include 'treemap' but ApexCharts supports it
 // See: https://apexcharts.com/docs/chart-types/treemap-chart/
 const chartType = 'treemap'
@@ -156,17 +170,28 @@ const series = ref([
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full space-y-4">
+    <!-- Mobile notice -->
+    <div class="md:hidden p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+      <div class="flex items-start gap-3">
+        <UIcon name="i-heroicons-device-phone-mobile" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+        <div>
+          <p class="text-sm font-medium text-blue-800 dark:text-blue-200">Best viewed on larger screens</p>
+          <p class="text-xs text-blue-600 dark:text-blue-300 mt-1">This treemap visualization is easier to explore on tablet or desktop.</p>
+        </div>
+      </div>
+    </div>
+
     <ClientOnly>
       <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
       <ApexChart
         :type="(chartType as any)"
-        height="550"
+        :height="isMobile ? 400 : 550"
         :options="chartOptions"
         :series="series"
       />
       <template #fallback>
-        <div class="h-[350px] flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg">
+        <div class="h-[350px] sm:h-[550px] flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg">
           <p class="text-gray-500">Loading chart...</p>
         </div>
       </template>

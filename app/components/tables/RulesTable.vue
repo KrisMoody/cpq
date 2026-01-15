@@ -81,7 +81,8 @@ function getTypeColor(type: string) {
       class="max-w-sm"
     />
 
-    <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
+    <!-- Desktop Table -->
+    <div class="hidden md:block overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
         <thead class="bg-gray-50 dark:bg-gray-900">
           <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
@@ -166,6 +167,52 @@ function getTypeColor(type: string) {
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Mobile Card List -->
+    <div class="md:hidden space-y-3">
+      <div
+        v-for="row in table.getRowModel().rows"
+        :key="row.id"
+        class="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-4"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0 flex-1">
+            <NuxtLink
+              :to="`/rules/${row.original.id}`"
+              class="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+            >
+              {{ row.original.name }}
+            </NuxtLink>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+              {{ row.original.trigger.replace('ON_', '').replace(/_/g, ' ') }}
+            </p>
+          </div>
+          <div class="flex gap-1">
+            <UButton
+              :to="`/rules/${row.original.id}`"
+              variant="ghost"
+              size="xs"
+              icon="i-heroicons-pencil-square"
+            />
+            <UButton
+              variant="ghost"
+              size="xs"
+              color="error"
+              icon="i-heroicons-trash"
+              @click="emit('delete', row.original.id)"
+            />
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 mt-3">
+          <UBadge :color="getTypeColor(row.original.type)" variant="subtle">
+            {{ row.original.type }}
+          </UBadge>
+          <UBadge :color="row.original.isActive ? 'success' : 'neutral'" variant="subtle">
+            {{ row.original.isActive ? 'Active' : 'Inactive' }}
+          </UBadge>
+        </div>
+      </div>
     </div>
 
     <p v-if="table.getRowModel().rows.length === 0" class="text-center text-gray-500 py-4">
