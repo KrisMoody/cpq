@@ -43,14 +43,20 @@ export function useBreadcrumbs(navigation: NavItem[]): ComputedRef<BreadcrumbIte
     const result = findNavItemForPath(navigation, path)
 
     if (result) {
-      // Add section header if present
+      // Add section header if present (with link if it has a route)
       if (result.section) {
-        items.push({ label: result.section.label })
+        items.push({
+          label: result.section.label,
+          to: result.section.to,
+        })
       }
 
-      // Add group if present
+      // Add group if present (with link if it has a route)
       if (result.group) {
-        items.push({ label: result.group.label })
+        items.push({
+          label: result.group.label,
+          to: result.group.to,
+        })
       }
 
       // Add the matched nav item (with link if not current page)
