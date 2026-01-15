@@ -191,6 +191,9 @@ watch(() => route.path, autoExpandActiveGroup, { immediate: true })
 watch(() => route.path, () => {
   mobileMenuOpen.value = false
 })
+
+// Breadcrumbs
+const breadcrumbs = useBreadcrumbs(navigation)
 </script>
 
 <template>
@@ -409,6 +412,38 @@ watch(() => route.path, () => {
       <!-- Main Content Area -->
       <div class="flex-1 lg:pl-64">
         <main class="min-h-screen">
+          <!-- Breadcrumbs -->
+          <nav
+            v-if="breadcrumbs.length > 1"
+            aria-label="Breadcrumb"
+            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-0"
+          >
+            <ol class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 overflow-x-auto">
+              <template v-for="(crumb, index) in breadcrumbs" :key="index">
+                <li class="flex items-center gap-1 whitespace-nowrap">
+                  <UIcon
+                    v-if="index > 0"
+                    name="i-heroicons-chevron-right-20-solid"
+                    class="w-4 h-4 flex-shrink-0 text-gray-400 dark:text-gray-500"
+                  />
+                  <NuxtLink
+                    v-if="crumb.to"
+                    :to="crumb.to"
+                    class="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                  >
+                    {{ crumb.label }}
+                  </NuxtLink>
+                  <span
+                    v-else
+                    :class="index === breadcrumbs.length - 1 ? 'text-gray-900 dark:text-gray-100 font-medium' : ''"
+                  >
+                    {{ crumb.label }}
+                  </span>
+                </li>
+              </template>
+            </ol>
+          </nav>
+
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <slot />
           </div>
