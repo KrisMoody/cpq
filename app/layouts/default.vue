@@ -5,7 +5,7 @@ const route = useRoute()
 const mobileMenuOpen = ref(false)
 
 // Track which groups are expanded (for auto-expand on active route)
-const expandedGroups = ref<string[]>(['catalog', 'configuration'])
+const expandedGroups = ref<string[]>(['catalog', 'configuration', 'learn'])
 
 // Navigation item types
 type NavItem = {
@@ -146,10 +146,84 @@ const navigation: NavItem[] = [
     ],
   },
   {
+    id: 'resources-section',
+    type: 'section',
+    label: 'Resources',
+  },
+  {
     id: 'learn',
+    type: 'group',
     label: 'Learn',
     icon: 'i-heroicons-academic-cap',
     to: '/learn',
+    children: [
+      {
+        id: 'course',
+        label: 'Course',
+        icon: 'i-heroicons-book-open',
+        to: '/learn/course',
+      },
+      {
+        id: 'workflow',
+        label: 'Workflow',
+        icon: 'i-heroicons-arrow-path',
+        to: '/learn/workflow',
+      },
+      {
+        id: 'data-model',
+        label: 'Data Model',
+        icon: 'i-heroicons-circle-stack',
+        to: '/learn/data-model',
+      },
+      {
+        id: 'business-logic',
+        label: 'Business Logic',
+        icon: 'i-heroicons-cog-6-tooth',
+        to: '/learn/business-logic',
+      },
+      {
+        id: 'formulas',
+        label: 'Formulas',
+        icon: 'i-heroicons-calculator',
+        to: '/learn/formulas',
+      },
+      {
+        id: 'example',
+        label: 'Example',
+        icon: 'i-heroicons-play-circle',
+        to: '/learn/example',
+      },
+      {
+        id: 'glossary',
+        label: 'Glossary',
+        icon: 'i-heroicons-book-open',
+        to: '/learn/glossary',
+      },
+      {
+        id: 'enums',
+        label: 'Enums',
+        icon: 'i-heroicons-list-bullet',
+        to: '/learn/enums',
+      },
+      {
+        id: 'relationships',
+        label: 'Relationships',
+        icon: 'i-heroicons-arrows-right-left',
+        to: '/learn/relationships',
+      },
+      {
+        id: 'quiz',
+        label: 'Quiz',
+        icon: 'i-heroicons-academic-cap',
+        to: '/learn/quiz',
+      },
+      {
+        id: 'tips',
+        label: 'Tips',
+        icon: 'i-heroicons-light-bulb',
+        to: '/learn/tips',
+      },
+    ],
   },
 ]
 
