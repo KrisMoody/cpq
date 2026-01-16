@@ -4,6 +4,7 @@ import type { DiscountType, DiscountScope } from '~/generated/prisma/client'
 
 const router = useRouter()
 const { createDiscount } = useDiscounts()
+const { categories, fetchCategories } = useCategories()
 
 const initialFormState = {
   name: '',
@@ -11,6 +12,7 @@ const initialFormState = {
   type: 'PERCENTAGE' as DiscountType,
   value: 10,
   scope: 'LINE_ITEM' as DiscountScope,
+  categoryId: undefined as string | undefined,
   minQuantity: null as number | null,
   maxQuantity: null as number | null,
   minOrderValue: null as number | null,
@@ -22,6 +24,10 @@ const initialFormState = {
   useTiers: false,
   tiers: [] as { minQuantity: number; maxQuantity: number | null; value: number }[],
 }
+
+onMounted(() => {
+  fetchCategories()
+})
 
 const form = ref({ ...initialFormState })
 const initialValues = ref({ ...initialFormState })
@@ -45,7 +51,14 @@ const typeOptions = [
 const scopeOptions = [
   { label: 'Line Item', value: 'LINE_ITEM' },
   { label: 'Quote Total', value: 'QUOTE' },
+  { label: 'Product Category', value: 'PRODUCT_CATEGORY' },
 ]
+
+const categoryOptions = computed(() =>
+  categories.value.map((c) => ({ label: c.name, value: c.id }))
+)
+
+const isCategoryScope = computed(() => form.value.scope === 'PRODUCT_CATEGORY')
 
 function addTier() {
   const lastTier = form.value.tiers[form.value.tiers.length - 1]
@@ -77,6 +90,7 @@ async function handleSubmit() {
       type: form.value.type,
       value: form.value.value,
       scope: form.value.scope,
+      categoryId: isCategoryScope.value ? form.value.categoryId : undefined,
       minQuantity: form.value.minQuantity ?? undefined,
       maxQuantity: form.value.maxQuantity ?? undefined,
       minOrderValue: form.value.minOrderValue ?? undefined,
@@ -154,6 +168,15 @@ async function handleSubmit() {
 
           <UFormField label="Scope">
             <USelect v-model="form.scope" :items="scopeOptions" value-key="value" />
+          </UFormField>
+
+          <UFormField v-if="isCategoryScope" label="Category" required hint="Discount applies only to products in this category">
+            <USelect
+              v-model="form.categoryId"
+              :items="categoryOptions"
+              value-key="value"
+              placeholder="Select a category"
+            />
           </UFormField>
         </div>
 

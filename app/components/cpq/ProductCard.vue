@@ -39,10 +39,15 @@ const typeColor = computed(() => {
 
     <template #footer>
       <div class="flex justify-between items-center">
-        <UBadge v-if="!product.isActive" color="warning" variant="subtle" size="xs">
-          Inactive
-        </UBadge>
-        <span v-else class="text-xs text-gray-400">Active</span>
+        <div class="flex items-center gap-2">
+          <UBadge v-if="!product.isActive" color="warning" variant="subtle" size="xs">
+            Inactive
+          </UBadge>
+          <span v-else class="text-xs text-gray-400">Active</span>
+          <UBadge v-if="!product.isTaxable" color="info" variant="subtle" size="xs">
+            Non-Taxable
+          </UBadge>
+        </div>
         <UButton
           :to="`/products/${product.id}`"
           size="sm"

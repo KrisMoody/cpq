@@ -7,6 +7,7 @@ export interface ContractPriceEntry {
   contractId: string
   productId: string
   fixedPrice: string
+  standardPrice?: string | null
   product: {
     id: string
     name: string

@@ -14,6 +14,7 @@ const initialFormState = {
   billingFrequency: 'ONE_TIME' as BillingFrequency,
   customBillingMonths: null as number | null,
   defaultTermMonths: null as number | null,
+  isTaxable: true,
   unitOfMeasureId: null as string | null,
 }
 
@@ -79,6 +80,7 @@ async function handleSubmit() {
       billingFrequency: form.value.billingFrequency,
       customBillingMonths: form.value.customBillingMonths || undefined,
       defaultTermMonths: form.value.defaultTermMonths || undefined,
+      isTaxable: form.value.isTaxable,
       unitOfMeasureId: form.value.unitOfMeasureId || undefined,
     })
 
@@ -207,6 +209,12 @@ async function handleSubmit() {
               value-key="value"
             />
           </UFormField>
+
+          <UCheckbox
+            v-model="form.isTaxable"
+            label="Taxable"
+            hint="Uncheck for products exempt from sales tax (e.g., some services, digital goods)"
+          />
         </div>
 
         <div class="flex justify-end gap-3 pt-4">

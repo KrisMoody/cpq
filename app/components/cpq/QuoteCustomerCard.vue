@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { Customer as _Customer } from '~/composables/useCustomers'
 
-defineProps<{
+const props = defineProps<{
   customer: {
     id: string
     name: string
     company?: string | null
     email?: string | null
+    isTaxExempt?: boolean
+    taxExemptExpiry?: string | null
   } | null
   priceBook?: {
     id: string
@@ -18,6 +20,18 @@ defineProps<{
 const emit = defineEmits<{
   'change-customer': []
 }>()
+
+// Check if tax exemption is expired
+const isTaxExemptionExpired = computed(() => {
+  if (!props.customer?.isTaxExempt || !props.customer?.taxExemptExpiry) return false
+  return new Date(props.customer.taxExemptExpiry) < new Date()
+})
+
+// Format expiry date
+const taxExemptExpiryFormatted = computed(() => {
+  if (!props.customer?.taxExemptExpiry) return null
+  return new Date(props.customer.taxExemptExpiry).toLocaleDateString()
+})
 </script>
 
 <template>
@@ -56,6 +70,22 @@ const emit = defineEmits<{
       <div v-if="priceBook" class="flex items-center gap-2 text-sm text-gray-500">
         <UIcon name="i-heroicons-book-open" class="w-4 h-4" />
         Price Book: {{ priceBook.name }}
+      </div>
+
+      <!-- Tax Exemption Status -->
+      <div v-if="customer.isTaxExempt" class="flex items-center gap-2">
+        <UBadge
+          :color="isTaxExemptionExpired ? 'warning' : 'success'"
+          variant="subtle"
+          size="sm"
+        >
+          <UIcon name="i-heroicons-receipt-percent" class="w-3 h-3 mr-1" />
+          Tax Exempt
+          <span v-if="isTaxExemptionExpired" class="ml-1">(Expired)</span>
+        </UBadge>
+        <span v-if="taxExemptExpiryFormatted && !isTaxExemptionExpired" class="text-xs text-gray-500">
+          Expires: {{ taxExemptExpiryFormatted }}
+        </span>
       </div>
     </div>
 

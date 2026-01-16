@@ -244,9 +244,15 @@ const isEditable = computed(() => quote.value?.status === 'DRAFT')
 
 const availableProducts = computed(() => {
   return products.value.map((p) => ({
-    label: `${p.name} (${p.sku})`,
+    label: `${p.name} (${p.sku})${p.isTaxable === false ? ' [Non-Taxable]' : ''}`,
     value: p.id,
+    isTaxable: p.isTaxable,
   }))
+})
+
+const selectedProduct = computed(() => {
+  if (!selectedProductId.value) return null
+  return products.value.find((p) => p.id === selectedProductId.value) || null
 })
 
 const quoteSubtotal = computed(() => {
@@ -483,6 +489,8 @@ async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
             :tcv="quote.tcv"
             :applied-discounts="quote.appliedDiscounts"
             :is-tax-exempt="quote.customer?.isTaxExempt"
+            :has-customer="!!quote.customer"
+            :customer-has-location="!!quote.customer?.country"
             :editable="isEditable"
             @apply-discount="openDiscountModal()"
           />
@@ -544,6 +552,21 @@ async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
                 value-key="value"
               />
             </UFormField>
+
+            <!-- Show taxable status for selected product -->
+            <div v-if="selectedProduct" class="flex items-center gap-2">
+              <UBadge
+                :color="selectedProduct.isTaxable ? 'neutral' : 'info'"
+                variant="subtle"
+                size="sm"
+              >
+                <UIcon :name="selectedProduct.isTaxable ? 'i-heroicons-receipt-percent' : 'i-heroicons-receipt-percent'" class="w-3 h-3 mr-1" />
+                {{ selectedProduct.isTaxable ? 'Taxable' : 'Non-Taxable' }}
+              </UBadge>
+              <span v-if="!selectedProduct.isTaxable" class="text-xs text-gray-500">
+                This product will not incur sales tax
+              </span>
+            </div>
 
             <UFormField label="Quantity">
               <UInput

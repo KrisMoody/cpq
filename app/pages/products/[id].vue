@@ -44,6 +44,7 @@ const form = ref({
   billingFrequency: 'ONE_TIME' as BillingFrequency,
   customBillingMonths: null as number | null,
   defaultTermMonths: null as number | null,
+  isTaxable: true,
   isActive: true,
   unitOfMeasureId: null as string | null,
 })
@@ -105,6 +106,7 @@ async function loadProduct() {
       billingFrequency: product.value.billingFrequency || 'ONE_TIME',
       customBillingMonths: product.value.customBillingMonths || null,
       defaultTermMonths: product.value.defaultTermMonths || null,
+      isTaxable: product.value.isTaxable ?? true,
       isActive: product.value.isActive,
       unitOfMeasureId: product.value.unitOfMeasureId || null,
     }
@@ -170,6 +172,7 @@ async function handleSave() {
       billingFrequency: form.value.billingFrequency,
       customBillingMonths: form.value.customBillingMonths || null,
       defaultTermMonths: form.value.defaultTermMonths || null,
+      isTaxable: form.value.isTaxable,
       isActive: form.value.isActive,
       unitOfMeasureId: form.value.unitOfMeasureId || null,
     })
@@ -198,6 +201,7 @@ function cancelEdit() {
       billingFrequency: product.value.billingFrequency || 'ONE_TIME',
       customBillingMonths: product.value.customBillingMonths || null,
       defaultTermMonths: product.value.defaultTermMonths || null,
+      isTaxable: product.value.isTaxable ?? true,
       isActive: product.value.isActive,
       unitOfMeasureId: product.value.unitOfMeasureId || null,
     }
@@ -653,6 +657,9 @@ async function handleSaveAttributes() {
           </p>
         </div>
         <div class="flex items-center gap-2">
+          <UBadge v-if="!product.isTaxable" color="info" variant="subtle">
+            Non-Taxable
+          </UBadge>
           <UBadge v-if="!product.isActive" color="warning" variant="subtle">
             Inactive
           </UBadge>
@@ -728,6 +735,12 @@ async function handleSaveAttributes() {
           <UFormField label="Unit of Measure" hint="How this product is measured and priced">
             <USelect v-model="form.unitOfMeasureId" :items="unitOptions" value-key="value" />
           </UFormField>
+
+          <UCheckbox
+            v-model="form.isTaxable"
+            label="Taxable"
+            hint="Uncheck for products exempt from sales tax (e.g., some services, digital goods)"
+          />
 
           <UCheckbox v-model="form.isActive" label="Active" />
 

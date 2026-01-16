@@ -472,7 +472,9 @@ function formatDate(date: string) {
               <tr>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">SKU</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Standard Price</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contract Price</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Savings</th>
                 <th class="px-4 py-3"/>
               </tr>
             </thead>
@@ -490,6 +492,12 @@ function formatDate(date: string) {
                 <td class="px-4 py-3 text-sm text-gray-500">
                   {{ entry.product.sku }}
                 </td>
+                <td class="px-4 py-3 text-sm">
+                  <span v-if="entry.standardPrice" class="text-gray-500">
+                    {{ formatPrice(entry.standardPrice) }}
+                  </span>
+                  <span v-else class="text-gray-400 italic">N/A</span>
+                </td>
                 <td class="px-4 py-3">
                   <div v-if="editingPriceId === entry.id" class="flex items-center gap-2">
                     <UInput
@@ -504,6 +512,24 @@ function formatDate(date: string) {
                     <UButton variant="ghost" size="xs" @click="cancelEditPrice">Cancel</UButton>
                   </div>
                   <span v-else class="font-medium">{{ formatPrice(entry.fixedPrice) }}</span>
+                </td>
+                <td class="px-4 py-3">
+                  <template v-if="entry.standardPrice">
+                    <span
+                      v-if="parseFloat(entry.fixedPrice) < parseFloat(entry.standardPrice)"
+                      class="text-green-600 font-medium"
+                    >
+                      -{{ ((1 - parseFloat(entry.fixedPrice) / parseFloat(entry.standardPrice)) * 100).toFixed(1) }}%
+                    </span>
+                    <span
+                      v-else-if="parseFloat(entry.fixedPrice) > parseFloat(entry.standardPrice)"
+                      class="text-red-600 font-medium"
+                    >
+                      +{{ ((parseFloat(entry.fixedPrice) / parseFloat(entry.standardPrice) - 1) * 100).toFixed(1) }}%
+                    </span>
+                    <span v-else class="text-gray-400">Same</span>
+                  </template>
+                  <span v-else class="text-gray-400">-</span>
                 </td>
                 <td class="px-4 py-3">
                   <div v-if="editingPriceId !== entry.id" class="flex justify-end gap-2">

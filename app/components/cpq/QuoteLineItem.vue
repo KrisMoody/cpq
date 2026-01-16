@@ -155,7 +155,17 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
           <UIcon name="i-heroicons-arrow-turn-down-right" class="w-4 h-4" />
         </div>
         <div class="min-w-0">
-          <p class="font-medium truncate">{{ lineItem.product.name }}</p>
+          <div class="flex items-center gap-2">
+            <p class="font-medium truncate">{{ lineItem.product.name }}</p>
+            <UBadge
+              v-if="lineItem.product.isTaxable === false"
+              color="info"
+              variant="subtle"
+              size="xs"
+            >
+              Non-Taxable
+            </UBadge>
+          </div>
           <p class="text-xs text-gray-500">{{ lineItem.product.sku }}</p>
           <!-- Key Attributes -->
           <div v-if="keyAttributes.length > 0" class="mt-1 flex flex-wrap gap-1">
@@ -207,14 +217,14 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
         </div>
 
         <!-- Unit Price -->
-        <div class="text-right w-24">
+        <div class="text-right w-28">
           <p class="text-xs text-gray-500">Unit Price</p>
           <div class="flex items-center justify-end gap-1">
             <p v-if="contractInfo" class="text-xs text-gray-400 line-through">
               {{ formatPrice(contractInfo.originalPrice) }}
             </p>
             <p class="font-medium" :class="{ 'text-info-600 dark:text-info-400': contractInfo }">
-              {{ formatPrice(lineItem.listPrice) }}
+              {{ formatPrice(lineItem.listPrice) }}<span v-if="lineItem.product.unitOfMeasure" class="text-gray-500 font-normal text-xs">/{{ lineItem.product.unitOfMeasure.abbreviation }}</span>
             </p>
           </div>
         </div>
@@ -260,26 +270,29 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
     </div>
 
     <!-- Contract Pricing Indicator -->
-    <div v-if="contractInfo" class="mt-2 flex flex-wrap gap-1">
-      <UBadge variant="subtle" color="info" size="xs">
-        <UIcon name="i-heroicons-document-check" class="w-3 h-3 mr-1" />
-        Contract:
-        {{ contractInfo.priceType === 'fixed' ? 'Fixed Price' : `${contractInfo.discountPercent}% off` }}
-      </UBadge>
+    <div v-if="contractInfo" class="mt-2 flex flex-wrap items-center gap-2">
+      <NuxtLink :to="`/contracts/${contractInfo.contractId}`" class="hover:opacity-80 transition-opacity">
+        <UBadge variant="subtle" color="info" size="xs">
+          <UIcon name="i-heroicons-document-check" class="w-3 h-3 mr-1" />
+          {{ contractInfo.contractName }}:
+          {{ contractInfo.priceType === 'fixed' ? 'Fixed Price' : `${contractInfo.discountPercent}% off` }}
+        </UBadge>
+      </NuxtLink>
+      <span class="text-xs text-gray-500">(was {{ formatPrice(contractInfo.originalPrice) }})</span>
     </div>
 
-    <!-- Applied Discounts Pills -->
-    <div v-if="hasDiscounts" class="mt-2 flex flex-wrap gap-1">
-      <UBadge
+    <!-- Applied Discounts -->
+    <div v-if="hasDiscounts" class="mt-2 space-y-1">
+      <div
         v-for="discount in lineItem.appliedDiscounts"
         :key="discount.id"
-        variant="subtle"
-        color="error"
-        size="xs"
+        class="flex items-center gap-2 text-sm text-gray-500"
       >
-        {{ discount.discount?.name || 'Manual' }}:
-        {{ discount.type === 'PERCENTAGE' ? `${discount.value}%` : formatPrice(discount.calculatedAmount) }}
-      </UBadge>
+        <span class="text-gray-400">&#8627;</span>
+        <span>{{ discount.discount?.name || 'Manual Discount' }}</span>
+        <span v-if="discount.type === 'PERCENTAGE'" class="text-gray-400">({{ discount.value }}%)</span>
+        <span class="text-red-500 font-medium">-{{ formatPrice(discount.calculatedAmount) }}</span>
+      </div>
     </div>
   </div>
 </template>
