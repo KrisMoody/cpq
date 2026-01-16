@@ -12,7 +12,8 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    databaseUrl: process.env.DATABASE_URL || ''
+    databaseUrl: process.env.DATABASE_URL || '',
+    anthropicApiKey: process.env.ANTHROPIC_API_KEY || ''
   },
 
   nitro: {

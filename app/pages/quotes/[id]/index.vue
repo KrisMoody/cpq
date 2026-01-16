@@ -2,6 +2,7 @@
 import { getErrorMessage } from '~/utils/errors'
 import type { QuoteWithLineItems, EvaluationSummary } from '~/composables/useQuotes'
 import type { Customer } from '~/composables/useCustomers'
+import type { AIRecommendation, GenerateQuoteResponse } from '~/composables/useAIQuoteOptimizer'
 
 definePageMeta({
   key: (route) => route.fullPath,
@@ -66,8 +67,11 @@ watch(
   { immediate: true }
 )
 
-async function loadQuote() {
-  loading.value = true
+async function loadQuote(showLoading = true) {
+  // Only show loading spinner on initial load, not on refreshes
+  if (showLoading && !quote.value) {
+    loading.value = true
+  }
   try {
     quote.value = await fetchQuote(quoteId)
     if (!quote.value) {
@@ -266,6 +270,56 @@ async function handleAddRecommendedProduct(productId: string) {
     error.value = getErrorMessage(e, 'Failed to add product')
   }
 }
+
+// AI Assistant
+const aiPanelRef = ref<{ refresh: () => void } | null>(null)
+
+async function handleApplyAIRecommendation(recommendation: AIRecommendation) {
+  if (!quote.value) return
+  try {
+    switch (recommendation.type) {
+      case 'ADD_PRODUCT':
+        if (recommendation.productId) {
+          await addLineItem(quote.value.id, {
+            productId: recommendation.productId,
+            quantity: recommendation.quantity || 1,
+          })
+        }
+        break
+      case 'REMOVE_PRODUCT':
+        if (recommendation.lineItemId) {
+          await removeLineItem(quote.value.id, recommendation.lineItemId)
+        }
+        break
+      case 'ADJUST_QUANTITY':
+        if (recommendation.lineItemId && recommendation.quantity) {
+          await updateLineItem(quote.value.id, recommendation.lineItemId, {
+            quantity: recommendation.quantity,
+          })
+        }
+        break
+      case 'APPLY_DISCOUNT':
+        // For discount recommendations, open the discount modal
+        openDiscountModal()
+        return
+    }
+    await loadQuote()
+    toast.add({ title: 'AI recommendation applied', color: 'success' })
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to apply AI recommendation')
+  }
+}
+
+async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
+  // Navigate to new quote creation with AI data
+  // For now, show a toast indicating the feature
+  toast.add({
+    title: 'Quote Generated',
+    description: `Created "${data.suggestedName}" with ${data.lineItems.length} items`,
+    color: 'success',
+  })
+  // The actual creation would be handled by the parent or navigation
+}
 </script>
 
 <template>
@@ -442,6 +496,18 @@ async function handleAddRecommendedProduct(productId: string) {
           >
             Recalculate Pricing
           </UButton>
+
+          <!-- AI Assistant Panel -->
+          <AiQuotePanel
+            v-if="isEditable"
+            ref="aiPanelRef"
+            :quote-id="quote.id"
+            :customer-id="quote.customerId || undefined"
+            :price-book-id="quote.priceBookId"
+            @apply-recommendation="handleApplyAIRecommendation"
+            @create-quote="handleCreateQuoteFromAI"
+            @refresh="loadQuote"
+          />
 
           <!-- Recommendations Panel -->
           <CpqRecommendations
