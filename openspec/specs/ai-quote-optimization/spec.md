@@ -18,29 +18,16 @@ The system SHALL support AI-powered quote optimization using Anthropic's Claude 
 ### Requirement: Data Lookup Tools
 The AI service SHALL provide tools for looking up CPQ data to inform recommendations.
 
-#### Scenario: Customer lookup
-- **WHEN** the AI calls `lookupCustomer` with a customer ID
-- **THEN** it receives customer profile, active contracts, and purchase history
+#### Scenario: Product search with full-text matching
+- **WHEN** the AI calls `searchProducts` with a natural language query
+- **THEN** the search uses PostgreSQL full-text search with stemming
+- **AND** plural forms match singular (e.g., "laptops" matches "Laptop")
+- **AND** results are ranked by relevance (name matches > description matches > sku matches)
 
-#### Scenario: Product search
-- **WHEN** the AI calls `searchProducts` with search criteria
-- **THEN** it receives matching products with their attributes and pricing info
-
-#### Scenario: Pricing lookup
-- **WHEN** the AI calls `getPricing` for a product and customer
-- **THEN** it receives pricing tiers, volume discounts, and contract-specific rates
-
-#### Scenario: Quote history lookup
-- **WHEN** the AI calls `getQuoteHistory` for a customer
-- **THEN** it receives historical quotes with statuses, products, and discount patterns
-
-#### Scenario: Product affinity lookup
-- **WHEN** the AI calls `getAffinities` for products in a quote
-- **THEN** it receives cross-sell and upsell recommendations based on purchase patterns
-
-#### Scenario: Discount availability lookup
-- **WHEN** the AI calls `getAvailableDiscounts` for a quote context
-- **THEN** it receives applicable discounts with eligibility criteria
+#### Scenario: Product search fallback
+- **WHEN** full-text search returns no results
+- **THEN** the search falls back to substring matching (ILIKE)
+- **AND** the fallback uses case-insensitive partial matching
 
 ### Requirement: Action Tools
 The AI service SHALL provide tools for modifying quotes based on recommendations.
