@@ -9,21 +9,18 @@ const AUTH_PAGES = [
   '/auth/callback'
 ]
 
-export default defineNuxtRouteMiddleware(async (to) => {
+export default defineNuxtRouteMiddleware((to) => {
   // Skip auth check for auth pages
   if (AUTH_PAGES.some(page => to.path === page || to.path.startsWith(page + '/'))) {
     return
   }
 
-  const auth = useNeonAuth()
+  // Session state is populated by auth.server.ts plugin during SSR
+  // and hydrated to client via useState
+  const { isAuthenticated } = useNeonSession()
 
-  // If not yet initialized, try to fetch session
-  if (!auth.isAuthenticated.value && !auth.loading.value) {
-    await auth.initialize()
-  }
-
-  // If still not authenticated, redirect to login
-  if (!auth.isAuthenticated.value) {
+  // If not authenticated, redirect to login
+  if (!isAuthenticated.value) {
     return navigateTo({
       path: '/login',
       query: { redirect: to.fullPath }

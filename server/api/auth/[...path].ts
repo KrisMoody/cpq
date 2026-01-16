@@ -15,26 +15,29 @@ export default defineEventHandler(async (event) => {
 
   // Get cookies from the incoming request
   const cookie = getHeader(event, 'cookie')
-  const contentType = getHeader(event, 'content-type')
   const origin = getHeader(event, 'origin')
 
   // Build headers to forward
   const headers: Record<string, string> = {}
   if (cookie) headers['cookie'] = cookie
-  if (contentType) headers['content-type'] = contentType
   if (origin) headers['origin'] = origin
 
   // Get request body for POST/PUT/PATCH requests
-  let body: unknown = undefined
+  let body: string | undefined = undefined
   if (['POST', 'PUT', 'PATCH'].includes(event.method)) {
-    body = await readBody(event)
+    const rawBody = await readBody(event)
+    // Always set content-type and body for POST/PUT/PATCH - Neon Auth requires JSON
+    headers['content-type'] = 'application/json'
+    body = rawBody && Object.keys(rawBody).length > 0
+      ? JSON.stringify(rawBody)
+      : '{}'
   }
 
   try {
     const response = await $fetch.raw(targetUrl, {
       method: event.method as 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
       headers,
-      body: body ? JSON.stringify(body) : undefined,
+      body,
       credentials: 'include'
     })
 

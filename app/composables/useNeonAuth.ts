@@ -6,33 +6,21 @@ interface SignUpResult {
 }
 
 export function useNeonAuth() {
-  const user = useState<NeonAuthUser | null>('neon-auth-user', () => null)
-  const session = useState<NeonAuthSession | null>('neon-auth-session', () => null)
+  // Use useNeonSession as the source of truth for SSR-hydrated session data
+  const neonSession = useNeonSession()
+
   const loading = useState<boolean>('neon-auth-loading', () => false)
   const error = useState<string | null>('neon-auth-error', () => null)
   const pendingVerificationEmail = useState<string | null>('neon-auth-pending-email', () => null)
 
-  const isAuthenticated = computed(() => !!user.value && !!session.value)
+  // Derive user/session from the SSR-hydrated useNeonSession
+  const user = computed(() => neonSession.user.value)
+  const session = computed(() => neonSession.session.value)
+  const isAuthenticated = computed(() => neonSession.isAuthenticated.value)
 
   async function refreshSession(): Promise<void> {
-    try {
-      const response = await $fetch<{ user: NeonAuthUser, session: NeonAuthSession }>('/api/auth/get-session', {
-        credentials: 'include'
-      })
-
-      if (response?.user && response?.session) {
-        user.value = response.user
-        session.value = response.session
-      }
-      else {
-        user.value = null
-        session.value = null
-      }
-    }
-    catch {
-      user.value = null
-      session.value = null
-    }
+    // Delegate to useNeonSession's refresh to keep state in sync
+    await neonSession.refresh()
   }
 
   async function signIn(credentials: SignInCredentials): Promise<void> {
@@ -40,16 +28,14 @@ export function useNeonAuth() {
     error.value = null
 
     try {
-      const response = await $fetch<{ user: NeonAuthUser, session: NeonAuthSession }>('/api/auth/sign-in/email', {
+      await $fetch<{ user: NeonAuthUser, session: NeonAuthSession }>('/api/auth/sign-in/email', {
         method: 'POST',
         body: credentials,
         credentials: 'include'
       })
 
-      if (response?.user && response?.session) {
-        user.value = response.user
-        session.value = response.session
-      }
+      // Refresh useNeonSession to sync the new session state
+      await neonSession.refresh()
     }
     catch (e: unknown) {
       const errorData = e as { data?: { message?: string } }
@@ -78,10 +64,9 @@ export function useNeonAuth() {
         return { needsVerification: true, email: credentials.email }
       }
 
-      // If already verified, set the session
+      // If already verified, refresh useNeonSession to sync the new session state
       if (response?.user && response?.session) {
-        user.value = response.user
-        session.value = response.session
+        await neonSession.refresh()
       }
 
       return { needsVerification: false, email: credentials.email }
@@ -110,8 +95,8 @@ export function useNeonAuth() {
       // Ignore errors on sign out
     }
     finally {
-      user.value = null
-      session.value = null
+      // Refresh useNeonSession to clear the session state
+      await neonSession.refresh()
       pendingVerificationEmail.value = null
       loading.value = false
     }
@@ -145,17 +130,15 @@ export function useNeonAuth() {
     error.value = null
 
     try {
-      const response = await $fetch<{ user: NeonAuthUser, session: NeonAuthSession }>('/api/auth/email-otp/verify-email', {
+      await $fetch<{ user: NeonAuthUser, session: NeonAuthSession }>('/api/auth/email-otp/verify-email', {
         method: 'POST',
         body: { email, otp: code },
         credentials: 'include'
       })
 
-      if (response?.user && response?.session) {
-        user.value = response.user
-        session.value = response.session
-        pendingVerificationEmail.value = null
-      }
+      // Refresh useNeonSession to sync the new verified session state
+      await neonSession.refresh()
+      pendingVerificationEmail.value = null
     }
     catch (e: unknown) {
       const errorData = e as { data?: { message?: string } }
@@ -188,14 +171,6 @@ export function useNeonAuth() {
     }
   }
 
-  async function initialize(): Promise<void> {
-    if (import.meta.server) return
-
-    loading.value = true
-    await refreshSession()
-    loading.value = false
-  }
-
   return {
     user,
     session,
@@ -209,7 +184,6 @@ export function useNeonAuth() {
     signInWithOAuth,
     refreshSession,
     verifyEmail,
-    resendVerification,
-    initialize
+    resendVerification
   }
 }
