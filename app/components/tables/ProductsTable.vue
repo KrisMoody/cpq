@@ -116,7 +116,8 @@ const table = useVueTable({
             >
               <template v-if="cell.column.id === 'actions'">
                 <UButton
-                  :to="`/products/${cell.getValue()}`"
+                  v-if="row.original.id"
+                  :to="`/products/${row.original.id}`"
                   variant="ghost"
                   size="xs"
                   icon="i-heroicons-pencil-square"
@@ -124,11 +125,13 @@ const table = useVueTable({
               </template>
               <template v-else-if="cell.column.id === 'name'">
                 <NuxtLink
+                  v-if="row.original.id"
                   :to="`/products/${row.original.id}`"
                   class="text-primary-600 dark:text-primary-400 hover:underline font-medium"
                 >
                   {{ cell.getValue() }}
                 </NuxtLink>
+                <span v-else class="font-medium">{{ cell.getValue() }}</span>
               </template>
               <template v-else-if="cell.column.id === 'type'">
                 <UBadge
@@ -173,16 +176,19 @@ const table = useVueTable({
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0 flex-1">
             <NuxtLink
+              v-if="row.original.id"
               :to="`/products/${row.original.id}`"
               class="text-primary-600 dark:text-primary-400 hover:underline font-medium"
             >
               {{ row.original.name }}
             </NuxtLink>
+            <span v-else class="font-medium">{{ row.original.name }}</span>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
               SKU: {{ row.original.sku }}
             </p>
           </div>
           <UButton
+            v-if="row.original.id"
             :to="`/products/${row.original.id}`"
             variant="ghost"
             size="xs"
