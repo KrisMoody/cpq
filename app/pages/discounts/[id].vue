@@ -5,6 +5,7 @@ import type { DiscountType, DiscountScope } from '~/generated/prisma/client'
 const _route = useRoute()
 const router = useRouter()
 const { fetchDiscount, updateDiscount, deleteDiscount } = useDiscounts()
+const { categories, fetchCategories } = useCategories()
 
 const discountId = useRequiredParam('id')
 const discount = ref<Awaited<ReturnType<typeof fetchDiscount>> | null>(null)
@@ -18,6 +19,7 @@ const form = ref({
   type: 'PERCENTAGE' as DiscountType,
   value: 10,
   scope: 'LINE_ITEM' as DiscountScope,
+  categoryId: undefined as string | undefined,
   minQuantity: null as number | null,
   maxQuantity: null as number | null,
   minOrderValue: null as number | null,
@@ -37,10 +39,17 @@ const typeOptions = [
 const scopeOptions = [
   { label: 'Line Item', value: 'LINE_ITEM' },
   { label: 'Quote Total', value: 'QUOTE' },
+  { label: 'Product Category', value: 'PRODUCT_CATEGORY' },
 ]
 
+const categoryOptions = computed(() =>
+  categories.value.map((c) => ({ label: c.name, value: c.id }))
+)
+
+const isCategoryScope = computed(() => form.value.scope === 'PRODUCT_CATEGORY')
+
 onMounted(async () => {
-  await loadDiscount()
+  await Promise.all([loadDiscount(), fetchCategories()])
 })
 
 async function loadDiscount() {
@@ -55,6 +64,7 @@ async function loadDiscount() {
         type: discount.value.type,
         value: Number(discount.value.value),
         scope: discount.value.scope,
+        categoryId: discount.value.categoryId || undefined,
         minQuantity: discount.value.minQuantity,
         maxQuantity: discount.value.maxQuantity,
         minOrderValue: discount.value.minOrderValue ? Number(discount.value.minOrderValue) : null,
@@ -107,6 +117,7 @@ async function handleSave() {
       type: form.value.type,
       value: form.value.value,
       scope: form.value.scope,
+      categoryId: isCategoryScope.value ? (form.value.categoryId ?? null) : null,
       minQuantity: form.value.minQuantity,
       maxQuantity: form.value.maxQuantity,
       minOrderValue: form.value.minOrderValue,
@@ -147,6 +158,7 @@ function cancelEdit() {
       type: discount.value.type,
       value: Number(discount.value.value),
       scope: discount.value.scope,
+      categoryId: discount.value.categoryId || undefined,
       minQuantity: discount.value.minQuantity,
       maxQuantity: discount.value.maxQuantity,
       minOrderValue: discount.value.minOrderValue ? Number(discount.value.minOrderValue) : null,
@@ -236,6 +248,15 @@ function cancelEdit() {
 
           <UFormField label="Scope">
             <USelect v-model="form.scope" :items="scopeOptions" value-key="value" />
+          </UFormField>
+
+          <UFormField v-if="isCategoryScope" label="Category" required hint="Discount applies only to products in this category">
+            <USelect
+              v-model="form.categoryId"
+              :items="categoryOptions"
+              value-key="value"
+              placeholder="Select a category"
+            />
           </UFormField>
         </div>
 

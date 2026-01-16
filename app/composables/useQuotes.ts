@@ -30,6 +30,7 @@ export interface QuoteLineItem {
     name: string
     sku: string
     type: string
+    isTaxable?: boolean
   }
   childLines?: QuoteLineItem[]
   appliedDiscounts?: AppliedDiscount[]
@@ -66,6 +67,8 @@ export interface Quote {
     isTaxExempt?: boolean
     taxExemptReason?: string | null
     taxExemptExpiry?: string | null
+    country?: string | null
+    state?: string | null
   }
   priceBook: {
     id: string

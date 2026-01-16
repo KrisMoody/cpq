@@ -23,6 +23,8 @@ export default defineEventHandler(async (event) => {
           isTaxExempt: true,
           taxExemptReason: true,
           taxExemptExpiry: true,
+          country: true,
+          state: true,
         },
       },
       priceBook: {
@@ -40,6 +42,7 @@ export default defineEventHandler(async (event) => {
               name: true,
               sku: true,
               type: true,
+              isTaxable: true,
               billingFrequency: true,
               customBillingMonths: true,
               defaultTermMonths: true,

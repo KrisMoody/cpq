@@ -16,6 +16,7 @@ export interface Product {
   billingFrequency: BillingFrequency
   customBillingMonths?: number | null
   defaultTermMonths?: number | null
+  isTaxable: boolean
   isActive: boolean
   createdAt: string
   unitOfMeasureId?: string | null
@@ -117,6 +118,7 @@ export function useProducts() {
     billingFrequency?: BillingFrequency
     customBillingMonths?: number
     defaultTermMonths?: number
+    isTaxable?: boolean
     unitOfMeasureId?: string
   }): Promise<Product | null> {
     try {
@@ -142,6 +144,7 @@ export function useProducts() {
       billingFrequency?: BillingFrequency
       customBillingMonths?: number | null
       defaultTermMonths?: number | null
+      isTaxable?: boolean
       isActive?: boolean
       unitOfMeasureId?: string | null
     }

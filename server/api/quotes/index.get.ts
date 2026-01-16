@@ -19,6 +19,8 @@ export default defineEventHandler(async (event) => {
       subtotal: true,
       discountTotal: true,
       total: true,
+      mrr: true,
+      arr: true,
       createdAt: true,
       customer: {
         select: {

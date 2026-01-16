@@ -17,6 +17,7 @@ export interface Discount {
   type: DiscountType
   value: string
   scope: DiscountScope
+  categoryId: string | null
   minQuantity: number | null
   maxQuantity: number | null
   minOrderValue: string | null
@@ -64,6 +65,7 @@ export function useDiscounts() {
     type: DiscountType
     value: number
     scope: DiscountScope
+    categoryId?: string | null
     minQuantity?: number
     maxQuantity?: number
     minOrderValue?: number
@@ -95,6 +97,7 @@ export function useDiscounts() {
       type: DiscountType
       value: number
       scope: DiscountScope
+      categoryId: string | null
       minQuantity: number | null
       maxQuantity: number | null
       minOrderValue: number | null

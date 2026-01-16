@@ -20,6 +20,8 @@ const props = defineProps<{
   }>
   isTaxExempt?: boolean
   editable?: boolean
+  hasCustomer?: boolean
+  customerHasLocation?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -72,6 +74,21 @@ const tcvNum = computed(() => {
 })
 
 const hasRecurringItems = computed(() => mrrNum.value > 0)
+
+// Determine why tax is not showing
+const taxStatusMessage = computed(() => {
+  if (props.isTaxExempt) return null
+  if (props.taxBreakdown && props.taxBreakdown.length > 0) return null
+  if (taxAmountNum.value > 0) return null
+
+  if (!props.hasCustomer) {
+    return 'Assign a customer to calculate tax'
+  }
+  if (!props.customerHasLocation) {
+    return 'Set customer location to calculate tax'
+  }
+  return 'No applicable tax rates found'
+})
 
 function formatTaxRate(rate: number): string {
   return `${(rate * 100).toFixed(2)}%`
@@ -161,6 +178,14 @@ function formatTaxRate(rate: number): string {
       <div v-else-if="taxAmountNum > 0" class="flex justify-between">
         <span class="text-gray-500">Tax</span>
         <span class="font-medium">{{ formatPrice(taxAmountNum) }}</span>
+      </div>
+
+      <div v-else-if="taxStatusMessage" class="flex justify-between text-sm">
+        <span class="text-gray-400 flex items-center gap-1">
+          <UIcon name="i-heroicons-information-circle" class="w-4 h-4" />
+          Tax
+        </span>
+        <span class="text-gray-400 italic text-xs">{{ taxStatusMessage }}</span>
       </div>
 
       <USeparator />
