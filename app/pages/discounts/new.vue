@@ -137,7 +137,7 @@ async function handleSubmit() {
             />
           </UFormField>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Type">
               <USelect v-model="form.type" :items="typeOptions" value-key="value" />
             </UFormField>
@@ -148,6 +148,7 @@ async function handleSubmit() {
                 type="number"
                 :min="0"
                 :step="form.type === 'PERCENTAGE' ? 1 : 0.01"
+                :class="form.type === 'PERCENTAGE' ? 'w-20' : 'w-40'"
               />
             </UFormField>
           </div>
@@ -161,7 +162,7 @@ async function handleSubmit() {
         <div class="space-y-4">
           <h3 class="text-sm font-medium text-gray-500 uppercase">Thresholds (Optional)</h3>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Min Quantity">
               <UInput
                 v-model.number="form.minQuantity"
@@ -205,10 +206,10 @@ async function handleSubmit() {
               :key="index"
               class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
             >
-              <UFormField label="Min Qty" class="flex-1">
+              <UFormField label="Min Qty" class="w-28">
                 <UInput v-model.number="tier.minQuantity" type="number" :min="1" />
               </UFormField>
-              <UFormField label="Max Qty" class="flex-1">
+              <UFormField label="Max Qty" class="w-28">
                 <UInput
                   v-model.number="tier.maxQuantity"
                   type="number"
@@ -216,7 +217,7 @@ async function handleSubmit() {
                   placeholder="No max"
                 />
               </UFormField>
-              <UFormField :label="form.type === 'PERCENTAGE' ? '%' : '$'" class="flex-1">
+              <UFormField :label="form.type === 'PERCENTAGE' ? '%' : '$'" :class="form.type === 'PERCENTAGE' ? 'w-20' : 'w-40'">
                 <UInput v-model.number="tier.value" type="number" :min="0" />
               </UFormField>
               <UButton
@@ -244,7 +245,7 @@ async function handleSubmit() {
         <div class="space-y-4">
           <h3 class="text-sm font-medium text-gray-500 uppercase">Validity Period (Optional)</h3>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Valid From">
               <UInput v-model="form.validFrom" type="date" />
             </UFormField>
@@ -259,9 +260,9 @@ async function handleSubmit() {
         <div class="space-y-4">
           <h3 class="text-sm font-medium text-gray-500 uppercase">Settings</h3>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Priority" hint="Lower numbers apply first">
-              <UInput v-model.number="form.priority" type="number" />
+              <UInput v-model.number="form.priority" type="number" class="w-28" />
             </UFormField>
 
             <div class="space-y-2 pt-6">

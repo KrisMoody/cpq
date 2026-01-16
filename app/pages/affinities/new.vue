@@ -237,7 +237,7 @@ async function handleSubmit() {
           </UFormField>
 
           <UFormField label="Priority" hint="Lower values are higher priority">
-            <UInput v-model.number="form.priority" type="number" min="1" />
+            <UInput v-model.number="form.priority" type="number" min="1" class="w-28" />
           </UFormField>
 
           <UFormField>

@@ -287,6 +287,7 @@ async function applyManualDiscount() {
                 :min="0"
                 :max="discountType === 'PERCENTAGE' ? 100 : undefined"
                 step="0.01"
+                :class="discountType === 'PERCENTAGE' ? 'w-20' : 'w-40'"
               />
               <template #hint>
                 <span v-if="discountType === 'PERCENTAGE' && discountValue > 100" class="text-red-500">

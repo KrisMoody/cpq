@@ -957,11 +957,11 @@ async function handleSaveAttributes() {
               <UInput v-model="featureForm.name" placeholder="e.g., Storage, Color, Processor" />
             </UFormField>
 
-            <div class="grid grid-cols-2 gap-4">
-              <UFormField label="Min Options">
+            <div class="flex gap-4">
+              <UFormField label="Min Options" class="w-28">
                 <UInput v-model.number="featureForm.minOptions" type="number" min="0" />
               </UFormField>
-              <UFormField label="Max Options">
+              <UFormField label="Max Options" class="w-28">
                 <UInput v-model.number="featureForm.maxOptions" type="number" min="1" />
               </UFormField>
             </div>
@@ -995,11 +995,11 @@ async function handleSaveAttributes() {
               />
             </UFormField>
 
-            <div class="grid grid-cols-2 gap-4">
-              <UFormField label="Min Quantity">
+            <div class="flex gap-4">
+              <UFormField label="Min Quantity" class="w-28">
                 <UInput v-model.number="optionForm.minQty" type="number" min="1" />
               </UFormField>
-              <UFormField label="Max Quantity">
+              <UFormField label="Max Quantity" class="w-28">
                 <UInput v-model.number="optionForm.maxQty" type="number" min="1" />
               </UFormField>
             </div>

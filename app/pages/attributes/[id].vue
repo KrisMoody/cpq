@@ -240,7 +240,7 @@ async function handleDelete() {
         </template>
 
         <div class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="text-sm text-gray-500">Type</label>
               <p class="font-medium">{{ getTypeLabel(attribute.type) }}</p>
@@ -251,7 +251,7 @@ async function handleDelete() {
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="text-sm text-gray-500">Required</label>
               <p class="font-medium">{{ attribute.isRequired ? 'Yes' : 'No' }}</p>
@@ -277,7 +277,7 @@ async function handleDelete() {
           </div>
 
           <!-- NUMBER Constraints -->
-          <div v-if="attribute.type === 'NUMBER' && numberConstraints" class="grid grid-cols-2 gap-4">
+          <div v-if="attribute.type === 'NUMBER' && numberConstraints" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div v-if="numberConstraints.min !== undefined">
               <label class="text-sm text-gray-500">Minimum</label>
               <p class="font-medium">{{ numberConstraints.min }}</p>
@@ -289,7 +289,7 @@ async function handleDelete() {
           </div>
 
           <!-- TEXT Constraints -->
-          <div v-if="attribute.type === 'TEXT' && textConstraints" class="grid grid-cols-2 gap-4">
+          <div v-if="attribute.type === 'TEXT' && textConstraints" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div v-if="textConstraints.minLength !== undefined">
               <label class="text-sm text-gray-500">Min Length</label>
               <p class="font-medium">{{ textConstraints.minLength }}</p>
@@ -309,7 +309,7 @@ async function handleDelete() {
         </template>
 
         <form class="space-y-6" @submit.prevent="handleSubmit">
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Name" required>
               <UInput v-model="form.name" placeholder="e.g., Color, Weight" />
             </UFormField>
@@ -319,7 +319,7 @@ async function handleDelete() {
             </UFormField>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Type" required>
               <USelect
                 v-model="form.type"
@@ -375,7 +375,7 @@ async function handleDelete() {
           </div>
 
           <!-- NUMBER Constraints -->
-          <div v-if="form.type === 'NUMBER'" class="grid grid-cols-2 gap-4">
+          <div v-if="form.type === 'NUMBER'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Minimum Value">
               <UInput v-model.number="form.constraints.min" type="number" placeholder="No minimum" />
             </UFormField>
@@ -385,7 +385,7 @@ async function handleDelete() {
           </div>
 
           <!-- TEXT Constraints -->
-          <div v-if="form.type === 'TEXT'" class="grid grid-cols-2 gap-4">
+          <div v-if="form.type === 'TEXT'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Min Length">
               <UInput v-model.number="form.constraints.minLength" type="number" min="0" placeholder="No minimum" />
             </UFormField>
@@ -399,7 +399,7 @@ async function handleDelete() {
           </div>
 
           <UFormField label="Sort Order">
-            <UInput v-model.number="form.sortOrder" type="number" min="0" class="w-32" />
+            <UInput v-model.number="form.sortOrder" type="number" min="0" class="w-28" />
           </UFormField>
 
           <div class="flex justify-end gap-3 pt-4">

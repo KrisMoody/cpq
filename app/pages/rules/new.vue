@@ -170,7 +170,7 @@ async function handleSubmit() {
             />
           </UFormField>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Type">
               <USelect v-model="form.type" :items="typeOptions" value-key="value" />
             </UFormField>
@@ -180,7 +180,7 @@ async function handleSubmit() {
             </UFormField>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Priority" hint="Lower numbers run first">
               <UInput v-model.number="form.priority" type="number" />
             </UFormField>

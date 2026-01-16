@@ -224,7 +224,7 @@ function cancelEdit() {
             <UTextarea v-model="form.description" :rows="2" />
           </UFormField>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Type">
               <USelect v-model="form.type" :items="typeOptions" value-key="value" />
             </UFormField>
@@ -243,7 +243,7 @@ function cancelEdit() {
         <div class="space-y-4">
           <h3 class="text-sm font-medium text-gray-500 uppercase">Thresholds</h3>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Min Quantity">
               <UInput v-model.number="form.minQuantity" type="number" :min="1" />
             </UFormField>
@@ -297,7 +297,7 @@ function cancelEdit() {
         <div class="space-y-4">
           <h3 class="text-sm font-medium text-gray-500 uppercase">Validity Period</h3>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Valid From">
               <UInput v-model="form.validFrom" type="date" />
             </UFormField>
@@ -312,7 +312,7 @@ function cancelEdit() {
         <div class="space-y-4">
           <h3 class="text-sm font-medium text-gray-500 uppercase">Settings</h3>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Priority">
               <UInput v-model.number="form.priority" type="number" />
             </UFormField>
