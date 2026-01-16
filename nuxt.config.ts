@@ -23,12 +23,6 @@ export default defineNuxtConfig({
   nitro: {
     // Note: @prisma/client alias removed - imports use generated client directly
     // The new prisma-client generator requires @prisma/client/runtime to remain unaliased
-    serverAssets: [
-      {
-        baseName: 'course',
-        dir: './docs/course'
-      }
-    ]
   },
 
   routeRules: {

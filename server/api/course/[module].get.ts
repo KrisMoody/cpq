@@ -1,21 +1,4 @@
-const ALLOWED_MODULES = [
-  '00-introduction',
-  '01-cpq-foundations',
-  '02-product-catalog',
-  '03-attribute-system',
-  '04-price-books',
-  '05-customers-contracts',
-  '06-quote-building',
-  '07-discounts',
-  '08-rules-engine',
-  '09-tax-management',
-  '10-multi-currency',
-  '11-guided-selling',
-  '12-architecture',
-  '13-capstone',
-  'appendix-data-models',
-  'appendix-glossary',
-]
+import { ALLOWED_MODULES, getCourseContent } from '../../utils/courseContent'
 
 export default defineEventHandler(async (event) => {
   const moduleId = getRouterParam(event, 'module')
@@ -35,24 +18,18 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const filename = `${moduleId}.md`
-  const storage = useStorage('assets:course')
+  const content = await getCourseContent(moduleId)
 
-  try {
-    const content = await storage.getItem<string>(filename)
-    if (!content) {
-      throw new Error('Content not found')
-    }
-    return {
-      id: moduleId,
-      filename,
-      content,
-    }
-  }
-  catch {
+  if (!content) {
     throw createError({
       statusCode: 404,
       message: 'Module not found',
     })
+  }
+
+  return {
+    id: moduleId,
+    filename: `${moduleId}.md`,
+    content,
   }
 })
