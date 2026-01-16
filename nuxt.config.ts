@@ -13,7 +13,11 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     databaseUrl: process.env.DATABASE_URL || '',
-    anthropicApiKey: process.env.ANTHROPIC_API_KEY || ''
+    anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
+    neonAuthUrl: process.env.NEON_AUTH_URL || '',
+    public: {
+      neonAuthUrl: process.env.NEON_AUTH_URL || ''
+    }
   },
 
   nitro: {

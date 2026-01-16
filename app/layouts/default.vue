@@ -216,7 +216,10 @@ const breadcrumbs = useBreadcrumbs(navigation)
           <UIcon name="i-heroicons-squares-2x2" class="w-6 h-6 text-primary-500" />
           <span class="font-semibold">CPQ Learning</span>
         </NuxtLink>
-        <UColorModeButton variant="ghost" size="sm" />
+        <div class="flex items-center gap-1">
+          <UColorModeButton variant="ghost" size="sm" />
+          <AuthUserMenu />
+        </div>
       </div>
     </header>
 
@@ -303,13 +306,6 @@ const breadcrumbs = useBreadcrumbs(navigation)
           </ul>
         </nav>
 
-        <!-- Sidebar Footer -->
-        <div class="border-t border-gray-200 dark:border-gray-800 p-4">
-          <div class="flex items-center justify-between">
-            <span class="text-xs text-gray-500">Color Mode</span>
-            <UColorModeButton variant="ghost" size="xs" />
-          </div>
-        </div>
       </aside>
 
       <!-- Mobile Sidebar (Slideover) -->
@@ -402,19 +398,18 @@ const breadcrumbs = useBreadcrumbs(navigation)
               </ul>
             </nav>
 
-            <!-- Mobile Sidebar Footer -->
-            <div class="border-t border-gray-200 dark:border-gray-800 p-4">
-              <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-500">Color Mode</span>
-                <UColorModeButton variant="ghost" size="sm" />
-              </div>
-            </div>
           </div>
         </template>
       </USlideover>
 
       <!-- Main Content Area -->
       <div class="flex-1 lg:pl-64">
+        <!-- Desktop Top Navigation -->
+        <header class="hidden lg:flex sticky top-0 z-40 h-16 items-center justify-end gap-2 px-6 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+          <UColorModeButton variant="ghost" size="sm" />
+          <AuthUserMenu />
+        </header>
+
         <main class="min-h-screen">
           <!-- Breadcrumbs -->
           <nav

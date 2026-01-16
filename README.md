@@ -39,6 +39,12 @@ A proof-of-concept CPQ (Configure, Price, Quote) application built with modern w
 - **Customer Price Books** - Assign specific price books to customers
 - **Tax Exemption Handling** - Track exemption certificates and expiry dates
 
+### Authentication
+- **Neon Auth Integration** - Secure authentication using Neon's managed auth service
+- **Email/Password Authentication** - User registration with email verification
+- **Session Management** - HTTP-only cookie-based sessions
+- **Route Protection** - All routes protected by default
+
 ## Tech Stack
 
 - **Frontend**: [Nuxt 4](https://nuxt.com/) with [Vue 3](https://vuejs.org/)
@@ -47,6 +53,7 @@ A proof-of-concept CPQ (Configure, Price, Quote) application built with modern w
 - **Charts**: [ApexCharts](https://apexcharts.com/) via vue3-apexcharts
 - **Database**: PostgreSQL with [Prisma ORM](https://www.prisma.io/)
 - **Database Hosting**: [Neon](https://neon.tech/) (serverless Postgres)
+- **Authentication**: [Neon Auth](https://neon.com/docs/auth/overview) (managed auth service)
 
 ## Project Structure
 
@@ -92,10 +99,13 @@ A proof-of-concept CPQ (Configure, Price, Quote) application built with modern w
    cp .env.example .env
    ```
 
-   Update `.env` with your database connection string:
+   Update `.env` with your connection strings:
    ```
    DATABASE_URL="postgresql://..."
+   NEON_AUTH_URL="https://<project-id>.<region>.neon.tech/auth"
    ```
+
+   Get your `NEON_AUTH_URL` from the Neon dashboard under the Auth tab.
 
 4. Push database schema:
    ```bash
@@ -141,6 +151,36 @@ Preview the production build:
 ```bash
 yarn preview
 ```
+
+## Authentication
+
+This project uses [Neon Auth](https://neon.com/docs/auth/overview) for authentication. The integration includes:
+
+- **Login/Register pages** - Email/password authentication with mandatory email verification
+- **Session management** - Secure HTTP-only cookie-based sessions
+- **Route protection** - All routes protected by default (client + server middleware)
+- **User menu** - User dropdown in sidebar with sign out
+
+### Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `NEON_AUTH_URL` | Neon Auth service URL (from Neon dashboard) |
+| `ANTHROPIC_API_KEY` | Optional - for AI features |
+
+### Adding OAuth Providers (Future)
+
+OAuth is prepared in the architecture but not enabled initially. To add OAuth:
+1. Configure providers in the Neon Auth dashboard
+2. Add provider buttons to login/register pages
+3. The `signInWithOAuth(provider)` method is already available in `useNeonAuth()`
+
+### Adding Public Routes (Future)
+
+Currently all routes require authentication. To add public routes:
+1. Update `AUTH_PAGES` array in `app/middleware/auth.global.ts`
+2. Optionally exclude paths in `server/middleware/01.auth.ts`
 
 ## License
 
