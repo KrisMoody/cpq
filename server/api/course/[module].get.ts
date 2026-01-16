@@ -1,6 +1,3 @@
-import { readFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
-
 const ALLOWED_MODULES = [
   '00-introduction',
   '01-cpq-foundations',
@@ -39,10 +36,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const filename = `${moduleId}.md`
-  const coursePath = resolve(process.cwd(), 'docs', 'course', filename)
+  const storage = useStorage('assets:course')
 
   try {
-    const content = await readFile(coursePath, 'utf-8')
+    const content = await storage.getItem<string>(filename)
+    if (!content) {
+      throw new Error('Content not found')
+    }
     return {
       id: moduleId,
       filename,
