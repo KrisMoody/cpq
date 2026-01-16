@@ -137,8 +137,9 @@ const categoryOptions = computed(() => {
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <NuxtLink
         v-for="product in filteredProducts"
-        :key="product.id"
-        :to="`/products/${product.id}`"
+        :key="product.id || product.sku"
+        :to="product.id ? `/products/${product.id}` : '#'"
+        :class="{ 'pointer-events-none': !product.id }"
       >
         <CpqProductCard :product="product" />
       </NuxtLink>
