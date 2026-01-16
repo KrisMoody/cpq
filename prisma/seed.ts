@@ -237,6 +237,36 @@ async function main() {
     },
   })
 
+  const unitApiCall = await prisma.unitOfMeasure.create({
+    data: {
+      name: 'API Call',
+      abbreviation: 'call',
+    },
+  })
+
+  const unitGB = await prisma.unitOfMeasure.create({
+    data: {
+      name: 'Gigabyte',
+      abbreviation: 'GB',
+    },
+  })
+
+  const unitProject = await prisma.unitOfMeasure.create({
+    data: {
+      name: 'Project',
+      abbreviation: 'proj',
+    },
+  })
+
+  const unitQuarter = await prisma.unitOfMeasure.create({
+    data: {
+      name: 'Quarter',
+      abbreviation: 'qtr',
+      baseUnitId: unitMonth.id,
+      conversionFactor: 3, // 1 quarter = 3 months
+    },
+  })
+
   console.log('  ✓ Created units of measure')
 
   // ============================================================================
@@ -290,6 +320,160 @@ async function main() {
     data: {
       name: 'Bundles',
       description: 'Pre-configured product bundles',
+      sortOrder: 2,
+    },
+  })
+
+  // Networking category with subcategories
+  const networkingCategory = await prisma.category.create({
+    data: {
+      name: 'Networking',
+      description: 'Network infrastructure and connectivity',
+      sortOrder: 3,
+    },
+  })
+
+  const routersCategory = await prisma.category.create({
+    data: {
+      name: 'Routers',
+      description: 'Network routers and gateways',
+      parentId: networkingCategory.id,
+      sortOrder: 0,
+    },
+  })
+
+  const switchesCategory = await prisma.category.create({
+    data: {
+      name: 'Switches',
+      description: 'Network switches and hubs',
+      parentId: networkingCategory.id,
+      sortOrder: 1,
+    },
+  })
+
+  const wirelessCategory = await prisma.category.create({
+    data: {
+      name: 'Wireless',
+      description: 'Wireless access points and adapters',
+      parentId: networkingCategory.id,
+      sortOrder: 2,
+    },
+  })
+
+  // Security category with subcategories
+  const securityCategory = await prisma.category.create({
+    data: {
+      name: 'Security',
+      description: 'Security software and hardware',
+      sortOrder: 4,
+    },
+  })
+
+  const securitySoftwareCategory = await prisma.category.create({
+    data: {
+      name: 'Security Software',
+      description: 'Security platforms and tools',
+      parentId: securityCategory.id,
+      sortOrder: 0,
+    },
+  })
+
+  const securityHardwareCategory = await prisma.category.create({
+    data: {
+      name: 'Security Hardware',
+      description: 'Hardware security devices',
+      parentId: securityCategory.id,
+      sortOrder: 1,
+    },
+  })
+
+  // Data & Analytics category with subcategories
+  const dataAnalyticsCategory = await prisma.category.create({
+    data: {
+      name: 'Data & Analytics',
+      description: 'Data platforms and analytics services',
+      sortOrder: 5,
+    },
+  })
+
+  const analyticsPlatformsCategory = await prisma.category.create({
+    data: {
+      name: 'Analytics Platforms',
+      description: 'Business intelligence and analytics tools',
+      parentId: dataAnalyticsCategory.id,
+      sortOrder: 0,
+    },
+  })
+
+  const dataServicesCategory = await prisma.category.create({
+    data: {
+      name: 'Data Services',
+      description: 'Data storage and processing services',
+      parentId: dataAnalyticsCategory.id,
+      sortOrder: 1,
+    },
+  })
+
+  // Professional Services category with subcategories
+  const professionalServicesCategory = await prisma.category.create({
+    data: {
+      name: 'Professional Services',
+      description: 'Consulting, implementation, and support services',
+      sortOrder: 6,
+    },
+  })
+
+  const consultingCategory = await prisma.category.create({
+    data: {
+      name: 'Consulting',
+      description: 'Expert consulting and advisory services',
+      parentId: professionalServicesCategory.id,
+      sortOrder: 0,
+    },
+  })
+
+  const managedServicesCategory = await prisma.category.create({
+    data: {
+      name: 'Managed Services',
+      description: 'Ongoing managed service offerings',
+      parentId: professionalServicesCategory.id,
+      sortOrder: 1,
+    },
+  })
+
+  const _trainingEnablementCategory = await prisma.category.create({
+    data: {
+      name: 'Training & Enablement',
+      description: 'Training programs and enablement services',
+      parentId: professionalServicesCategory.id,
+      sortOrder: 2,
+    },
+  })
+
+  // Accessories subcategories
+  const inputDevicesCategory = await prisma.category.create({
+    data: {
+      name: 'Input Devices',
+      description: 'Keyboards, mice, and other input devices',
+      parentId: accessoriesCategory.id,
+      sortOrder: 0,
+    },
+  })
+
+  const audioVideoCategory = await prisma.category.create({
+    data: {
+      name: 'Audio/Video',
+      description: 'Webcams, headsets, and audio equipment',
+      parentId: accessoriesCategory.id,
+      sortOrder: 1,
+    },
+  })
+
+  const dockingConnectivityCategory = await prisma.category.create({
+    data: {
+      name: 'Docking & Connectivity',
+      description: 'USB hubs, docks, and stands',
+      parentId: accessoriesCategory.id,
       sortOrder: 2,
     },
   })
@@ -603,6 +787,108 @@ async function main() {
     },
   })
 
+  // Networking Products
+  const enterpriseRouter = await prisma.product.create({
+    data: {
+      name: 'Enterprise Router',
+      description: 'High-performance enterprise router with advanced security features, 10Gbps throughput',
+      sku: 'NET-RTR-ENT',
+      type: ProductType.STANDALONE,
+      unitOfMeasureId: unitEach.id,
+    },
+  })
+
+  const managedSwitch24 = await prisma.product.create({
+    data: {
+      name: 'Managed Switch 24-Port',
+      description: '24-port Gigabit managed switch with PoE+ support',
+      sku: 'NET-SW-24P',
+      type: ProductType.STANDALONE,
+      unitOfMeasureId: unitEach.id,
+    },
+  })
+
+  const managedSwitch48 = await prisma.product.create({
+    data: {
+      name: 'Managed Switch 48-Port',
+      description: '48-port Gigabit managed switch with PoE+ and 10G uplinks',
+      sku: 'NET-SW-48P',
+      type: ProductType.STANDALONE,
+      unitOfMeasureId: unitEach.id,
+    },
+  })
+
+  const wirelessAP = await prisma.product.create({
+    data: {
+      name: 'Wireless Access Point Pro',
+      description: 'Enterprise Wi-Fi 6E access point with mesh capability',
+      sku: 'NET-WAP-PRO',
+      type: ProductType.STANDALONE,
+      unitOfMeasureId: unitEach.id,
+    },
+  })
+
+  const networkCableKit = await prisma.product.create({
+    data: {
+      name: 'Network Cable Kit',
+      description: 'Professional network cable kit with Cat6a cables, patch panel, and tools',
+      sku: 'NET-CABLE-KIT',
+      type: ProductType.STANDALONE,
+      unitOfMeasureId: unitEach.id,
+    },
+  })
+
+  // Peripheral Products
+  const mechanicalKeyboard = await prisma.product.create({
+    data: {
+      name: 'Mechanical Keyboard Pro',
+      description: 'Programmable mechanical keyboard with Cherry MX switches and RGB backlighting',
+      sku: 'ACC-KB-MECH',
+      type: ProductType.STANDALONE,
+      unitOfMeasureId: unitEach.id,
+    },
+  })
+
+  const ergonomicMouse = await prisma.product.create({
+    data: {
+      name: 'Ergonomic Mouse',
+      description: 'Wireless ergonomic mouse with adjustable DPI and programmable buttons',
+      sku: 'ACC-MOUSE-ERGO',
+      type: ProductType.STANDALONE,
+      unitOfMeasureId: unitEach.id,
+    },
+  })
+
+  const hdWebcam = await prisma.product.create({
+    data: {
+      name: 'HD Webcam 4K',
+      description: '4K webcam with auto-focus, noise-canceling microphone, and privacy shutter',
+      sku: 'ACC-CAM-4K',
+      type: ProductType.STANDALONE,
+      unitOfMeasureId: unitEach.id,
+    },
+  })
+
+  const noiseCancelingHeadset = await prisma.product.create({
+    data: {
+      name: 'Noise-Canceling Headset',
+      description: 'Professional noise-canceling headset with boom microphone for calls',
+      sku: 'ACC-HEAD-NC',
+      type: ProductType.STANDALONE,
+      unitOfMeasureId: unitEach.id,
+    },
+  })
+
+  const securityKey2Pack = await prisma.product.create({
+    data: {
+      name: 'Hardware Security Key 2-Pack',
+      description: 'FIDO2/WebAuthn compatible hardware security keys for MFA',
+      sku: 'SEC-KEY-2PK',
+      type: ProductType.STANDALONE,
+      unitOfMeasureId: unitEach.id,
+    },
+  })
+
   console.log('  ✓ Created standalone products')
 
   // ============================================================================
@@ -715,6 +1001,159 @@ async function main() {
     },
   })
 
+  // Security Platform Subscription Products
+  const securityPlatformBasic = await prisma.product.create({
+    data: {
+      name: 'Security Platform - Basic',
+      description: 'Essential security monitoring with threat detection, vulnerability scanning, and compliance reporting',
+      sku: 'SEC-PLAT-BASIC',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.MONTHLY,
+      defaultTermMonths: 12,
+      unitOfMeasureId: unitSeat.id,
+    },
+  })
+
+  const securityPlatformPro = await prisma.product.create({
+    data: {
+      name: 'Security Platform - Pro',
+      description: 'Advanced security with SIEM integration, incident response, and 24/7 monitoring',
+      sku: 'SEC-PLAT-PRO',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.MONTHLY,
+      defaultTermMonths: 12,
+      unitOfMeasureId: unitSeat.id,
+    },
+  })
+
+  const securityPlatformEnterprise = await prisma.product.create({
+    data: {
+      name: 'Security Platform - Enterprise',
+      description: 'Full security suite with SOC services, threat hunting, custom integrations, and dedicated security team',
+      sku: 'SEC-PLAT-ENT',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.ANNUAL,
+      defaultTermMonths: 36,
+      unitOfMeasureId: unitSeat.id,
+    },
+  })
+
+  // Data Analytics Subscription Products
+  const analyticsSuiteStarter = await prisma.product.create({
+    data: {
+      name: 'Analytics Suite - Starter',
+      description: 'Self-service analytics with dashboards, basic visualizations, and 10GB data storage',
+      sku: 'DATA-ANALYTICS-START',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.MONTHLY,
+      defaultTermMonths: 12,
+      unitOfMeasureId: unitMonth.id,
+    },
+  })
+
+  const analyticsSuiteBusiness = await prisma.product.create({
+    data: {
+      name: 'Analytics Suite - Business',
+      description: 'Team analytics with collaboration, advanced visualizations, ML insights, and 100GB storage',
+      sku: 'DATA-ANALYTICS-BIZ',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.MONTHLY,
+      defaultTermMonths: 12,
+      unitOfMeasureId: unitSeat.id,
+    },
+  })
+
+  const analyticsSuiteEnterprise = await prisma.product.create({
+    data: {
+      name: 'Analytics Suite - Enterprise',
+      description: 'Enterprise analytics with unlimited seats, custom ML models, data governance, and unlimited storage',
+      sku: 'DATA-ANALYTICS-ENT',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.ANNUAL,
+      defaultTermMonths: 36,
+      unitOfMeasureId: unitYear.id,
+    },
+  })
+
+  // Usage-Based Products
+  const apiGatewayPayg = await prisma.product.create({
+    data: {
+      name: 'API Gateway - Pay As You Go',
+      description: 'Managed API gateway with rate limiting, authentication, and analytics. Billed per 1000 API calls.',
+      sku: 'API-GW-PAYG',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.MONTHLY,
+      unitOfMeasureId: unitApiCall.id,
+    },
+  })
+
+  const cloudStorageMetered = await prisma.product.create({
+    data: {
+      name: 'Cloud Storage - Metered',
+      description: 'Scalable cloud storage with automatic tiering and global replication. Billed per GB/month.',
+      sku: 'CLOUD-STORAGE-GB',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.MONTHLY,
+      unitOfMeasureId: unitGB.id,
+    },
+  })
+
+  // Professional Services
+  const securityAssessment = await prisma.product.create({
+    data: {
+      name: 'Security Assessment',
+      description: 'Comprehensive security audit including penetration testing, vulnerability assessment, and remediation roadmap',
+      sku: 'SVC-SEC-ASSESS',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.ONE_TIME,
+      unitOfMeasureId: unitProject.id,
+    },
+  })
+
+  const managedSecurityService = await prisma.product.create({
+    data: {
+      name: 'Managed Security Service',
+      description: 'Ongoing managed security operations with 24/7 monitoring, incident response, and monthly reporting',
+      sku: 'SVC-SEC-MANAGED',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.MONTHLY,
+      unitOfMeasureId: unitMonth.id,
+    },
+  })
+
+  const dataMigrationServices = await prisma.product.create({
+    data: {
+      name: 'Data Migration Services',
+      description: 'Expert data migration services including assessment, planning, execution, and validation',
+      sku: 'SVC-DATA-MIGRATE',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.ONE_TIME,
+      unitOfMeasureId: unitHour.id,
+    },
+  })
+
+  const customIntegrationDev = await prisma.product.create({
+    data: {
+      name: 'Custom Integration Development',
+      description: 'Custom integration development for connecting systems, APIs, and workflows',
+      sku: 'SVC-CUSTOM-INT',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.ONE_TIME,
+      unitOfMeasureId: unitHour.id,
+    },
+  })
+
+  const quarterlyBusinessReview = await prisma.product.create({
+    data: {
+      name: 'Quarterly Business Review',
+      description: 'Strategic quarterly review with executive reporting, optimization recommendations, and roadmap planning',
+      sku: 'SVC-QBR',
+      type: ProductType.STANDALONE,
+      billingFrequency: BillingFrequency.QUARTERLY,
+      unitOfMeasureId: unitQuarter.id,
+    },
+  })
+
   console.log('  ✓ Created subscription products')
 
   // ============================================================================
@@ -748,12 +1187,71 @@ async function main() {
     ],
   })
 
-  // Accessories
+  // Accessories - Docking & Connectivity
   await prisma.productCategory.createMany({
     data: [
-      { productId: usbHub.id, categoryId: accessoriesCategory.id },
-      { productId: laptopStand.id, categoryId: accessoriesCategory.id },
+      { productId: usbHub.id, categoryId: dockingConnectivityCategory.id },
+      { productId: laptopStand.id, categoryId: dockingConnectivityCategory.id },
       { productId: monitor27.id, categoryId: accessoriesCategory.id },
+    ],
+  })
+
+  // Networking Products
+  await prisma.productCategory.createMany({
+    data: [
+      { productId: enterpriseRouter.id, categoryId: routersCategory.id },
+      { productId: managedSwitch24.id, categoryId: switchesCategory.id },
+      { productId: managedSwitch48.id, categoryId: switchesCategory.id },
+      { productId: wirelessAP.id, categoryId: wirelessCategory.id },
+      { productId: networkCableKit.id, categoryId: networkingCategory.id },
+    ],
+  })
+
+  // Peripheral Products - Input Devices
+  await prisma.productCategory.createMany({
+    data: [
+      { productId: mechanicalKeyboard.id, categoryId: inputDevicesCategory.id },
+      { productId: ergonomicMouse.id, categoryId: inputDevicesCategory.id },
+    ],
+  })
+
+  // Peripheral Products - Audio/Video
+  await prisma.productCategory.createMany({
+    data: [
+      { productId: hdWebcam.id, categoryId: audioVideoCategory.id },
+      { productId: noiseCancelingHeadset.id, categoryId: audioVideoCategory.id },
+    ],
+  })
+
+  // Security Products
+  await prisma.productCategory.createMany({
+    data: [
+      { productId: securityKey2Pack.id, categoryId: securityHardwareCategory.id },
+      { productId: securityPlatformBasic.id, categoryId: securitySoftwareCategory.id },
+      { productId: securityPlatformPro.id, categoryId: securitySoftwareCategory.id },
+      { productId: securityPlatformEnterprise.id, categoryId: securitySoftwareCategory.id },
+    ],
+  })
+
+  // Data & Analytics Products
+  await prisma.productCategory.createMany({
+    data: [
+      { productId: analyticsSuiteStarter.id, categoryId: analyticsPlatformsCategory.id },
+      { productId: analyticsSuiteBusiness.id, categoryId: analyticsPlatformsCategory.id },
+      { productId: analyticsSuiteEnterprise.id, categoryId: analyticsPlatformsCategory.id },
+      { productId: apiGatewayPayg.id, categoryId: dataServicesCategory.id },
+      { productId: cloudStorageMetered.id, categoryId: dataServicesCategory.id },
+    ],
+  })
+
+  // Professional Services
+  await prisma.productCategory.createMany({
+    data: [
+      { productId: securityAssessment.id, categoryId: consultingCategory.id },
+      { productId: managedSecurityService.id, categoryId: managedServicesCategory.id },
+      { productId: dataMigrationServices.id, categoryId: consultingCategory.id },
+      { productId: customIntegrationDev.id, categoryId: consultingCategory.id },
+      { productId: quarterlyBusinessReview.id, categoryId: managedServicesCategory.id },
     ],
   })
 
@@ -821,6 +1319,41 @@ async function main() {
       { productId: monitor27.id, attributeId: weightAttr.id, value: 5.2 },
       { productId: monitor27.id, attributeId: warrantyMonthsAttr.id, value: 36 },
       { productId: monitor27.id, attributeId: extendedWarrantyAttr.id, value: true },
+    ],
+  })
+
+  // Networking product attributes
+  await prisma.productAttribute.createMany({
+    data: [
+      { productId: enterpriseRouter.id, attributeId: weightAttr.id, value: 3.2 },
+      { productId: enterpriseRouter.id, attributeId: warrantyMonthsAttr.id, value: 36 },
+      { productId: enterpriseRouter.id, attributeId: extendedWarrantyAttr.id, value: true },
+      { productId: managedSwitch24.id, attributeId: weightAttr.id, value: 2.8 },
+      { productId: managedSwitch24.id, attributeId: warrantyMonthsAttr.id, value: 36 },
+      { productId: managedSwitch48.id, attributeId: weightAttr.id, value: 4.5 },
+      { productId: managedSwitch48.id, attributeId: warrantyMonthsAttr.id, value: 36 },
+      { productId: wirelessAP.id, attributeId: weightAttr.id, value: 0.6 },
+      { productId: wirelessAP.id, attributeId: warrantyMonthsAttr.id, value: 24 },
+      { productId: networkCableKit.id, attributeId: warrantyMonthsAttr.id, value: 12 },
+    ],
+  })
+
+  // Peripheral product attributes
+  await prisma.productAttribute.createMany({
+    data: [
+      { productId: mechanicalKeyboard.id, attributeId: colorAttr.id, value: 'black' },
+      { productId: mechanicalKeyboard.id, attributeId: weightAttr.id, value: 1.1 },
+      { productId: mechanicalKeyboard.id, attributeId: warrantyMonthsAttr.id, value: 24 },
+      { productId: ergonomicMouse.id, attributeId: colorAttr.id, value: 'black' },
+      { productId: ergonomicMouse.id, attributeId: weightAttr.id, value: 0.12 },
+      { productId: ergonomicMouse.id, attributeId: warrantyMonthsAttr.id, value: 24 },
+      { productId: hdWebcam.id, attributeId: colorAttr.id, value: 'black' },
+      { productId: hdWebcam.id, attributeId: weightAttr.id, value: 0.15 },
+      { productId: hdWebcam.id, attributeId: warrantyMonthsAttr.id, value: 24 },
+      { productId: noiseCancelingHeadset.id, attributeId: colorAttr.id, value: 'black' },
+      { productId: noiseCancelingHeadset.id, attributeId: weightAttr.id, value: 0.28 },
+      { productId: noiseCancelingHeadset.id, attributeId: warrantyMonthsAttr.id, value: 24 },
+      { productId: securityKey2Pack.id, attributeId: warrantyMonthsAttr.id, value: 12 },
     ],
   })
 
@@ -897,10 +1430,242 @@ async function main() {
 
   console.log('  ✓ Created Developer Laptop bundle')
 
-  // Add bundle to Bundles category
+  // ============================================================================
+  // Bundle: Remote Worker Kit (Static Bundle)
+  // ============================================================================
+
+  const remoteWorkerKit = await prisma.product.create({
+    data: {
+      name: 'Remote Worker Kit',
+      description: 'Complete home office setup with essential peripherals for productive remote work',
+      sku: 'BUNDLE-REMOTE-KIT',
+      type: ProductType.BUNDLE,
+      features: {
+        create: [
+          {
+            name: 'Laptop Stand',
+            minOptions: 1,
+            maxOptions: 1,
+            sortOrder: 0,
+            options: {
+              create: [
+                { optionProductId: laptopStand.id, isDefault: true, isRequired: true, sortOrder: 0 },
+              ],
+            },
+          },
+          {
+            name: 'Webcam',
+            minOptions: 1,
+            maxOptions: 1,
+            sortOrder: 1,
+            options: {
+              create: [
+                { optionProductId: hdWebcam.id, isDefault: true, isRequired: true, sortOrder: 0 },
+              ],
+            },
+          },
+          {
+            name: 'Keyboard',
+            minOptions: 1,
+            maxOptions: 1,
+            sortOrder: 2,
+            options: {
+              create: [
+                { optionProductId: mechanicalKeyboard.id, isDefault: true, isRequired: true, sortOrder: 0 },
+              ],
+            },
+          },
+          {
+            name: 'Mouse',
+            minOptions: 1,
+            maxOptions: 1,
+            sortOrder: 3,
+            options: {
+              create: [
+                { optionProductId: ergonomicMouse.id, isDefault: true, isRequired: true, sortOrder: 0 },
+              ],
+            },
+          },
+          {
+            name: 'Headset',
+            minOptions: 1,
+            maxOptions: 1,
+            sortOrder: 4,
+            options: {
+              create: [
+                { optionProductId: noiseCancelingHeadset.id, isDefault: true, isRequired: true, sortOrder: 0 },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  })
+
+  console.log('  ✓ Created Remote Worker Kit bundle')
+
+  // ============================================================================
+  // Bundle: Security Starter Pack (Configurable Bundle)
+  // ============================================================================
+
+  const securityStarterPack = await prisma.product.create({
+    data: {
+      name: 'Security Starter Pack',
+      description: 'Essential security bundle with software platform, hardware keys, and support',
+      sku: 'BUNDLE-SEC-STARTER',
+      type: ProductType.BUNDLE,
+      features: {
+        create: [
+          {
+            name: 'Security Software',
+            minOptions: 1,
+            maxOptions: 1,
+            sortOrder: 0,
+            options: {
+              create: [
+                { optionProductId: securityPlatformBasic.id, isDefault: true, sortOrder: 0 },
+                { optionProductId: securityPlatformPro.id, sortOrder: 1 },
+                { optionProductId: securityPlatformEnterprise.id, sortOrder: 2 },
+              ],
+            },
+          },
+          {
+            name: 'Hardware Security Keys',
+            minOptions: 0,
+            maxOptions: 2,
+            sortOrder: 1,
+            options: {
+              create: [
+                { optionProductId: securityKey2Pack.id, sortOrder: 0 },
+              ],
+            },
+          },
+          {
+            name: 'Support Plan',
+            minOptions: 1,
+            maxOptions: 1,
+            sortOrder: 2,
+            options: {
+              create: [
+                { optionProductId: supportBasic.id, isDefault: true, sortOrder: 0 },
+                { optionProductId: supportPremium.id, sortOrder: 1 },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  })
+
+  console.log('  ✓ Created Security Starter Pack bundle')
+
+  // ============================================================================
+  // Bundle: Enterprise Platform Bundle (Configurable Bundle)
+  // ============================================================================
+
+  const enterprisePlatformBundle = await prisma.product.create({
+    data: {
+      name: 'Enterprise Platform Bundle',
+      description: 'Complete enterprise software platform with DevTools, Analytics, Security, and Support',
+      sku: 'BUNDLE-ENT-PLATFORM',
+      type: ProductType.BUNDLE,
+      features: {
+        create: [
+          {
+            name: 'Core Platform (DevTools)',
+            minOptions: 1,
+            maxOptions: 1,
+            sortOrder: 0,
+            options: {
+              create: [
+                { optionProductId: softwareLicenseBasic.id, sortOrder: 0 },
+                { optionProductId: softwareLicensePro.id, isDefault: true, sortOrder: 1 },
+                { optionProductId: softwareLicenseEnterprise.id, sortOrder: 2 },
+              ],
+            },
+          },
+          {
+            name: 'Analytics Add-on',
+            minOptions: 0,
+            maxOptions: 1,
+            sortOrder: 1,
+            options: {
+              create: [
+                { optionProductId: analyticsSuiteStarter.id, sortOrder: 0 },
+                { optionProductId: analyticsSuiteBusiness.id, sortOrder: 1 },
+                { optionProductId: analyticsSuiteEnterprise.id, sortOrder: 2 },
+              ],
+            },
+          },
+          {
+            name: 'Security Add-on',
+            minOptions: 0,
+            maxOptions: 1,
+            sortOrder: 2,
+            options: {
+              create: [
+                { optionProductId: securityPlatformBasic.id, sortOrder: 0 },
+                { optionProductId: securityPlatformPro.id, sortOrder: 1 },
+                { optionProductId: securityPlatformEnterprise.id, sortOrder: 2 },
+              ],
+            },
+          },
+          {
+            name: 'Cloud Hosting',
+            minOptions: 0,
+            maxOptions: 1,
+            sortOrder: 3,
+            options: {
+              create: [
+                { optionProductId: cloudHostingBasic.id, sortOrder: 0 },
+                { optionProductId: cloudHostingPro.id, sortOrder: 1 },
+              ],
+            },
+          },
+          {
+            name: 'Support Plan',
+            minOptions: 1,
+            maxOptions: 1,
+            sortOrder: 4,
+            options: {
+              create: [
+                { optionProductId: supportBasic.id, isDefault: true, sortOrder: 0 },
+                { optionProductId: supportPremium.id, sortOrder: 1 },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  })
+
+  console.log('  ✓ Created Enterprise Platform Bundle')
+
+  // Add bundles to Bundles category
   await prisma.productCategory.create({
     data: {
       productId: developerLaptop.id,
+      categoryId: bundlesCategory.id,
+    },
+  })
+
+  await prisma.productCategory.create({
+    data: {
+      productId: remoteWorkerKit.id,
+      categoryId: bundlesCategory.id,
+    },
+  })
+
+  await prisma.productCategory.create({
+    data: {
+      productId: securityStarterPack.id,
+      categoryId: bundlesCategory.id,
+    },
+  })
+
+  await prisma.productCategory.create({
+    data: {
+      productId: enterprisePlatformBundle.id,
       categoryId: bundlesCategory.id,
     },
   })
@@ -948,6 +1713,39 @@ async function main() {
           // One-time Services
           { productId: implementationService.id, listPrice: 250.00, cost: 150.00 },
           { productId: trainingPackage.id, listPrice: 2000.00, cost: 800.00 },
+          // Networking Products
+          { productId: enterpriseRouter.id, listPrice: 1299.00, cost: 850.00 },
+          { productId: managedSwitch24.id, listPrice: 599.00, cost: 380.00 },
+          { productId: managedSwitch48.id, listPrice: 1199.00, cost: 780.00 },
+          { productId: wirelessAP.id, listPrice: 349.00, cost: 220.00 },
+          { productId: networkCableKit.id, listPrice: 149.00, cost: 75.00 },
+          // Peripheral Products
+          { productId: mechanicalKeyboard.id, listPrice: 179.00, cost: 90.00 },
+          { productId: ergonomicMouse.id, listPrice: 89.00, cost: 45.00 },
+          { productId: hdWebcam.id, listPrice: 199.00, cost: 100.00 },
+          { productId: noiseCancelingHeadset.id, listPrice: 249.00, cost: 125.00 },
+          { productId: securityKey2Pack.id, listPrice: 99.00, cost: 50.00 },
+          // Security Platform Products
+          { productId: securityPlatformBasic.id, listPrice: 19.00, cost: 3.00 },
+          { productId: securityPlatformPro.id, listPrice: 49.00, cost: 8.00 },
+          { productId: securityPlatformEnterprise.id, listPrice: 999.00, cost: 150.00 },
+          // Data Analytics Products
+          { productId: analyticsSuiteStarter.id, listPrice: 99.00, cost: 15.00 },
+          { productId: analyticsSuiteBusiness.id, listPrice: 39.00, cost: 6.00 },
+          { productId: analyticsSuiteEnterprise.id, listPrice: 24999.00, cost: 4000.00 },
+          // Usage-Based Products
+          { productId: apiGatewayPayg.id, listPrice: 0.005, cost: 0.001 }, // Per API call
+          { productId: cloudStorageMetered.id, listPrice: 0.10, cost: 0.03 }, // Per GB
+          // Professional Services
+          { productId: securityAssessment.id, listPrice: 15000.00, cost: 8000.00 },
+          { productId: managedSecurityService.id, listPrice: 2999.00, cost: 1500.00 },
+          { productId: dataMigrationServices.id, listPrice: 275.00, cost: 150.00 },
+          { productId: customIntegrationDev.id, listPrice: 300.00, cost: 165.00 },
+          { productId: quarterlyBusinessReview.id, listPrice: 5000.00, cost: 2500.00 },
+          // New Bundles
+          { productId: remoteWorkerKit.id, listPrice: 699.00, cost: 400.00 },
+          { productId: securityStarterPack.id, listPrice: 0.00, cost: 0.00 }, // Base price, options add cost
+          { productId: enterprisePlatformBundle.id, listPrice: 0.00, cost: 0.00 }, // Base price, options add cost
         ],
       },
     },
@@ -998,6 +1796,39 @@ async function main() {
           // One-time Services (enterprise discount)
           { productId: implementationService.id, listPrice: 225.00, cost: 150.00 },
           { productId: trainingPackage.id, listPrice: 1800.00, cost: 800.00 },
+          // Networking Products (10% enterprise discount)
+          { productId: enterpriseRouter.id, listPrice: 1169.00, cost: 850.00 },
+          { productId: managedSwitch24.id, listPrice: 539.00, cost: 380.00 },
+          { productId: managedSwitch48.id, listPrice: 1079.00, cost: 780.00 },
+          { productId: wirelessAP.id, listPrice: 314.00, cost: 220.00 },
+          { productId: networkCableKit.id, listPrice: 134.00, cost: 75.00 },
+          // Peripheral Products (10% enterprise discount)
+          { productId: mechanicalKeyboard.id, listPrice: 161.00, cost: 90.00 },
+          { productId: ergonomicMouse.id, listPrice: 80.00, cost: 45.00 },
+          { productId: hdWebcam.id, listPrice: 179.00, cost: 100.00 },
+          { productId: noiseCancelingHeadset.id, listPrice: 224.00, cost: 125.00 },
+          { productId: securityKey2Pack.id, listPrice: 89.00, cost: 50.00 },
+          // Security Platform Products (10% enterprise discount)
+          { productId: securityPlatformBasic.id, listPrice: 17.00, cost: 3.00 },
+          { productId: securityPlatformPro.id, listPrice: 44.00, cost: 8.00 },
+          { productId: securityPlatformEnterprise.id, listPrice: 899.00, cost: 150.00 },
+          // Data Analytics Products (10% enterprise discount)
+          { productId: analyticsSuiteStarter.id, listPrice: 89.00, cost: 15.00 },
+          { productId: analyticsSuiteBusiness.id, listPrice: 35.00, cost: 6.00 },
+          { productId: analyticsSuiteEnterprise.id, listPrice: 22499.00, cost: 4000.00 },
+          // Usage-Based Products (10% enterprise discount)
+          { productId: apiGatewayPayg.id, listPrice: 0.0045, cost: 0.001 },
+          { productId: cloudStorageMetered.id, listPrice: 0.09, cost: 0.03 },
+          // Professional Services (10% enterprise discount)
+          { productId: securityAssessment.id, listPrice: 13500.00, cost: 8000.00 },
+          { productId: managedSecurityService.id, listPrice: 2699.00, cost: 1500.00 },
+          { productId: dataMigrationServices.id, listPrice: 247.00, cost: 150.00 },
+          { productId: customIntegrationDev.id, listPrice: 270.00, cost: 165.00 },
+          { productId: quarterlyBusinessReview.id, listPrice: 4500.00, cost: 2500.00 },
+          // New Bundles (10% enterprise discount)
+          { productId: remoteWorkerKit.id, listPrice: 629.00, cost: 400.00 },
+          { productId: securityStarterPack.id, listPrice: 0.00, cost: 0.00 },
+          { productId: enterprisePlatformBundle.id, listPrice: 0.00, cost: 0.00 },
         ],
       },
     },
@@ -2793,6 +3624,116 @@ async function main() {
     },
   })
 
+  // Security Platform Basic → Upsell to Pro
+  await prisma.productAffinity.create({
+    data: {
+      sourceProductId: securityPlatformBasic.id,
+      targetProductId: securityPlatformPro.id,
+      type: AffinityType.UPSELL,
+      priority: 5,
+      isActive: true,
+    },
+  })
+
+  // Security Platform Pro → Cross-sell Security Assessment
+  await prisma.productAffinity.create({
+    data: {
+      sourceProductId: securityPlatformPro.id,
+      targetProductId: securityAssessment.id,
+      type: AffinityType.CROSS_SELL,
+      priority: 15,
+      isActive: true,
+    },
+  })
+
+  // Security Platform Enterprise → Require Managed Security Service
+  await prisma.productAffinity.create({
+    data: {
+      sourceProductId: securityPlatformEnterprise.id,
+      targetProductId: managedSecurityService.id,
+      type: AffinityType.REQUIRED,
+      priority: 1,
+      isActive: true,
+    },
+  })
+
+  // Analytics Starter → Upsell to Business
+  await prisma.productAffinity.create({
+    data: {
+      sourceProductId: analyticsSuiteStarter.id,
+      targetProductId: analyticsSuiteBusiness.id,
+      type: AffinityType.UPSELL,
+      priority: 5,
+      isActive: true,
+    },
+  })
+
+  // Analytics Business → Upsell to Enterprise
+  await prisma.productAffinity.create({
+    data: {
+      sourceProductId: analyticsSuiteBusiness.id,
+      targetProductId: analyticsSuiteEnterprise.id,
+      type: AffinityType.UPSELL,
+      priority: 5,
+      isActive: true,
+    },
+  })
+
+  // Remote Worker Kit → Cross-sell Support Plan
+  await prisma.productAffinity.create({
+    data: {
+      sourceProductId: remoteWorkerKit.id,
+      targetProductId: supportBasic.id,
+      type: AffinityType.CROSS_SELL,
+      priority: 20,
+      isActive: true,
+    },
+  })
+
+  // Enterprise Router → Cross-sell Managed Switch
+  await prisma.productAffinity.create({
+    data: {
+      sourceProductId: enterpriseRouter.id,
+      targetProductId: managedSwitch24.id,
+      type: AffinityType.CROSS_SELL,
+      priority: 10,
+      isActive: true,
+    },
+  })
+
+  // Managed Switch → Cross-sell Wireless AP
+  await prisma.productAffinity.create({
+    data: {
+      sourceProductId: managedSwitch48.id,
+      targetProductId: wirelessAP.id,
+      type: AffinityType.CROSS_SELL,
+      priority: 15,
+      isActive: true,
+    },
+  })
+
+  // Category-based affinity: Networking category → Professional Services
+  await prisma.productAffinity.create({
+    data: {
+      sourceCategoryId: networkingCategory.id,
+      targetCategoryId: professionalServicesCategory.id,
+      type: AffinityType.CROSS_SELL,
+      priority: 90,
+      isActive: true,
+    },
+  })
+
+  // Category-based affinity: Security category → Professional Services
+  await prisma.productAffinity.create({
+    data: {
+      sourceCategoryId: securityCategory.id,
+      targetCategoryId: professionalServicesCategory.id,
+      type: AffinityType.CROSS_SELL,
+      priority: 85,
+      isActive: true,
+    },
+  })
+
   console.log('  ✓ Created product affinities')
 
   // ============================================================================
@@ -3133,20 +4074,21 @@ async function main() {
   console.log('\n✅ Database seeded successfully!')
   console.log(`   - 5 currencies (USD base, EUR, GBP, CAD, AUD)`)
   console.log(`   - 4 exchange rates`)
-  console.log(`   - 9 units of measure (Each, Hour, Day, Month, Year, License, Seat, Box, Unit)`)
-  console.log(`   - 6 categories (hierarchical)`)
+  console.log(`   - 13 units of measure (Each, Hour, Day, Month, Year, License, Seat, Box, Unit, API Call, GB, Project, Quarter)`)
+  console.log(`   - 22 categories (hierarchical with Networking, Security, Data & Analytics, Professional Services)`)
   console.log(`   - 6 tax rates (3 US states, 3 EU countries)`)
   console.log(`   - 3 attribute groups (Physical, Technical, Warranty)`)
   console.log(`   - 7 attributes (color, weight, cores, threads, capacity, warranty, extended warranty)`)
-  console.log(`   - 12 standalone products (hardware)`)
-  console.log(`   - 9 subscription products (software licenses, cloud hosting, support plans, services)`)
-  console.log(`   - 1 bundle product (Developer Laptop Pro)`)
-  console.log(`   - 13 product-category assignments`)
-  console.log(`   - 34 product-attribute assignments`)
-  console.log(`   - 2 price books (Standard + Enterprise) with entries and USD currency`)
+  console.log(`   - 22 standalone products (hardware: networking, peripherals)`)
+  console.log(`   - 22 subscription/service products (security platform, analytics, usage-based, professional services)`)
+  console.log(`   - 4 bundle products (Developer Laptop, Remote Worker Kit, Security Starter Pack, Enterprise Platform)`)
+  console.log(`   - 40+ product-category assignments`)
+  console.log(`   - 55+ product-attribute assignments`)
+  console.log(`   - 2 price books (Standard + Enterprise) with 70+ entries each`)
   console.log(`   - 3 price tiers for volume pricing`)
   console.log(`   - 4 customers (1 tax-exempt)`)
   console.log(`   - 5 rules (2 configuration, 3 pricing)`)
+  console.log(`   - 18 product affinities (cross-sell, upsell, required)`)
   console.log(`   - 5 discounts (including 1 with tiers)`)
   console.log(`   - 25 quotes total for AI training data:`)
   console.log(`     - 1 example quote (DRAFT)`)

@@ -18,12 +18,18 @@ The system SHALL provide a dashboard page at `/` with an overview of CPQ concept
 - **AND** highlight Dashboard as active in the sidebar
 
 ### Requirement: Learn Page
-The system SHALL provide a learning page at `/learn` with interactive CPQ glossary and entity relationship diagrams.
+The system SHALL provide a learning hub page at `/learn` with sections for CPQ course, glossary, diagrams, and interactive tools.
 
 #### Scenario: View learn page
-- **WHEN** user navigates to /learn
-- **THEN** display CPQ glossary with term definitions
-- **AND** display interactive entity relationship diagram using ApexCharts
+- **WHEN** user navigates to `/learn`
+- **THEN** display the Learn hub with collapsible sections
+- **AND** the Course section shows a summary/link to the course hub at `/learn/course`
+- **AND** display remaining sections: Workflow, Data Model, Business Logic, Formulas, Example, Glossary, Enums, Relationships, Quiz, Tips
+
+#### Scenario: Access course from learn page
+- **WHEN** user clicks on the Course section or "View Course" link
+- **THEN** navigate to `/learn/course`
+- **AND** display the full course module list
 
 ### Requirement: Glossary Terms
 The system SHALL display definitions and examples for the following CPQ terms, organized into logical groups:
@@ -1002,12 +1008,13 @@ The system SHALL provide a Quiz section on the Learn page as a collapsible secti
 - **AND** show expand/collapse toggle
 
 ### Requirement: Quiz Question Bank
-The system SHALL provide a question bank with 5-10 questions per CPQ domain and 15-20 questions about concept relationships.
+The system SHALL provide a question bank with 5-10 questions per CPQ domain, 15-20 questions about concept relationships, and additional questions from course checkpoint sections.
 
 #### Scenario: Question bank coverage
 - **WHEN** quiz questions are loaded
 - **THEN** include questions for all glossary groups: Meta, Product, Category, Attribute, Pricing, Currency, Quote, Customer, Contract, Tax, Rules, Discount, Guided Selling
 - **AND** include questions about relationships between concepts
+- **AND** include checkpoint questions from course modules organized by level
 
 #### Scenario: Question format
 - **WHEN** a question is defined
@@ -1286,4 +1293,164 @@ The Units of Measure table SHALL display a mobile card layout showing unit name,
 - **AND** displays abbreviation
 - **AND** displays base unit and conversion factor if applicable
 - **AND** provides action button to view unit
+
+### Requirement: Course Section
+The system SHALL provide a "Course" collapsible section on the Learn page displaying all CPQ course modules from `/docs/course/`.
+
+#### Scenario: View course section
+- **WHEN** user views the Learn page
+- **THEN** display a "Course" collapsible section with icon
+- **AND** the section appears in the table of contents navigation
+- **AND** the section shows a list of all course modules
+
+#### Scenario: Course section content
+- **WHEN** user expands the Course section
+- **THEN** display module cards showing: module number, title, level (Beginner/Intermediate/Advanced), and focus
+- **AND** cards are ordered by module number (00-13)
+- **AND** appendices appear after numbered modules
+
+### Requirement: Course Module List
+The system SHALL display course modules as interactive cards with metadata and progress indicators.
+
+#### Scenario: View module card
+- **WHEN** user views a course module card
+- **THEN** display module number and title
+- **AND** display level badge (Beginner = green, Intermediate = yellow, Advanced = red)
+- **AND** display brief focus description
+- **AND** display progress indicator if module has been started
+
+#### Scenario: Module progress states
+- **WHEN** user has not opened a module
+- **THEN** display "Not Started" indicator (gray)
+- **WHEN** user has opened but not completed a module
+- **THEN** display "In Progress" indicator (blue)
+- **WHEN** user has marked a module as complete
+- **THEN** display "Completed" indicator (green checkmark)
+
+### Requirement: Course Module Viewer
+The system SHALL provide a module viewer component to display rendered course markdown content.
+
+#### Scenario: Open module viewer
+- **WHEN** user clicks on a course module card
+- **THEN** fetch module content from server API
+- **AND** display loading state while fetching
+- **AND** render markdown content with syntax highlighting for code blocks
+- **AND** render Mermaid diagrams where present
+
+#### Scenario: Module navigation
+- **WHEN** user is viewing a module
+- **THEN** display "Previous Module" button (disabled on first module)
+- **AND** display "Next Module" button (disabled on last module)
+- **AND** display "Mark as Complete" button
+- **AND** display "Close" button to return to module list
+
+#### Scenario: Module completion
+- **WHEN** user clicks "Mark as Complete"
+- **THEN** save completion status to localStorage
+- **AND** update progress indicator on module card
+- **AND** update overall course completion percentage
+
+### Requirement: Course Progress Tracking
+The system SHALL track course progress in localStorage and display overall completion percentage.
+
+#### Scenario: Track module progress
+- **WHEN** user opens a module for the first time
+- **THEN** save module as "in progress" to localStorage
+- **WHEN** user marks module as complete
+- **THEN** save module as "completed" to localStorage
+
+#### Scenario: Display overall progress
+- **WHEN** user views the Course section header
+- **THEN** display overall completion percentage (completed modules / total modules)
+- **AND** display visual progress bar
+
+#### Scenario: Reset progress
+- **WHEN** user clicks "Reset Progress" button in Course section
+- **THEN** clear all module progress from localStorage
+- **AND** reset completion indicators on all module cards
+
+### Requirement: Course API Endpoint
+The system SHALL provide a server API endpoint to fetch course module content.
+
+#### Scenario: Fetch module content
+- **WHEN** client requests GET `/api/course/[module]`
+- **THEN** return markdown content of the specified module file
+- **AND** return 404 if module file does not exist
+
+#### Scenario: List available modules
+- **WHEN** client requests GET `/api/course`
+- **THEN** return array of module metadata (filename, title, level, focus)
+- **AND** modules are sorted by filename
+
+### Requirement: Course Checkpoint Questions in Quiz
+The system SHALL include checkpoint questions from course modules in the quiz question bank.
+
+#### Scenario: Quiz includes course questions
+- **WHEN** quiz questions are loaded
+- **THEN** include questions from course checkpoint sections
+- **AND** questions are organized by course level domains: `course-beginner`, `course-intermediate`, `course-advanced`
+
+#### Scenario: Course question format
+- **WHEN** a course checkpoint question is defined
+- **THEN** it has question text extracted from module markdown
+- **AND** it has answer options (for multiple choice) or expected answer text (for open-ended converted to single choice)
+- **AND** it has explanation from the `<details>` answer section
+- **AND** it references the source module
+
+#### Scenario: Quiz domain labels include course domains
+- **WHEN** user views quiz domain breakdown
+- **THEN** display "Course: Beginner" for `course-beginner` domain
+- **AND** display "Course: Intermediate" for `course-intermediate` domain
+- **AND** display "Course: Advanced" for `course-advanced` domain
+
+### Requirement: Course Route Structure
+The system SHALL provide dedicated routes for the CPQ course section with breadcrumb support.
+
+#### Scenario: Navigate to course hub
+- **WHEN** user navigates to `/learn/course`
+- **THEN** display the course module list
+- **AND** breadcrumbs display "Learn > Course"
+- **AND** "Learn" links to `/learn`
+- **AND** "Course" is not a link (current page)
+
+#### Scenario: Navigate to course module
+- **WHEN** user navigates to `/learn/course/[moduleId]`
+- **THEN** display the module content
+- **AND** breadcrumbs display "Learn > Course > [Module Title]"
+- **AND** "Learn" links to `/learn`
+- **AND** "Course" links to `/learn/course`
+- **AND** "[Module Title]" is not a link (current page)
+
+#### Scenario: Direct URL access to module
+- **WHEN** user navigates directly to `/learn/course/01-cpq-foundations`
+- **THEN** display the "CPQ Foundations" module content
+- **AND** module progress tracking works correctly
+- **AND** breadcrumbs show "Learn > Course > CPQ Foundations"
+
+### Requirement: Course Navigation in Sidebar
+The system SHALL display the Course section as a navigation item under the Learn area.
+
+#### Scenario: View Learn section in navigation
+- **WHEN** user views the sidebar navigation
+- **THEN** Learn appears as a standalone item or section
+- **AND** Course is accessible from the Learn page
+
+### Requirement: Course Module URL Persistence
+The system SHALL maintain URL state when navigating between course modules.
+
+#### Scenario: Navigate to next module
+- **WHEN** user clicks "Next" on a module page
+- **THEN** URL updates to `/learn/course/[nextModuleId]`
+- **AND** breadcrumb updates to show the new module title
+- **AND** browser history is updated for back navigation
+
+#### Scenario: Navigate to previous module
+- **WHEN** user clicks "Previous" on a module page
+- **THEN** URL updates to `/learn/course/[previousModuleId]`
+- **AND** breadcrumb updates to show the new module title
+
+#### Scenario: Browser back navigation
+- **WHEN** user presses browser back button from a module page
+- **THEN** navigate to the previous page in history
+- **AND** if returning to course list, display the course list
 

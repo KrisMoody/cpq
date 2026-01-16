@@ -58,7 +58,8 @@ function parseMarkdown(content: string): ParsedContent {
   let diagramIndex = 0
 
   // Extract mermaid diagrams and replace with placeholders
-  let processedContent = content.replace(/```mermaid\n([\s\S]*?)```/g, (_, code) => {
+  // Handle optional trailing whitespace and CRLF line endings
+  let processedContent = content.replace(/``` *mermaid[ \t]*\r?\n([\s\S]*?)```/g, (_, code) => {
     const id = `mermaid-${diagramIndex++}`
     mermaidDiagrams.push({ id, code: code.trim() })
     return `<div data-mermaid-id="${id}"></div>`
@@ -78,14 +79,15 @@ function parseMarkdown(content: string): ParsedContent {
   processedContent = processedContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
   processedContent = processedContent.replace(/\*(.*?)\*/g, '<em>$1</em>')
 
-  // Inline code
-  processedContent = processedContent.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm font-mono">$1</code>')
-
-  // Code blocks (non-mermaid)
-  processedContent = processedContent.replace(/```(\w+)?\n([\s\S]*?)```/g, (_, lang, code) => {
+  // Code blocks (non-mermaid) - MUST run before inline code to prevent backtick conflicts
+  // Handle various whitespace patterns: optional space after backticks, optional trailing whitespace after language, CRLF or LF
+  processedContent = processedContent.replace(/``` *(\w+)?[ \t]*\r?\n([\s\S]*?)```/g, (_, lang, code) => {
     const language = lang || 'text'
     return `<pre class="p-4 bg-gray-900 text-gray-100 rounded-lg overflow-x-auto my-4"><code class="language-${language} text-sm">${escapeHtml(code.trim())}</code></pre>`
   })
+
+  // Inline code - runs after code blocks
+  processedContent = processedContent.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm font-mono">$1</code>')
 
   // Tables
   processedContent = processedContent.replace(/^\|(.+)\|$/gm, (match) => {
