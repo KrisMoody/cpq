@@ -34,8 +34,8 @@ const { formatPrice } = usePricing()
       <template v-for="lineItem in lineItems" :key="lineItem.id">
         <!-- Parent line item -->
         <div class="flex items-center px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/50">
-          <div class="flex-1">
-            <p class="font-medium">{{ lineItem.product.name }}</p>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium truncate" :title="lineItem.product.name">{{ lineItem.product.name }}</p>
             <p class="text-xs text-gray-500">{{ lineItem.product.sku }}</p>
             <UBadge
               v-if="lineItem.product.type === 'BUNDLE'"
@@ -67,10 +67,10 @@ const { formatPrice } = usePricing()
             :key="child.id"
             class="flex items-center px-4 py-2 pl-10 bg-gray-50/50 dark:bg-gray-800/30"
           >
-            <div class="flex-1 flex items-center gap-2">
-              <UIcon name="i-heroicons-arrow-turn-down-right" class="w-4 h-4 text-gray-400" />
-              <div>
-                <p class="text-sm">{{ child.product.name }}</p>
+            <div class="flex-1 flex items-center gap-2 min-w-0">
+              <UIcon name="i-heroicons-arrow-turn-down-right" class="w-4 h-4 text-gray-400 shrink-0" />
+              <div class="min-w-0">
+                <p class="text-sm truncate" :title="child.product.name">{{ child.product.name }}</p>
                 <p class="text-xs text-gray-400">{{ child.product.sku }}</p>
               </div>
             </div>

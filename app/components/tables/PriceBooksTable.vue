@@ -91,13 +91,22 @@ const table = useVueTable({
 
     <!-- Desktop Table -->
     <div class="hidden md:block overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
-      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800 table-fixed">
         <thead class="bg-gray-50 dark:bg-gray-900">
           <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
             <th
               v-for="header in headerGroup.headers"
               :key="header.id"
               class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer select-none"
+              :class="[
+                header.column.id === 'name' && 'w-[25%]',
+                header.column.id === 'isDefault' && 'w-[12%]',
+                header.column.id === 'isActive' && 'w-[12%]',
+                header.column.id === 'validFrom' && 'w-[15%]',
+                header.column.id === 'validTo' && 'w-[15%]',
+                header.column.id === 'entryCount' && 'w-[12%]',
+                header.column.id === 'actions' && 'w-[9%]',
+              ]"
               @click="header.column.getToggleSortingHandler()?.($event)"
             >
               <div class="flex items-center gap-1">
@@ -128,7 +137,7 @@ const table = useVueTable({
             <td
               v-for="cell in row.getVisibleCells()"
               :key="cell.id"
-              class="px-4 py-3 whitespace-nowrap text-sm"
+              class="px-4 py-3 text-sm overflow-hidden"
             >
               <template v-if="cell.column.id === 'actions'">
                 <UButton
@@ -141,7 +150,8 @@ const table = useVueTable({
               <template v-else-if="cell.column.id === 'name'">
                 <NuxtLink
                   :to="`/price-books/${row.original.id}`"
-                  class="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+                  class="text-primary-600 dark:text-primary-400 hover:underline font-medium truncate block"
+                  :title="cell.getValue() as string"
                 >
                   {{ cell.getValue() }}
                 </NuxtLink>
