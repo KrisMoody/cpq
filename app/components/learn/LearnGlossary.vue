@@ -557,83 +557,6 @@ const groupLabels: Record<GlossaryTerm['group'], string> = {
 
 const groupOrder: GlossaryTerm['group'][] = ['meta', 'product', 'category', 'attribute', 'pricing', 'currency', 'quote', 'customer', 'contract', 'tax', 'rules', 'discount', 'guided-selling']
 
-// Section management
-interface TocSection {
-  id: string
-  label: string
-  icon: string
-}
-
-const sections: TocSection[] = [
-  { id: 'workflow', label: 'Workflow', icon: 'i-heroicons-arrow-path' },
-  { id: 'data-model', label: 'Data Model', icon: 'i-heroicons-circle-stack' },
-  { id: 'business-logic', label: 'Business Logic', icon: 'i-heroicons-cog-6-tooth' },
-  { id: 'formulas', label: 'Formulas', icon: 'i-heroicons-calculator' },
-  { id: 'example', label: 'Example', icon: 'i-heroicons-play-circle' },
-  { id: 'glossary', label: 'Glossary', icon: 'i-heroicons-book-open' },
-  { id: 'enums', label: 'Enums', icon: 'i-heroicons-list-bullet' },
-  { id: 'relationships', label: 'Relationships', icon: 'i-heroicons-arrows-right-left' },
-  { id: 'quiz', label: 'Quiz', icon: 'i-heroicons-academic-cap' },
-  { id: 'tips', label: 'Tips', icon: 'i-heroicons-light-bulb' },
-]
-
-const sectionStates = ref<Record<string, boolean>>({
-  'workflow': true,
-  'data-model': true,
-  'business-logic': true,
-  'formulas': true,
-  'example': true,
-  'glossary': true,
-  'enums': true,
-  'relationships': true,
-  'quiz': true,
-  'tips': true,
-})
-
-const activeSection = ref('workflow')
-
-function navigateToSection(sectionId: string) {
-  const element = document.getElementById(sectionId)
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    // Ensure section is expanded
-    sectionStates.value[sectionId] = true
-  }
-}
-
-function expandAll() {
-  for (const key of Object.keys(sectionStates.value)) {
-    sectionStates.value[key] = true
-  }
-}
-
-function collapseAll() {
-  for (const key of Object.keys(sectionStates.value)) {
-    sectionStates.value[key] = false
-  }
-}
-
-// Intersection observer for active section tracking
-onMounted(() => {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          activeSection.value = entry.target.id
-        }
-      }
-    },
-    { rootMargin: '-20% 0px -60% 0px' },
-  )
-
-  for (const section of sections) {
-    const el = document.getElementById(section.id)
-    if (el) observer.observe(el)
-  }
-
-  onUnmounted(() => observer.disconnect())
-})
-
 // Glossary state
 const searchQuery = ref('')
 const compareMode = ref(false)
@@ -705,357 +628,87 @@ function scrollToTerm(term: string) {
     }, 2000)
   }
 }
-
-const activeTab = ref('interactive')
 </script>
 
 <template>
-  <div class="relative">
-    <!-- Table of Contents -->
-    <LearnTableOfContents
-      :sections="sections"
-      :active-section="activeSection"
-      @navigate="navigateToSection"
+  <div class="space-y-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <UButton
+          v-if="!compareMode"
+          variant="outline"
+          size="sm"
+          icon="i-heroicons-arrows-right-left"
+          @click="compareMode = true"
+        >
+          Compare Terms
+        </UButton>
+        <UButton
+          v-else
+          variant="soft"
+          color="error"
+          size="sm"
+          icon="i-heroicons-x-mark"
+          @click="exitCompareMode"
+        >
+          Exit Compare
+        </UButton>
+        <UInput
+          v-model="searchQuery"
+          placeholder="Search terms..."
+          icon="i-heroicons-magnifying-glass"
+          class="w-64"
+        />
+      </div>
+    </div>
+
+    <!-- Compare mode hint -->
+    <div v-if="compareMode && selectedTerms.length < 2" class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm text-blue-700 dark:text-blue-300">
+      Select 2-3 terms to compare them side-by-side. Click on the cards below to select.
+      <span v-if="selectedTerms.length === 1" class="font-medium">({{ selectedTerms.length }}/3 selected)</span>
+    </div>
+
+    <!-- Comparison view -->
+    <LearnGlossaryComparison
+      v-if="compareMode && selectedTerms.length >= 2"
+      :terms="selectedTermsData"
+      @close="exitCompareMode"
     />
 
-    <!-- Main Content (with left margin for desktop TOC) -->
-    <div class="xl:ml-64 space-y-6">
-      <div>
-        <h1 class="text-2xl font-bold">Learn CPQ</h1>
-        <p class="text-gray-500 dark:text-gray-400">
-          Interactive glossary and concepts for Configure, Price, Quote systems
-        </p>
-      </div>
+    <div v-if="filteredTerms.length === 0" class="text-center py-8 text-gray-500">
+      No terms found matching "{{ searchQuery }}"
+    </div>
 
-      <!-- Expand/Collapse All -->
-      <div class="flex gap-2">
-        <UButton size="sm" variant="ghost" @click="expandAll">
-          <UIcon name="i-heroicons-arrows-pointing-out" class="w-4 h-4 mr-1" />
-          Expand All
-        </UButton>
-        <UButton size="sm" variant="ghost" @click="collapseAll">
-          <UIcon name="i-heroicons-arrows-pointing-in" class="w-4 h-4 mr-1" />
-          Collapse All
-        </UButton>
-      </div>
-
-      <!-- CPQ Flow Diagram -->
-      <LearnCollapsibleSection
-        id="workflow"
-        v-model="sectionStates['workflow']"
-        title="CPQ Workflow Overview"
-        icon="i-heroicons-arrow-path"
+    <!-- Grouped glossary terms -->
+    <div v-else class="space-y-8">
+      <div
+        v-for="group in groupOrder"
+        :key="group"
       >
-        <LearnCPQFlowDiagram />
-      </LearnCollapsibleSection>
-
-      <!-- Entity Relationship Visualizations -->
-      <LearnCollapsibleSection
-        id="data-model"
-        v-model="sectionStates['data-model']"
-        title="Data Model"
-        icon="i-heroicons-circle-stack"
-      >
-        <div class="space-y-4">
-          <div class="flex gap-2">
-            <UButton
-              :variant="activeTab === 'interactive' ? 'solid' : 'ghost'"
-              size="sm"
-              @click="activeTab = 'interactive'"
-            >
-              Interactive ER
-            </UButton>
-            <UButton
-              :variant="activeTab === 'hierarchy' ? 'solid' : 'ghost'"
-              size="sm"
-              @click="activeTab = 'hierarchy'"
-            >
-              Hierarchy
-            </UButton>
-            <UButton
-              :variant="activeTab === 'schema' ? 'solid' : 'ghost'"
-              size="sm"
-              @click="activeTab = 'schema'"
-            >
-              Database Schema
-            </UButton>
-          </div>
-          <ClientOnly>
-            <LearnERDiagram v-if="activeTab === 'interactive'" />
-          </ClientOnly>
-          <LearnEntityHierarchy v-if="activeTab === 'hierarchy'" />
-          <LearnPrismaERD v-if="activeTab === 'schema'" />
-        </div>
-      </LearnCollapsibleSection>
-
-      <!-- Business Logic -->
-      <LearnCollapsibleSection
-        id="business-logic"
-        v-model="sectionStates['business-logic']"
-        title="Business Logic"
-        icon="i-heroicons-cog-6-tooth"
-      >
-        <LearnBusinessLogic />
-      </LearnCollapsibleSection>
-
-      <!-- Formula Reference -->
-      <LearnCollapsibleSection
-        id="formulas"
-        v-model="sectionStates['formulas']"
-        title="Formula Reference"
-        icon="i-heroicons-calculator"
-      >
-        <LearnFormulaReference />
-      </LearnCollapsibleSection>
-
-      <!-- Worked Example -->
-      <LearnCollapsibleSection
-        id="example"
-        v-model="sectionStates['example']"
-        title="Worked Example"
-        icon="i-heroicons-play-circle"
-      >
-        <LearnWorkedExample />
-      </LearnCollapsibleSection>
-
-      <!-- Glossary -->
-      <LearnCollapsibleSection
-        id="glossary"
-        v-model="sectionStates['glossary']"
-        title="Glossary"
-        icon="i-heroicons-book-open"
-      >
-        <div class="space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-            <UButton
-              v-if="!compareMode"
-              variant="outline"
-              size="sm"
-              icon="i-heroicons-arrows-right-left"
-              class="w-full sm:w-auto"
-              @click="compareMode = true"
-            >
-              Compare Terms
-            </UButton>
-            <UButton
-              v-else
-              variant="soft"
-              color="error"
-              size="sm"
-              icon="i-heroicons-x-mark"
-              class="w-full sm:w-auto"
-              @click="exitCompareMode"
-            >
-              Exit Compare
-            </UButton>
-            <UInput
-              v-model="searchQuery"
-              placeholder="Search terms..."
-              icon="i-heroicons-magnifying-glass"
-              class="w-full sm:w-64"
+        <template v-if="groupedTerms[group].length > 0">
+          <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+            {{ groupLabels[group] }}
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <LearnGlossaryTerm
+              v-for="item in groupedTerms[group]"
+              :id="`glossary-term-${item.term.toLowerCase().replace(/\s+/g, '-')}`"
+              :key="item.term"
+              :term="item.term"
+              :definition="item.definition"
+              :example="item.example"
+              :related-terms="item.relatedTerms"
+              :confused-with="item.confusedWith"
+              :distinction="item.distinction"
+              :compare-mode="compareMode"
+              :selected="selectedTerms.includes(item.term)"
+              :highlighted="highlightedTerm === item.term"
+              @toggle-select="toggleTermSelection(item.term)"
+              @navigate-to-term="scrollToTerm"
             />
           </div>
-
-          <!-- Compare mode hint -->
-          <div v-if="compareMode && selectedTerms.length < 2" class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm text-blue-700 dark:text-blue-300">
-            Select 2-3 terms to compare them side-by-side. Click on the cards below to select.
-            <span v-if="selectedTerms.length === 1" class="font-medium">({{ selectedTerms.length }}/3 selected)</span>
-          </div>
-
-          <!-- Comparison view -->
-          <LearnGlossaryComparison
-            v-if="compareMode && selectedTerms.length >= 2"
-            :terms="selectedTermsData"
-            @close="exitCompareMode"
-          />
-
-          <div v-if="filteredTerms.length === 0" class="text-center py-8 text-gray-500">
-            No terms found matching "{{ searchQuery }}"
-          </div>
-
-          <!-- Grouped glossary terms -->
-          <div v-else class="space-y-8">
-            <div
-              v-for="group in groupOrder"
-              :key="group"
-            >
-              <template v-if="groupedTerms[group].length > 0">
-                <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
-                  {{ groupLabels[group] }}
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <LearnGlossaryTerm
-                    v-for="item in groupedTerms[group]"
-                    :id="`glossary-term-${item.term.toLowerCase().replace(/\s+/g, '-')}`"
-                    :key="item.term"
-                    :term="item.term"
-                    :definition="item.definition"
-                    :example="item.example"
-                    :related-terms="item.relatedTerms"
-                    :confused-with="item.confusedWith"
-                    :distinction="item.distinction"
-                    :compare-mode="compareMode"
-                    :selected="selectedTerms.includes(item.term)"
-                    :highlighted="highlightedTerm === item.term"
-                    @toggle-select="toggleTermSelection(item.term)"
-                    @navigate-to-term="scrollToTerm"
-                  />
-                </div>
-              </template>
-            </div>
-          </div>
-        </div>
-      </LearnCollapsibleSection>
-
-      <!-- Enum Reference -->
-      <LearnCollapsibleSection
-        id="enums"
-        v-model="sectionStates['enums']"
-        title="Enum Reference"
-        icon="i-heroicons-list-bullet"
-      >
-        <LearnEnumReference />
-      </LearnCollapsibleSection>
-
-      <!-- Relationship Cards -->
-      <LearnCollapsibleSection
-        id="relationships"
-        v-model="sectionStates['relationships']"
-        title="Relationship Cards"
-        icon="i-heroicons-arrows-right-left"
-      >
-        <LearnRelationshipCards />
-      </LearnCollapsibleSection>
-
-      <!-- Quiz -->
-      <LearnCollapsibleSection
-        id="quiz"
-        v-model="sectionStates['quiz']"
-        title="Test Your Knowledge"
-        icon="i-heroicons-academic-cap"
-      >
-        <LearnQuiz />
-      </LearnCollapsibleSection>
-
-      <!-- Quick Tips -->
-      <LearnCollapsibleSection
-        id="tips"
-        v-model="sectionStates['tips']"
-        title="Quick Tips"
-        icon="i-heroicons-light-bulb"
-      >
-        <div class="space-y-4">
-          <div class="flex gap-3">
-            <UIcon name="i-heroicons-light-bulb" class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p class="font-medium">Start with Products</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
-                Browse the product catalog to understand what's available. Pay attention to the
-                difference between standalone products and configurable bundles.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex gap-3">
-            <UIcon name="i-heroicons-light-bulb" class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p class="font-medium">Configure Bundles Carefully</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
-                When adding a bundle to a quote, review each feature and its options. Some options
-                have price adjustments that affect the final price.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex gap-3">
-            <UIcon name="i-heroicons-sparkles" class="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p class="font-medium">Use Guided Selling</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
-                Set up product affinities for cross-sell and upsell opportunities. Use REQUIRED affinity
-                type for mandatory companion products. Questionnaires help discover customer needs.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex gap-3">
-            <UIcon name="i-heroicons-clipboard-document-list" class="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p class="font-medium">Design Effective Questionnaires</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
-                Use branching logic to skip irrelevant questions. Set relevance scores to rank product
-                recommendations. Track acceptance rates to improve suggestions over time.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex gap-3">
-            <UIcon name="i-heroicons-user-group" class="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p class="font-medium">Assign Customers to Quotes</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
-                Link quotes to customer records for tracking and reporting. Customers can have assigned
-                price books for automatic customer-specific pricing.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex gap-3">
-            <UIcon name="i-heroicons-cog-6-tooth" class="w-5 h-5 text-pink-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p class="font-medium">Configuration Rules</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
-                Rules can enforce product dependencies (e.g., "32GB RAM requires SSD") and validate
-                configurations automatically when products are added or changed.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex gap-3">
-            <UIcon name="i-heroicons-receipt-percent" class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p class="font-medium">Discount Stacking</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
-                Check if discounts are stackable before applying multiple. Non-stackable discounts are
-                exclusive; stackable discounts combine. Priority determines application order.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex gap-3">
-            <UIcon name="i-heroicons-document-text" class="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p class="font-medium">Contract Pricing</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
-                Create contracts with customers for negotiated pricing. Contract Price Entries override
-                standard price book prices. Only active contracts (not draft or expired) affect pricing.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex gap-3">
-            <UIcon name="i-heroicons-currency-dollar" class="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p class="font-medium">Multi-Currency Support</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
-                Configure currencies with exchange rates for international sales. Quote totals are
-                automatically converted to the base currency for consistent reporting across regions.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex gap-3">
-            <UIcon name="i-heroicons-arrow-path" class="w-5 h-5 text-violet-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p class="font-medium">Recurring Revenue</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
-                Products with billing frequencies (monthly, quarterly, annual) automatically calculate
-                MRR, ARR, and TCV metrics on quotes. Use proration for mid-period subscription starts.
-              </p>
-            </div>
-          </div>
-        </div>
-      </LearnCollapsibleSection>
+        </template>
+      </div>
     </div>
   </div>
 </template>

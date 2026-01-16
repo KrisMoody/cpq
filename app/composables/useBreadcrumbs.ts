@@ -20,6 +20,40 @@ export type NavItem = {
 }
 
 /**
+ * Set a custom breadcrumb label for the current page.
+ * This overrides the default "View" label for dynamic ID segments.
+ *
+ * @param label - The custom label to display in breadcrumbs
+ *
+ * @example
+ * ```typescript
+ * // In a dynamic page like [moduleId].vue
+ * const module = await fetchModule(id)
+ * useBreadcrumbLabel(module.title)  // Shows "Price Books" instead of "View"
+ * ```
+ */
+export function useBreadcrumbLabel(label: string | Ref<string | undefined>) {
+  const breadcrumbLabel = useState<string | undefined>('breadcrumb-label', () => undefined)
+
+  // Support both reactive and static values
+  if (isRef(label)) {
+    watch(label, (newLabel) => {
+      breadcrumbLabel.value = newLabel
+    }, { immediate: true })
+  }
+  else {
+    breadcrumbLabel.value = label
+  }
+
+  // Clear the label when the component is unmounted
+  onUnmounted(() => {
+    breadcrumbLabel.value = undefined
+  })
+
+  return breadcrumbLabel
+}
+
+/**
  * Generate breadcrumb items from the current route and navigation structure.
  *
  * @param navigation - The navigation configuration array
@@ -34,6 +68,7 @@ export type NavItem = {
  */
 export function useBreadcrumbs(navigation: NavItem[]): ComputedRef<BreadcrumbItem[]> {
   const route = useRoute()
+  const customLabel = useState<string | undefined>('breadcrumb-label', () => undefined)
 
   return computed(() => {
     const path = route.path
@@ -79,9 +114,9 @@ export function useBreadcrumbs(navigation: NavItem[]): ComputedRef<BreadcrumbIte
         if (segment === 'new') {
           items.push({ label: 'New' })
         } else if (isLikelyId(segment)) {
-          // Dynamic ID segment - use "View" label
-          // If there are more segments after, this is not the last item
-          const viewItem: BreadcrumbItem = { label: 'View' }
+          // Dynamic ID segment - use custom label if set, otherwise "View"
+          const label = isLast && customLabel.value ? customLabel.value : 'View'
+          const viewItem: BreadcrumbItem = { label }
           if (!isLast && result.item.to) {
             // Build link to the ID page for nested routes
             const basePath = result.item.to
@@ -109,7 +144,9 @@ export function useBreadcrumbs(navigation: NavItem[]): ComputedRef<BreadcrumbIte
           if (segment === 'new') {
             items.push({ label: 'New' })
           } else if (isLikelyId(segment)) {
-            items.push({ label: 'View' })
+            // Dynamic ID segment - use custom label if set, otherwise "View"
+            const label = isLast && customLabel.value ? customLabel.value : 'View'
+            items.push({ label })
           } else {
             const segmentPath = '/' + segments.slice(0, i + 1).join('/')
             items.push({
