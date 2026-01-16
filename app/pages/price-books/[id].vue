@@ -374,7 +374,7 @@ function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
             />
           </UFormField>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Valid From">
               <UInput v-model="form.validFrom" type="date" />
             </UFormField>
@@ -394,7 +394,7 @@ function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
           </div>
         </form>
 
-        <dl v-else class="grid grid-cols-2 gap-4">
+        <dl v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <dt class="text-sm text-gray-500">Currency</dt>
             <dd>{{ priceBook.currency ? `${priceBook.currency.code} (${priceBook.currency.symbol})` : 'Default' }}</dd>
@@ -484,7 +484,7 @@ function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
                         v-model.number="editingEntry.listPrice"
                         type="number"
                         step="0.01"
-                        class="w-28 text-right"
+                        class="w-40 text-right"
                       />
                     </template>
                     <template v-else>
@@ -497,7 +497,7 @@ function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
                         v-model.number="editingEntry.cost"
                         type="number"
                         step="0.01"
-                        class="w-28 text-right"
+                        class="w-40 text-right"
                         placeholder="—"
                       />
                     </template>
@@ -583,16 +583,16 @@ function getEntryTiers(entry: PriceBookEntry): PriceTier[] {
                           :key="index"
                           class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
                         >
-                          <UFormField label="Min Qty" class="w-24">
+                          <UFormField label="Min Qty" class="w-28">
                             <UInput v-model.number="tier.minQuantity" type="number" min="1" />
                           </UFormField>
-                          <UFormField label="Max Qty" class="w-24">
+                          <UFormField label="Max Qty" class="w-28">
                             <UInput v-model.number="tier.maxQuantity" type="number" min="1" placeholder="No max" />
                           </UFormField>
-                          <UFormField label="Price" class="w-28">
+                          <UFormField label="Price" class="w-40">
                             <UInput v-model.number="tier.tierPrice" type="number" step="0.01" min="0" />
                           </UFormField>
-                          <UFormField label="Type" class="w-32">
+                          <UFormField label="Type" class="w-40">
                             <USelect v-model="tier.tierType" :items="tierTypeOptions" value-key="value" />
                           </UFormField>
                           <UButton

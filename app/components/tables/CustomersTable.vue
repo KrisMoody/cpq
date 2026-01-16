@@ -37,6 +37,18 @@ const columns = [
     header: 'Quotes',
     cell: (info) => info.getValue() ?? 0,
   }),
+  columnHelper.display({
+    id: 'taxExempt',
+    header: 'Tax',
+    cell: (info) => {
+      const customer = info.row.original
+      if (!customer.isTaxExempt) return 'Standard'
+      if (customer.taxExemptExpiry && new Date(customer.taxExemptExpiry) < new Date()) {
+        return 'Expired'
+      }
+      return 'Exempt'
+    },
+  }),
   columnHelper.accessor('isActive', {
     header: 'Status',
     cell: (info) => info.getValue() ? 'Active' : 'Inactive',
@@ -161,6 +173,16 @@ const table = useVueTable({
                   {{ cell.getValue() }}
                 </span>
               </template>
+              <template v-else-if="cell.column.id === 'taxExempt'">
+                <UBadge
+                  v-if="row.original.isTaxExempt"
+                  :color="row.original.taxExemptExpiry && new Date(row.original.taxExemptExpiry) < new Date() ? 'warning' : 'success'"
+                  variant="subtle"
+                >
+                  {{ row.original.taxExemptExpiry && new Date(row.original.taxExemptExpiry) < new Date() ? 'Expired' : 'Exempt' }}
+                </UBadge>
+                <span v-else class="text-gray-400">—</span>
+              </template>
               <template v-else-if="cell.column.id === 'isActive'">
                 <UBadge :color="row.original.isActive ? 'success' : 'neutral'" variant="subtle">
                   {{ row.original.isActive ? 'Active' : 'Inactive' }}
@@ -206,6 +228,13 @@ const table = useVueTable({
         </div>
         <div class="flex flex-wrap items-center gap-2 mt-3">
           <span class="text-xs text-gray-500">{{ row.original.quoteCount ?? 0 }} quotes</span>
+          <UBadge
+            v-if="row.original.isTaxExempt"
+            :color="row.original.taxExemptExpiry && new Date(row.original.taxExemptExpiry) < new Date() ? 'warning' : 'success'"
+            variant="subtle"
+          >
+            {{ row.original.taxExemptExpiry && new Date(row.original.taxExemptExpiry) < new Date() ? 'Tax Expired' : 'Tax Exempt' }}
+          </UBadge>
           <UBadge :color="row.original.isActive ? 'success' : 'neutral'" variant="subtle">
             {{ row.original.isActive ? 'Active' : 'Inactive' }}
           </UBadge>

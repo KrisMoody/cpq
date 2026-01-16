@@ -193,7 +193,7 @@ function formatDate(dateStr: string) {
             </UFormField>
 
             <UFormField label="Symbol" required>
-              <UInput v-model="form.symbol" maxlength="5" />
+              <UInput v-model="form.symbol" maxlength="5" class="w-20" />
             </UFormField>
 
             <div class="space-y-3">
@@ -326,6 +326,7 @@ function formatDate(dateStr: string) {
                 type="number"
                 step="0.0001"
                 min="0.0001"
+                class="w-28"
               />
             </UFormField>
 
@@ -333,6 +334,7 @@ function formatDate(dateStr: string) {
               <UInput
                 v-model="newRate.effectiveDate"
                 type="date"
+                class="w-40"
               />
             </UFormField>
           </div>

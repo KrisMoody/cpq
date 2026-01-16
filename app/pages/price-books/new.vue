@@ -99,7 +99,7 @@ async function handleSubmit() {
           />
         </UFormField>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <UFormField label="Valid From" hint="Optional start date">
             <UInput
               v-model="form.validFrom"

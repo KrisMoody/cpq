@@ -36,6 +36,15 @@ const columns = [
     header: 'Total',
     cell: (info) => formatPrice(info.row.original.total, info.row.original.currency),
   }),
+  columnHelper.display({
+    id: 'mrr',
+    header: 'MRR',
+    cell: (info) => {
+      const mrr = info.row.original.mrr
+      if (!mrr || parseFloat(mrr) === 0) return '—'
+      return formatPrice(mrr, info.row.original.currency)
+    },
+  }),
   columnHelper.accessor('validTo', {
     header: 'Valid Until',
     cell: (info) => new Date(info.getValue()).toLocaleDateString(),
@@ -220,9 +229,17 @@ function getStatusColor(status: string) {
           <UBadge :color="getStatusColor(row.original.status)" variant="subtle">
             {{ row.original.status }}
           </UBadge>
-          <span class="text-sm font-medium">
-            {{ formatPrice(row.original.total, row.original.currency) }}
-          </span>
+          <div class="text-right">
+            <span class="text-sm font-medium">
+              {{ formatPrice(row.original.total, row.original.currency) }}
+            </span>
+            <span
+              v-if="row.original.mrr && parseFloat(row.original.mrr) > 0"
+              class="text-xs text-blue-600 dark:text-blue-400 ml-2"
+            >
+              {{ formatPrice(row.original.mrr, row.original.currency) }}/mo
+            </span>
+          </div>
         </div>
       </div>
     </div>

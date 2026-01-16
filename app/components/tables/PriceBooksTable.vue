@@ -20,6 +20,11 @@ const columns = [
     header: 'Name',
     cell: (info) => info.getValue(),
   }),
+  columnHelper.display({
+    id: 'currency',
+    header: 'Currency',
+    cell: (info) => info.row.original.currency?.code || '—',
+  }),
   columnHelper.accessor('isDefault', {
     header: 'Default',
     cell: (info) => info.getValue() ? 'Yes' : 'No',
@@ -151,6 +156,12 @@ const table = useVueTable({
                   {{ cell.getValue() }}
                 </NuxtLink>
               </template>
+              <template v-else-if="cell.column.id === 'currency'">
+                <UBadge v-if="row.original.currency" color="neutral" variant="subtle">
+                  {{ row.original.currency.code }}
+                </UBadge>
+                <span v-else class="text-gray-400">—</span>
+              </template>
               <template v-else-if="cell.column.id === 'isDefault'">
                 <UBadge v-if="row.original.isDefault" color="primary" variant="subtle">
                   Default
@@ -201,6 +212,9 @@ const table = useVueTable({
           />
         </div>
         <div class="flex flex-wrap items-center gap-2 mt-3">
+          <UBadge v-if="row.original.currency" color="neutral" variant="subtle">
+            {{ row.original.currency.code }}
+          </UBadge>
           <UBadge v-if="row.original.isDefault" color="primary" variant="subtle">
             Default
           </UBadge>

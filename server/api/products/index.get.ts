@@ -87,6 +87,7 @@ export default defineEventHandler(async (event) => {
       description: true,
       sku: true,
       type: true,
+      isTaxable: true,
       isActive: true,
       createdAt: true,
       unitOfMeasureId: true,

@@ -28,6 +28,10 @@ const columns = [
     header: 'Type',
     cell: (info) => info.getValue() === 'BUNDLE' ? 'Bundle' : 'Standalone',
   }),
+  columnHelper.accessor('isTaxable', {
+    header: 'Tax',
+    cell: (info) => info.getValue() ? 'Taxable' : 'Non-Taxable',
+  }),
   columnHelper.accessor('description', {
     header: 'Description',
     cell: (info) => info.getValue() || '—',
@@ -163,6 +167,14 @@ const table = useVueTable({
                   {{ cell.getValue() }}
                 </span>
               </template>
+              <template v-else-if="cell.column.id === 'isTaxable'">
+                <UBadge
+                  :color="row.original.isTaxable ? 'neutral' : 'info'"
+                  variant="subtle"
+                >
+                  {{ row.original.isTaxable ? 'Taxable' : 'Non-Taxable' }}
+                </UBadge>
+              </template>
               <template v-else-if="cell.column.id === 'isActive'">
                 <UBadge
                   :color="row.original.isActive ? 'success' : 'neutral'"
@@ -218,6 +230,12 @@ const table = useVueTable({
             variant="subtle"
           >
             {{ row.original.type === 'BUNDLE' ? 'Bundle' : 'Standalone' }}
+          </UBadge>
+          <UBadge
+            :color="row.original.isTaxable ? 'neutral' : 'info'"
+            variant="subtle"
+          >
+            {{ row.original.isTaxable ? 'Taxable' : 'Non-Taxable' }}
           </UBadge>
           <UBadge
             :color="row.original.isActive ? 'success' : 'neutral'"

@@ -36,7 +36,7 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto space-y-6">
+  <div class="max-w-2xl mx-auto space-y-6">
     <div class="flex items-center gap-4">
       <UButton to="/questionnaires" variant="ghost" icon="i-heroicons-arrow-left" />
       <div>

@@ -48,6 +48,21 @@ const columns = [
     header: 'Stackable',
     cell: (info) => info.getValue() ? 'Yes' : 'No',
   }),
+  columnHelper.display({
+    id: 'validity',
+    header: 'Validity',
+    cell: (info) => {
+      const discount = info.row.original
+      const now = new Date()
+      const from = discount.validFrom ? new Date(discount.validFrom) : null
+      const to = discount.validTo ? new Date(discount.validTo) : null
+
+      if (to && to < now) return 'Expired'
+      if (from && from > now) return 'Scheduled'
+      if (!from && !to) return 'Always'
+      return 'Active'
+    },
+  }),
   columnHelper.accessor('isActive', {
     header: 'Status',
     cell: (info) => info.getValue() ? 'Active' : 'Inactive',
@@ -89,6 +104,19 @@ function getScopeColor(scope: string) {
     case 'QUOTE': return 'warning'
     default: return 'neutral'
   }
+}
+
+type BadgeColor = 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral'
+
+function getValidityStatus(discount: Discount): { label: string; color: BadgeColor } {
+  const now = new Date()
+  const from = discount.validFrom ? new Date(discount.validFrom) : null
+  const to = discount.validTo ? new Date(discount.validTo) : null
+
+  if (to && to < now) return { label: 'Expired', color: 'error' }
+  if (from && from > now) return { label: 'Scheduled', color: 'info' }
+  if (!from && !to) return { label: 'Always', color: 'neutral' }
+  return { label: 'Valid', color: 'success' }
 }
 </script>
 
@@ -187,6 +215,11 @@ function getScopeColor(scope: string) {
                   {{ (cell.getValue() as string).replace(/_/g, ' ') }}
                 </UBadge>
               </template>
+              <template v-else-if="cell.column.id === 'validity'">
+                <UBadge :color="getValidityStatus(row.original).color" variant="subtle">
+                  {{ getValidityStatus(row.original).label }}
+                </UBadge>
+              </template>
               <template v-else-if="cell.column.id === 'isActive'">
                 <UBadge :color="row.original.isActive ? 'success' : 'neutral'" variant="subtle">
                   {{ row.original.isActive ? 'Active' : 'Inactive' }}
@@ -245,6 +278,9 @@ function getScopeColor(scope: string) {
           </UBadge>
           <UBadge :color="getScopeColor(row.original.scope)" variant="subtle">
             {{ row.original.scope.replace(/_/g, ' ') }}
+          </UBadge>
+          <UBadge :color="getValidityStatus(row.original).color" variant="subtle">
+            {{ getValidityStatus(row.original).label }}
           </UBadge>
           <UBadge :color="row.original.isActive ? 'success' : 'neutral'" variant="subtle">
             {{ row.original.isActive ? 'Active' : 'Inactive' }}

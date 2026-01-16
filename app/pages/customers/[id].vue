@@ -38,6 +38,30 @@ const isTaxExemptExpired = computed(() => {
   return new Date(customer.value.taxExemptExpiry) < new Date()
 })
 
+// Check for currency mismatch between customer and price book
+const hasCurrencyMismatch = computed(() => {
+  if (!form.value.currencyId || !form.value.priceBookId) return false
+
+  const selectedPriceBook = priceBooks.value.find((pb) => pb.id === form.value.priceBookId)
+  if (!selectedPriceBook?.currencyId) return false
+
+  return selectedPriceBook.currencyId !== form.value.currencyId
+})
+
+const currencyMismatchDetails = computed(() => {
+  if (!hasCurrencyMismatch.value) return null
+
+  const customerCurrency = currencies.value.find((c) => c.id === form.value.currencyId)
+  const selectedPriceBook = priceBooks.value.find((pb) => pb.id === form.value.priceBookId)
+  const priceBookCurrency = currencies.value.find((c) => c.id === selectedPriceBook?.currencyId)
+
+  return {
+    customerCurrency: customerCurrency?.code || 'Unknown',
+    priceBookCurrency: priceBookCurrency?.code || 'Unknown',
+    priceBookName: selectedPriceBook?.name || 'Unknown',
+  }
+})
+
 onMounted(async () => {
   await Promise.all([loadCustomer(), fetchPriceBooks(), fetchCurrencies()])
   // Fetch contracts for this customer after customer is loaded
@@ -237,7 +261,7 @@ function cancelEdit() {
               <UInput v-model="form.company" />
             </UFormField>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <UFormField label="Email">
                 <UInput v-model="form.email" type="email" />
               </UFormField>
@@ -250,7 +274,7 @@ function cancelEdit() {
               <UInput v-model="form.street" />
             </UFormField>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <UFormField label="City">
                 <UInput v-model="form.city" />
               </UFormField>
@@ -259,7 +283,7 @@ function cancelEdit() {
               </UFormField>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <UFormField label="Postal Code">
                 <UInput v-model="form.postalCode" />
               </UFormField>
@@ -285,6 +309,16 @@ function cancelEdit() {
                 value-key="value"
               />
             </UFormField>
+
+            <!-- Currency Mismatch Warning -->
+            <UAlert v-if="hasCurrencyMismatch && currencyMismatchDetails" color="warning" icon="i-heroicons-exclamation-triangle">
+              <template #title>Currency Mismatch</template>
+              <template #description>
+                Customer currency ({{ currencyMismatchDetails.customerCurrency }}) differs from price book
+                "{{ currencyMismatchDetails.priceBookName }}" currency ({{ currencyMismatchDetails.priceBookCurrency }}).
+                Quotes may show prices in inconsistent currencies. Consider using the default price book or selecting a matching currency.
+              </template>
+            </UAlert>
 
             <!-- Tax Exemption Section -->
             <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
@@ -443,25 +477,47 @@ function cancelEdit() {
             v-for="contract in customerContracts"
             :key="contract.id"
             :to="`/contracts/${contract.id}`"
-            class="block p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            :class="[
+              'block p-4 rounded-lg border transition-colors',
+              contract.status === 'ACTIVE' && new Date(contract.startDate) <= new Date() && new Date(contract.endDate) >= new Date()
+                ? 'border-green-300 dark:border-green-800 bg-green-50/50 dark:bg-green-900/10 hover:bg-green-50 dark:hover:bg-green-900/20'
+                : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+            ]"
           >
             <div class="flex justify-between items-start">
               <div>
-                <p class="font-medium text-primary-600 dark:text-primary-400">{{ contract.name }}</p>
+                <div class="flex items-center gap-2">
+                  <p class="font-medium text-primary-600 dark:text-primary-400">{{ contract.name }}</p>
+                  <UBadge
+                    v-if="contract.status === 'ACTIVE' && new Date(contract.startDate) <= new Date() && new Date(contract.endDate) >= new Date()"
+                    color="success"
+                    variant="subtle"
+                    size="xs"
+                  >
+                    Currently Active
+                  </UBadge>
+                </div>
                 <p class="text-sm text-gray-500">
                   {{ formatDate(contract.startDate) }} - {{ formatDate(contract.endDate) }}
                 </p>
-                <p v-if="contract.priceEntryCount" class="text-xs text-gray-400 mt-1">
-                  {{ contract.priceEntryCount }} custom price{{ contract.priceEntryCount !== 1 ? 's' : '' }}
-                </p>
+                <div class="flex items-center gap-2 mt-1">
+                  <UBadge
+                    v-if="contract.discountPercent"
+                    :color="parseFloat(contract.discountPercent) >= 15 ? 'success' : 'info'"
+                    variant="subtle"
+                    size="xs"
+                  >
+                    {{ contract.discountPercent }}% discount
+                  </UBadge>
+                  <span v-if="contract.priceEntryCount" class="text-xs text-gray-400">
+                    + {{ contract.priceEntryCount }} custom price{{ contract.priceEntryCount !== 1 ? 's' : '' }}
+                  </span>
+                </div>
               </div>
               <div class="text-right">
                 <UBadge :color="getStatusColor(contract.status)" variant="subtle">
                   {{ contract.status }}
                 </UBadge>
-                <p v-if="contract.discountPercent" class="text-sm text-gray-500 mt-1">
-                  {{ contract.discountPercent }}% off
-                </p>
               </div>
             </div>
           </NuxtLink>
