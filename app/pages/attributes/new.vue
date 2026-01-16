@@ -163,7 +163,7 @@ async function handleSubmit() {
       </template>
 
       <form class="space-y-6" @submit.prevent="handleSubmit">
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <UFormField label="Name" required>
             <UInput v-model="form.name" placeholder="e.g., Color, Weight" />
           </UFormField>
@@ -174,7 +174,7 @@ async function handleSubmit() {
           </UFormField>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <UFormField label="Type" required>
             <USelect v-model="form.type" :items="typeOptions" value-key="value" />
           </UFormField>
@@ -223,7 +223,7 @@ async function handleSubmit() {
         </div>
 
         <!-- NUMBER Constraints -->
-        <div v-if="form.type === 'NUMBER'" class="grid grid-cols-2 gap-4">
+        <div v-if="form.type === 'NUMBER'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <UFormField label="Minimum Value">
             <UInput v-model.number="form.constraints.min" type="number" placeholder="No minimum" />
           </UFormField>
@@ -233,7 +233,7 @@ async function handleSubmit() {
         </div>
 
         <!-- TEXT Constraints -->
-        <div v-if="form.type === 'TEXT'" class="grid grid-cols-2 gap-4">
+        <div v-if="form.type === 'TEXT'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <UFormField label="Min Length">
             <UInput v-model.number="form.constraints.minLength" type="number" min="0" placeholder="No minimum" />
           </UFormField>
@@ -247,7 +247,7 @@ async function handleSubmit() {
         </div>
 
         <UFormField label="Sort Order">
-          <UInput v-model.number="form.sortOrder" type="number" min="0" class="w-32" />
+          <UInput v-model.number="form.sortOrder" type="number" min="0" class="w-28" />
           <template #hint>Lower numbers appear first</template>
         </UFormField>
 

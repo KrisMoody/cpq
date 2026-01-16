@@ -175,7 +175,7 @@ const categoryOptions = computed(() =>
           />
         </UFormField>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <UFormField label="Country" required>
             <UInput v-model="form.country" />
           </UFormField>
@@ -188,7 +188,7 @@ const categoryOptions = computed(() =>
           <USelect v-model="form.categoryId" :items="categoryOptions" value-key="value" placeholder="All Products" />
         </UFormField>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <UFormField label="Valid From">
             <UInput v-model="form.validFrom" type="date" />
           </UFormField>

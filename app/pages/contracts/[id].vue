@@ -339,7 +339,7 @@ function formatDate(date: string) {
               />
             </UFormField>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <UFormField label="Start Date" required>
                 <UInput v-model="form.startDate" type="date" />
               </UFormField>
@@ -568,7 +568,7 @@ function formatDate(date: string) {
               <UInput v-model="renewForm.name" />
             </UFormField>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <UFormField label="Start Date">
                 <UInput v-model="renewForm.startDate" type="date" />
               </UFormField>

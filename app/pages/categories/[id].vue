@@ -272,7 +272,7 @@ function getAttributeTypeLabel(type: string): string {
             <USelect v-model="form.parentId" :items="parentOptions" value-key="value" placeholder="None (root category)" />
           </UFormField>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Sort Order">
               <UInput v-model.number="form.sortOrder" type="number" />
             </UFormField>

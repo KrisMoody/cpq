@@ -139,7 +139,7 @@ async function handleSubmit() {
         <div class="space-y-4">
           <h3 class="text-sm font-medium text-gray-500 uppercase">Validity Period</h3>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Start Date" required>
               <UInput v-model="form.startDate" type="date" />
             </UFormField>

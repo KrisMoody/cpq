@@ -114,7 +114,7 @@ async function handleSubmit() {
             />
           </UFormField>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Email">
               <UInput
                 v-model="form.email"
@@ -145,7 +145,7 @@ async function handleSubmit() {
             />
           </UFormField>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="City">
               <UInput v-model="form.city" placeholder="City" />
             </UFormField>
@@ -155,7 +155,7 @@ async function handleSubmit() {
             </UFormField>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Postal Code">
               <UInput v-model="form.postalCode" placeholder="Postal code" />
             </UFormField>

@@ -73,13 +73,13 @@ async function handleSubmit() {
           <template #description>{{ error }}</template>
         </UAlert>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <UFormField label="Currency Code" required hint="e.g., USD, EUR, GBP">
             <UInput
               v-model="form.code"
               placeholder="USD"
               maxlength="3"
-              class="uppercase"
+              class="w-20 uppercase"
             />
           </UFormField>
 
@@ -88,6 +88,7 @@ async function handleSubmit() {
               v-model="form.symbol"
               placeholder="$"
               maxlength="5"
+              class="w-20"
             />
           </UFormField>
         </div>
@@ -116,6 +117,7 @@ async function handleSubmit() {
             type="number"
             step="0.0001"
             min="0.0001"
+            class="w-28"
           />
         </UFormField>
 

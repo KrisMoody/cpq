@@ -261,7 +261,7 @@ function cancelEdit() {
               <UInput v-model="form.company" />
             </UFormField>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <UFormField label="Email">
                 <UInput v-model="form.email" type="email" />
               </UFormField>
@@ -274,7 +274,7 @@ function cancelEdit() {
               <UInput v-model="form.street" />
             </UFormField>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <UFormField label="City">
                 <UInput v-model="form.city" />
               </UFormField>
@@ -283,7 +283,7 @@ function cancelEdit() {
               </UFormField>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <UFormField label="Postal Code">
                 <UInput v-model="form.postalCode" />
               </UFormField>

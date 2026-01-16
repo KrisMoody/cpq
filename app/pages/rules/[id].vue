@@ -180,7 +180,7 @@ function cancelEdit() {
             <UTextarea v-model="form.description" :rows="2" />
           </UFormField>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Type">
               <USelect v-model="form.type" :items="typeOptions" value-key="value" />
             </UFormField>
@@ -190,7 +190,7 @@ function cancelEdit() {
             </UFormField>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Priority">
               <UInput v-model.number="form.priority" type="number" />
             </UFormField>

@@ -90,7 +90,7 @@ const categoryOptions = computed(() =>
         <template #description>{{ error }}</template>
       </UAlert>
 
-      <form class="space-y-4" @submit.prevent="handleSubmit">
+      <form class="space-y-6" @submit.prevent="handleSubmit">
         <UFormField label="Name" required>
           <UInput v-model="form.name" placeholder="e.g., California State Tax" />
         </UFormField>
@@ -103,13 +103,14 @@ const categoryOptions = computed(() =>
             min="0"
             max="100"
             placeholder="e.g., 8.25"
+            class="w-20"
           />
           <template #hint>
             Enter the tax rate as a percentage (e.g., 8.25 for 8.25%)
           </template>
         </UFormField>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <UFormField label="Country" required>
             <UInput v-model="form.country" placeholder="e.g., USA" />
           </UFormField>
@@ -133,7 +134,7 @@ const categoryOptions = computed(() =>
           </template>
         </UFormField>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <UFormField label="Valid From">
             <UInput v-model="form.validFrom" type="date" />
           </UFormField>
