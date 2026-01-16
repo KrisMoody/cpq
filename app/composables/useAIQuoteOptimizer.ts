@@ -242,22 +242,10 @@ export function useAIQuoteOptimizer() {
         const { done, value } = await reader.read()
         if (done) break
 
+        // Plain text streaming - just append the chunk directly
         const chunk = decoder.decode(value, { stream: true })
-        // Parse the AI SDK data stream format
-        const lines = chunk.split('\n')
-
-        for (const line of lines) {
-          if (line.startsWith('0:')) {
-            // Text delta
-            try {
-              const text = JSON.parse(line.slice(2))
-              assistantContent += text
-              streamingContent.value = assistantContent
-            } catch {
-              // Ignore parse errors for incomplete JSON
-            }
-          }
-        }
+        assistantContent += chunk
+        streamingContent.value = assistantContent
       }
 
       // Add assistant message to chat

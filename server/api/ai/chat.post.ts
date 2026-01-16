@@ -129,7 +129,7 @@ Guidelines:
       stopWhen: stepCountIs(10),
     })
 
-    // Return a streaming response
+    // Return plain text streaming response
     return result.toTextStreamResponse()
   } catch (error) {
     console.error('[AI Chat] Error:', error)
@@ -141,9 +141,10 @@ Guidelines:
       })
     }
 
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     throw createError({
       statusCode: 500,
-      message: 'Failed to process chat request',
+      message: `Failed to process chat request: ${errorMessage}`,
     })
   }
 })

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { generateText, stepCountIs } from 'ai'
+import { generateText, Output, stepCountIs } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
 import { usePrisma } from '../../utils/prisma'
 import { isAIEnabled, AIServiceError, aiTools } from '../../services/aiQuoteService'
@@ -98,34 +98,11 @@ Use the search tools to find appropriate products, then provide your response in
         getPricing: aiTools.getPricing,
         ...(customerId && { lookupCustomer: aiTools.lookupCustomer }),
       },
-      stopWhen: stepCountIs(5),
+      output: Output.object({ schema: generateQuoteResponseSchema }),
+      stopWhen: stepCountIs(6), // +1 for structured output step
     })
 
-    // Parse the response
-    const responseText = result.text
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/)
-
-    if (!jsonMatch) {
-      return {
-        suggestedName: 'New Quote',
-        lineItems: [],
-        summary: responseText,
-        estimatedTotal: null,
-      }
-    }
-
-    try {
-      const parsed = JSON.parse(jsonMatch[0])
-      const validated = generateQuoteResponseSchema.parse(parsed)
-      return validated
-    } catch {
-      return {
-        suggestedName: 'New Quote',
-        lineItems: [],
-        summary: responseText,
-        estimatedTotal: null,
-      }
-    }
+    return result.output
   } catch (error) {
     console.error('[AI Generate Quote] Error:', error)
 

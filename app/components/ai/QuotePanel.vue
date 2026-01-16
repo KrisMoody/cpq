@@ -15,15 +15,15 @@ const emit = defineEmits<{
 
 const { optimizeQuote, loading, error, requiresConfirmation, userSettings, updateSettings } = useAIQuoteOptimizer()
 
-const isExpanded = ref(false)
-const activeTab = ref('optimize')
+const isExpanded = ref(true)
+const activeTab = ref('chat')
 const optimizationResult = ref<OptimizationResponse | null>(null)
 const dismissedRecommendations = ref<Set<number>>(new Set())
 const showSettings = ref(false)
 
 const tabs = [
-  { label: 'Optimize', value: 'optimize', icon: 'i-heroicons-light-bulb' },
   { label: 'Chat', value: 'chat', icon: 'i-heroicons-chat-bubble-left-right' },
+  { label: 'Optimize', value: 'optimize', icon: 'i-heroicons-light-bulb' },
   { label: 'Generate', value: 'generate', icon: 'i-heroicons-sparkles' },
 ]
 

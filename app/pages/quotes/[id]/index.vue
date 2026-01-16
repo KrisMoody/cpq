@@ -67,8 +67,11 @@ watch(
   { immediate: true }
 )
 
-async function loadQuote() {
-  loading.value = true
+async function loadQuote(showLoading = true) {
+  // Only show loading spinner on initial load, not on refreshes
+  if (showLoading && !quote.value) {
+    loading.value = true
+  }
   try {
     quote.value = await fetchQuote(quoteId)
     if (!quote.value) {
