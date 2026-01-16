@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { generateText, tool, stepCountIs } from 'ai'
+import { generateText, Output, tool, stepCountIs } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
 import { usePrisma } from '../utils/prisma'
 import { calculateLinePrice, calculateQuoteTotal } from './pricingEngine'
@@ -248,16 +248,177 @@ async function executeSearchProducts(input: z.infer<typeof searchProductsInputSc
   const prisma = usePrisma()
   const { query, categoryId, billingFrequency, isActive, limit } = input
 
-  const products = await prisma.product.findMany({
+  // If no query provided, use standard Prisma findMany
+  if (!query) {
+    const products = await prisma.product.findMany({
+      where: {
+        isActive,
+        ...(categoryId && {
+          categories: { some: { categoryId } },
+        }),
+        ...(billingFrequency && { billingFrequency }),
+      },
+      include: {
+        categories: {
+          include: { category: { select: { id: true, name: true } } },
+        },
+        priceBookEntries: {
+          take: 1,
+          select: { listPrice: true },
+        },
+      },
+      take: limit,
+    })
+
+    return products.map((p) => ({
+      id: p.id,
+      name: p.name,
+      sku: p.sku,
+      description: p.description,
+      type: p.type,
+      billingFrequency: p.billingFrequency,
+      categories: p.categories.map((pc) => pc.category),
+      basePrice: p.priceBookEntries[0] ? Number(p.priceBookEntries[0].listPrice) : null,
+    }))
+  }
+
+  // Use full-text search with raw SQL
+  // Build dynamic WHERE clause parts
+  const isActiveValue = isActive ?? true
+  const limitValue = limit ?? 20
+
+  type FTSProductResult = {
+    id: string
+    name: string
+    sku: string
+    description: string | null
+    type: string
+    billingFrequency: string
+    isActive: boolean
+    listPrice: string | null
+    categoryId: string | null
+    categoryName: string | null
+  }
+
+  let ftsResults: FTSProductResult[]
+
+  if (categoryId && billingFrequency) {
+    ftsResults = await prisma.$queryRaw<FTSProductResult[]>`
+      SELECT DISTINCT ON (p.id)
+        p.id, p.name, p.sku, p.description, p.type,
+        p."billingFrequency", p."isActive",
+        pbe."listPrice"::text as "listPrice",
+        c.id as "categoryId", c.name as "categoryName"
+      FROM "Product" p
+      LEFT JOIN "PriceBookEntry" pbe ON pbe."productId" = p.id
+      LEFT JOIN "ProductCategory" pc ON pc."productId" = p.id
+      LEFT JOIN "Category" c ON c.id = pc."categoryId"
+      WHERE p."isActive" = ${isActiveValue}
+        AND p.search_vector @@ plainto_tsquery('english', ${query})
+        AND p."billingFrequency" = ${billingFrequency}::"BillingFrequency"
+        AND pc."categoryId" = ${categoryId}
+      ORDER BY p.id, ts_rank(p.search_vector, plainto_tsquery('english', ${query})) DESC
+      LIMIT ${limitValue}
+    `
+  } else if (categoryId) {
+    ftsResults = await prisma.$queryRaw<FTSProductResult[]>`
+      SELECT DISTINCT ON (p.id)
+        p.id, p.name, p.sku, p.description, p.type,
+        p."billingFrequency", p."isActive",
+        pbe."listPrice"::text as "listPrice",
+        c.id as "categoryId", c.name as "categoryName"
+      FROM "Product" p
+      LEFT JOIN "PriceBookEntry" pbe ON pbe."productId" = p.id
+      LEFT JOIN "ProductCategory" pc ON pc."productId" = p.id
+      LEFT JOIN "Category" c ON c.id = pc."categoryId"
+      WHERE p."isActive" = ${isActiveValue}
+        AND p.search_vector @@ plainto_tsquery('english', ${query})
+        AND pc."categoryId" = ${categoryId}
+      ORDER BY p.id, ts_rank(p.search_vector, plainto_tsquery('english', ${query})) DESC
+      LIMIT ${limitValue}
+    `
+  } else if (billingFrequency) {
+    ftsResults = await prisma.$queryRaw<FTSProductResult[]>`
+      SELECT DISTINCT ON (p.id)
+        p.id, p.name, p.sku, p.description, p.type,
+        p."billingFrequency", p."isActive",
+        pbe."listPrice"::text as "listPrice",
+        c.id as "categoryId", c.name as "categoryName"
+      FROM "Product" p
+      LEFT JOIN "PriceBookEntry" pbe ON pbe."productId" = p.id
+      LEFT JOIN "ProductCategory" pc ON pc."productId" = p.id
+      LEFT JOIN "Category" c ON c.id = pc."categoryId"
+      WHERE p."isActive" = ${isActiveValue}
+        AND p.search_vector @@ plainto_tsquery('english', ${query})
+        AND p."billingFrequency" = ${billingFrequency}::"BillingFrequency"
+      ORDER BY p.id, ts_rank(p.search_vector, plainto_tsquery('english', ${query})) DESC
+      LIMIT ${limitValue}
+    `
+  } else {
+    ftsResults = await prisma.$queryRaw<FTSProductResult[]>`
+      SELECT DISTINCT ON (p.id)
+        p.id, p.name, p.sku, p.description, p.type,
+        p."billingFrequency", p."isActive",
+        pbe."listPrice"::text as "listPrice",
+        c.id as "categoryId", c.name as "categoryName"
+      FROM "Product" p
+      LEFT JOIN "PriceBookEntry" pbe ON pbe."productId" = p.id
+      LEFT JOIN "ProductCategory" pc ON pc."productId" = p.id
+      LEFT JOIN "Category" c ON c.id = pc."categoryId"
+      WHERE p."isActive" = ${isActiveValue}
+        AND p.search_vector @@ plainto_tsquery('english', ${query})
+      ORDER BY p.id, ts_rank(p.search_vector, plainto_tsquery('english', ${query})) DESC
+      LIMIT ${limitValue}
+    `
+  }
+
+  // If FTS returns results, map them to the expected format
+  if (ftsResults.length > 0) {
+    // Group categories by product ID
+    const productMap = new Map<string, {
+      id: string
+      name: string
+      sku: string
+      description: string | null
+      type: string
+      billingFrequency: string
+      categories: { id: string; name: string }[]
+      basePrice: number | null
+    }>()
+
+    for (const row of ftsResults) {
+      if (!productMap.has(row.id)) {
+        productMap.set(row.id, {
+          id: row.id,
+          name: row.name,
+          sku: row.sku,
+          description: row.description,
+          type: row.type,
+          billingFrequency: row.billingFrequency,
+          categories: [],
+          basePrice: row.listPrice ? Number(row.listPrice) : null,
+        })
+      }
+      if (row.categoryId && row.categoryName) {
+        const product = productMap.get(row.id)!
+        if (!product.categories.some((c) => c.id === row.categoryId)) {
+          product.categories.push({ id: row.categoryId, name: row.categoryName })
+        }
+      }
+    }
+
+    return Array.from(productMap.values())
+  }
+
+  // Fallback to ILIKE search when FTS returns no results
+  const fallbackProducts = await prisma.product.findMany({
     where: {
-      isActive,
-      ...(query && {
-        OR: [
-          { name: { contains: query, mode: 'insensitive' } },
-          { description: { contains: query, mode: 'insensitive' } },
-          { sku: { contains: query, mode: 'insensitive' } },
-        ],
-      }),
+      isActive: isActiveValue,
+      OR: [
+        { name: { contains: query, mode: 'insensitive' } },
+        { description: { contains: query, mode: 'insensitive' } },
+        { sku: { contains: query, mode: 'insensitive' } },
+      ],
       ...(categoryId && {
         categories: { some: { categoryId } },
       }),
@@ -272,10 +433,10 @@ async function executeSearchProducts(input: z.infer<typeof searchProductsInputSc
         select: { listPrice: true },
       },
     },
-    take: limit,
+    take: limitValue,
   })
 
-  return products.map((p) => ({
+  return fallbackProducts.map((p) => ({
     id: p.id,
     name: p.name,
     sku: p.sku,
@@ -916,47 +1077,11 @@ Return your analysis in the specified JSON format.`
         applyDiscount: applyDiscountTool,
         calculateMetrics: calculateMetricsTool,
       },
-      stopWhen: stepCountIs(10),
+      output: Output.object({ schema: OptimizationResponseSchema }),
+      stopWhen: stepCountIs(11), // +1 for structured output step
     })
 
-    // Parse and validate the response
-    const responseText = result.text
-
-    // Try to extract JSON from the response
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) {
-      // If no JSON found, construct a basic response from the text
-      return {
-        overallScore: 50,
-        recommendations: [],
-        analysis: {
-          strengths: [],
-          weaknesses: [],
-          opportunities: [],
-          risks: [],
-        },
-        summary: responseText,
-      }
-    }
-
-    try {
-      const parsed = JSON.parse(jsonMatch[0])
-      const validated = OptimizationResponseSchema.parse(parsed)
-      return validated
-    } catch {
-      console.warn('[AI Service] Could not parse structured response, returning summary')
-      return {
-        overallScore: 50,
-        recommendations: [],
-        analysis: {
-          strengths: [],
-          weaknesses: [],
-          opportunities: [],
-          risks: [],
-        },
-        summary: responseText,
-      }
-    }
+    return result.output
   } catch (error) {
     console.error('[AI Service] Error optimizing quote:', error)
     handleAIError(error)
