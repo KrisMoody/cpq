@@ -21,6 +21,14 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 This project does not require writing tests.
 
+# Course Documentation
+
+When making changes to CPQ functionality, update the corresponding course docs in `server/assets/course/` to keep documentation in sync. This includes:
+- New features or capabilities
+- Changes to existing behavior
+- New pricing types, rules, or business logic
+- Schema changes that affect how features work
+
 # Form Input Width Conventions
 
 When creating or editing forms, use these standardized width tiers based on expected character count:
