@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getErrorMessage } from '~/utils/errors'
+import { formatMarginPercent } from '~/utils/pricing'
 import type { PriceBook, PriceBookEntry, PriceTier } from '~/composables/usePricing'
 
 const _route = useRoute()
@@ -552,10 +553,7 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
                     </template>
                   </td>
                   <td class="px-4 py-3 text-right text-sm">
-                    <template v-if="entry.cost">
-                      {{ Math.round((1 - parseFloat(entry.cost) / parseFloat(entry.listPrice)) * 100) }}%
-                    </template>
-                    <template v-else>—</template>
+                    {{ formatMarginPercent(entry.cost, entry.listPrice) }}
                   </td>
                   <td class="px-4 py-3 text-right">
                     <template v-if="editingEntryId === entry.id">
