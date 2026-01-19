@@ -17,6 +17,10 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 <!-- OPENSPEC:END -->
 
+# Testing
+
+This project does not require writing tests.
+
 # Form Input Width Conventions
 
 When creating or editing forms, use these standardized width tiers based on expected character count:

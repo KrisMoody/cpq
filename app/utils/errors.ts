@@ -47,19 +47,19 @@ function isNuxtError(error: unknown): error is NuxtError {
  * @returns A string error message
  */
 export function getErrorMessage(error: unknown, fallback = 'An error occurred'): string {
-  // Standard Error instance
-  if (error instanceof Error) {
-    return error.message
-  }
-
   // String error
   if (typeof error === 'string') {
     return error
   }
 
-  // Nuxt/H3 error format
+  // Nuxt/H3/$fetch error format (check before Error instance since FetchError extends Error)
   if (isNuxtError(error)) {
     return error.data?.message || error.message || error.statusMessage || fallback
+  }
+
+  // Standard Error instance
+  if (error instanceof Error) {
+    return error.message
   }
 
   // Generic object with message property

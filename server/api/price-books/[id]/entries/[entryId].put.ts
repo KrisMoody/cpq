@@ -1,4 +1,5 @@
 import { usePrisma } from '../../../../utils/prisma'
+import { validateTiers } from '../../../../services/priceLookup'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
@@ -37,11 +38,6 @@ export default defineEventHandler(async (event) => {
 
   // Handle tiers if provided
   if (body.tiers !== undefined) {
-    // Delete existing tiers
-    await prisma.priceTier.deleteMany({
-      where: { priceBookEntryId: entryId },
-    })
-
     // Create new tiers if any
     if (body.tiers && body.tiers.length > 0) {
       // Validate that all tiers use the same tier type
@@ -53,6 +49,23 @@ export default defineEventHandler(async (event) => {
         })
       }
 
+      // Validate tier ranges
+      const validationError = validateTiers(body.tiers)
+      if (validationError) {
+        throw createError({
+          statusCode: 400,
+          message: validationError.message,
+        })
+      }
+    }
+
+    // Delete existing tiers
+    await prisma.priceTier.deleteMany({
+      where: { priceBookEntryId: entryId },
+    })
+
+    // Create new tiers if any
+    if (body.tiers && body.tiers.length > 0) {
       await prisma.priceTier.createMany({
         data: body.tiers.map((tier: { minQuantity: number; maxQuantity?: number | null; tierPrice: number; tierType?: string; discountPercent?: number | null }) => {
           const tierType = tier.tierType || 'UNIT_PRICE'

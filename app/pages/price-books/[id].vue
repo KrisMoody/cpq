@@ -296,19 +296,24 @@ async function saveTiers(entry: PriceBookEntry) {
   }
 
   error.value = null
-  const updated = await updatePriceBookEntry(priceBookId, entry.id, {
-    listPrice: parseFloat(entry.listPrice),
-    cost: entry.cost ? parseFloat(entry.cost) : null,
-    tiers: editingTiers.value,
-  })
+  try {
+    const updated = await $fetch<PriceBookEntry>(`/api/price-books/${priceBookId}/entries/${entry.id}`, {
+      method: 'PUT',
+      body: {
+        listPrice: parseFloat(entry.listPrice),
+        cost: entry.cost ? parseFloat(entry.cost) : null,
+        tiers: editingTiers.value,
+      },
+    })
 
-  if (updated) {
     const idx = entries.value.findIndex((e) => e.id === entry.id)
     if (idx >= 0) {
       entries.value[idx] = updated
     }
     editingTiersEntryId.value = null
     editingTiers.value = []
+  } catch (e) {
+    error.value = getErrorMessage(e, 'Failed to save tiers')
   }
 }
 
