@@ -3,6 +3,7 @@ import { getErrorMessage } from '~/utils/errors'
 import type { ProductWithDetails, ProductFeature } from '~/composables/useProducts'
 import type { ProductType, BillingFrequency } from '~/generated/prisma/client'
 import type { Attribute } from '~/composables/useAttributes'
+import type { CategoryAttributeWithSuggestion } from '~/composables/useCategories'
 
 const _route = useRoute()
 const router = useRouter()
@@ -20,6 +21,7 @@ const {
   deleteOption,
   reorderFeatures,
   reorderOptions,
+  updateProductCategories,
   error: productError,
 } = useProducts()
 const { products } = useProducts()
@@ -27,6 +29,7 @@ const { formatPrice: _formatPrice } = usePricing()
 const { createQuote, addLineItem } = useQuotes()
 const { attributes, groups, fetchAttributes, fetchGroups, setProductAttributes } = useAttributes()
 const { units, fetchUnits } = useUnits()
+const { categories, fetchCategories, fetchCategoryAttributesBulk, flattenCategories } = useCategories()
 
 const productId = useRequiredParam('id')
 const product = ref<ProductWithDetails | null>(null)
@@ -72,6 +75,12 @@ const showAttributesModal = ref(false)
 const attributeValues = ref<Record<string, string | number | boolean | null>>({})
 const savingAttributes = ref(false)
 
+// Categories state
+const showCategoriesModal = ref(false)
+const editingCategoryIds = ref<string[]>([])
+const savingCategories = ref(false)
+const suggestedAttributes = ref<CategoryAttributeWithSuggestion[]>([])
+
 // Drag-and-drop state
 const draggedFeatureId = ref<string | null>(null)
 const draggedOptionId = ref<string | null>(null)
@@ -85,6 +94,7 @@ onMounted(async () => {
     fetchAttributes({ includeGroup: true }),
     fetchGroups(),
     fetchUnits(),
+    fetchCategories(),
   ])
 })
 
@@ -600,6 +610,74 @@ async function handleSaveAttributes() {
     toast.add({ title: 'Failed to save attributes', color: 'error' })
   }
 }
+
+// Categories helpers
+const productCategories = computed(() => {
+  if (!product.value?.categories) return []
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return product.value.categories.map((pc: any) => pc.category as { id: string; name: string })
+})
+
+function getCategoryPath(categoryId: string): string {
+  const flatCats = flattenCategories(categories.value)
+  const path: string[] = []
+  let current = flatCats.find((c) => c.id === categoryId)
+
+  while (current) {
+    path.unshift(current.name)
+    current = flatCats.find((c) => c.id === current?.parentId)
+  }
+
+  return path.join(' > ')
+}
+
+function openCategoriesModal() {
+  editingCategoryIds.value = productCategories.value.map((c: { id: string }) => c.id)
+  showCategoriesModal.value = true
+}
+
+async function handleSaveCategories() {
+  savingCategories.value = true
+
+  const result = await updateProductCategories(productId, editingCategoryIds.value)
+
+  savingCategories.value = false
+
+  if (result) {
+    toast.add({ title: 'Categories saved', color: 'success' })
+    showCategoriesModal.value = false
+    await loadProduct()
+    // Reload suggested attributes
+    await loadSuggestedAttributes()
+  } else {
+    toast.add({ title: 'Failed to save categories', color: 'error' })
+  }
+}
+
+async function loadSuggestedAttributes() {
+  const categoryIds = productCategories.value.map((c: { id: string }) => c.id)
+  if (categoryIds.length > 0) {
+    suggestedAttributes.value = await fetchCategoryAttributesBulk(categoryIds)
+  } else {
+    suggestedAttributes.value = []
+  }
+}
+
+// Load suggested attributes when product loads
+watch(
+  () => product.value?.categories,
+  () => {
+    loadSuggestedAttributes()
+  },
+  { immediate: true }
+)
+
+// Suggested attribute IDs for highlighting
+const suggestedAttributeIds = computed(() => new Set(suggestedAttributes.value.map((a) => a.id)))
+
+function isAttributeSuggested(attributeId: string): boolean {
+  return suggestedAttributeIds.value.has(attributeId)
+}
 </script>
 
 <template>
@@ -757,6 +835,34 @@ async function handleSaveAttributes() {
           <h2 class="font-semibold">Description</h2>
         </template>
         <p class="text-gray-600 dark:text-gray-300">{{ product.description }}</p>
+      </UCard>
+
+      <!-- Categories Section (View Mode) -->
+      <UCard v-if="!isEditing">
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h2 class="font-semibold">Categories</h2>
+            <UButton size="sm" variant="soft" icon="i-heroicons-pencil" @click="openCategoriesModal">
+              Edit
+            </UButton>
+          </div>
+        </template>
+
+        <div v-if="productCategories.length === 0" class="text-gray-500 text-sm">
+          No categories assigned
+        </div>
+
+        <div v-else class="flex flex-wrap gap-2">
+          <UTooltip
+            v-for="category in productCategories"
+            :key="category.id"
+            :text="getCategoryPath(category.id)"
+          >
+            <UBadge color="neutral" variant="subtle">
+              {{ category.name }}
+            </UBadge>
+          </UTooltip>
+        </div>
       </UCard>
 
       <!-- Product Attributes (View Mode) -->
@@ -1050,13 +1156,38 @@ async function handleSaveAttributes() {
             </div>
 
             <template v-else>
+              <!-- Suggested Attributes Section -->
+              <div v-if="suggestedAttributes.length > 0" class="space-y-3">
+                <div class="flex items-center gap-2">
+                  <UBadge color="primary" variant="subtle" size="xs">Suggested</UBadge>
+                  <span class="text-sm text-gray-500">Based on assigned categories</span>
+                </div>
+                <div class="space-y-3">
+                  <UFormField
+                    v-for="attr in suggestedAttributes"
+                    :key="attr.id"
+                    :label="attr.name"
+                    :required="attr.isRequired"
+                  >
+                    <template #hint>
+                      <span class="text-xs">{{ attr.suggestedByCategoryNames.join(', ') }}</span>
+                    </template>
+                    <CpqAttributeInput
+                      :model-value="getAttributeValue(attr.id)"
+                      :attribute="attr as unknown as Attribute"
+                      @update:model-value="setAttributeValue(attr.id, $event)"
+                    />
+                  </UFormField>
+                </div>
+              </div>
+
               <div v-for="group in groups" :key="group.id" class="space-y-3">
                 <h4 class="text-sm font-medium text-gray-500 border-b pb-1 dark:border-gray-700">
                   {{ group.name }}
                 </h4>
                 <div class="space-y-3">
                   <UFormField
-                    v-for="attr in attributes.filter(a => a.groupId === group.id)"
+                    v-for="attr in attributes.filter(a => a.groupId === group.id && !isAttributeSuggested(a.id))"
                     :key="attr.id"
                     :label="attr.name"
                     :required="attr.isRequired"
@@ -1071,13 +1202,13 @@ async function handleSaveAttributes() {
               </div>
 
               <!-- Ungrouped attributes -->
-              <div v-if="attributes.some(a => !a.groupId)" class="space-y-3">
+              <div v-if="attributes.some(a => !a.groupId && !isAttributeSuggested(a.id))" class="space-y-3">
                 <h4 v-if="groups.length > 0" class="text-sm font-medium text-gray-500 border-b pb-1 dark:border-gray-700">
                   Other
                 </h4>
                 <div class="space-y-3">
                   <UFormField
-                    v-for="attr in attributes.filter(a => !a.groupId)"
+                    v-for="attr in attributes.filter(a => !a.groupId && !isAttributeSuggested(a.id))"
                     :key="attr.id"
                     :label="attr.name"
                     :required="attr.isRequired"
@@ -1096,6 +1227,35 @@ async function handleSaveAttributes() {
               <UButton variant="ghost" @click="showAttributesModal = false">Cancel</UButton>
               <UButton type="submit" :loading="savingAttributes" :disabled="attributes.length === 0">
                 Save Attributes
+              </UButton>
+            </div>
+          </form>
+        </UCard>
+      </template>
+    </UModal>
+
+    <!-- Categories Modal -->
+    <UModal v-model:open="showCategoriesModal" title="Edit Categories">
+      <template #content>
+        <UCard class="w-[450px]">
+          <template #header>
+            <h3 class="font-semibold">Edit Product Categories</h3>
+          </template>
+
+          <form class="space-y-4" @submit.prevent="handleSaveCategories">
+            <p class="text-sm text-gray-500">
+              Select categories for this product. Categories help organize products and suggest relevant attributes.
+            </p>
+
+            <CpqCategorySelector
+              v-model="editingCategoryIds"
+              placeholder="Select categories..."
+            />
+
+            <div class="flex justify-end gap-3 pt-4">
+              <UButton variant="ghost" @click="showCategoriesModal = false">Cancel</UButton>
+              <UButton type="submit" :loading="savingCategories">
+                Save Categories
               </UButton>
             </div>
           </form>

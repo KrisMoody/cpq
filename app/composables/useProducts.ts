@@ -120,6 +120,22 @@ export function useProducts() {
     defaultTermMonths?: number
     isTaxable?: boolean
     unitOfMeasureId?: string
+    categoryIds?: string[]
+    attributes?: Array<{ attributeId: string; value: unknown }>
+    features?: Array<{
+      name: string
+      minOptions?: number
+      maxOptions?: number
+      sortOrder?: number
+      options?: Array<{
+        optionProductId: string
+        isRequired?: boolean
+        isDefault?: boolean
+        minQty?: number
+        maxQty?: number
+        sortOrder?: number
+      }>
+    }>
   }): Promise<Product | null> {
     try {
       const product = await $fetch<Product>('/api/products', {
@@ -333,6 +349,22 @@ export function useProducts() {
     }
   }
 
+  async function updateProductCategories(
+    productId: string,
+    categoryIds: string[]
+  ): Promise<ProductCategory[] | null> {
+    try {
+      const categories = await $fetch<ProductCategory[]>(`/api/products/${productId}/categories`, {
+        method: 'PUT',
+        body: { categoryIds },
+      })
+      return categories
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to update product categories')
+      return null
+    }
+  }
+
   return {
     products,
     loading,
@@ -350,5 +382,6 @@ export function useProducts() {
     deleteOption,
     reorderFeatures,
     reorderOptions,
+    updateProductCategories,
   }
 }
