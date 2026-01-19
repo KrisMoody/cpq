@@ -102,7 +102,7 @@ A configuration "question" on a bundle product (e.g., "Select RAM").
 A contract-specified price that overrides price book pricing for a specific product.
 
 ### Flat Price
-A tier pricing type where the total price is fixed regardless of quantity within the tier.
+A tier pricing type where the total price is fixed regardless of quantity within the tier. Also known as **Stairstep Pricing** or **Block Pricing**.
 
 ---
 
@@ -253,7 +253,7 @@ The complete value of a deal over the contract term.
 A quantity range with specific pricing or discount.
 
 ### Tier Type
-How tier pricing is calculated: UNIT_PRICE (per item) or FLAT_PRICE (total for range).
+How tier pricing is calculated: UNIT_PRICE (per item, also known as Slab Pricing) or FLAT_PRICE (total for range, also known as Stairstep Pricing).
 
 ---
 
