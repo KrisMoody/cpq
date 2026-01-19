@@ -72,15 +72,6 @@ const categoryOptions = computed(() =>
 
 <template>
   <div class="max-w-2xl mx-auto">
-    <UButton
-      to="/tax-rates"
-      variant="ghost"
-      icon="i-heroicons-arrow-left"
-      class="mb-4"
-    >
-      Back to Tax Rates
-    </UButton>
-
     <UCard>
       <template #header>
         <h1 class="text-xl font-bold">Create Tax Rate</h1>

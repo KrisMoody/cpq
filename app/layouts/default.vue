@@ -272,6 +272,18 @@ watch(() => route.path, () => {
 
 // Breadcrumbs
 const breadcrumbs = useBreadcrumbs(navigation)
+
+// Parent route for back navigation (last breadcrumb with a `to` value)
+const parentRoute = computed(() => {
+  const crumbs = breadcrumbs.value
+  for (let i = crumbs.length - 1; i >= 0; i--) {
+    const crumb = crumbs[i]
+    if (crumb?.to) {
+      return crumb.to
+    }
+  }
+  return '/'
+})
 </script>
 
 <template>
@@ -492,6 +504,16 @@ const breadcrumbs = useBreadcrumbs(navigation)
             class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-0"
           >
             <ol class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 overflow-x-auto">
+              <li class="flex items-center">
+                <UButton
+                  :to="parentRoute"
+                  icon="i-heroicons-arrow-left"
+                  variant="ghost"
+                  color="neutral"
+                  size="xs"
+                  class="mr-1"
+                />
+              </li>
               <template v-for="(crumb, index) in breadcrumbs" :key="index">
                 <li class="flex items-center gap-1 whitespace-nowrap">
                   <UIcon

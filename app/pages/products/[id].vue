@@ -682,16 +682,6 @@ function isAttributeSuggested(attributeId: string): boolean {
 
 <template>
   <div class="max-w-4xl mx-auto">
-    <!-- Back button -->
-    <UButton
-      to="/products"
-      variant="ghost"
-      icon="i-heroicons-arrow-left"
-      class="mb-4"
-    >
-      Back to Products
-    </UButton>
-
     <!-- Loading -->
     <div v-if="loading" class="flex justify-center py-12">
       <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />

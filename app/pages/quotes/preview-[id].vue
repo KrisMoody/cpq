@@ -48,10 +48,6 @@ const layoutOptions = computed(() => {
 function handlePrint() {
   window.print()
 }
-
-async function goBack() {
-  await navigateTo(`/quotes/${route.params.id}`)
-}
 </script>
 
 <template>
@@ -59,15 +55,7 @@ async function goBack() {
   <div class="fixed inset-0 z-50 bg-gray-100 dark:bg-gray-950 overflow-auto">
     <!-- Navigation Bar (hidden when printing) -->
     <div class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 print:hidden">
-      <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-        <UButton
-          variant="ghost"
-          icon="i-heroicons-arrow-left"
-          @click="goBack"
-        >
-          Back to Editor
-        </UButton>
-
+      <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-end">
         <div class="flex items-center gap-3">
           <!-- Layout Selector -->
           <div class="flex items-center gap-2">

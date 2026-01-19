@@ -148,15 +148,6 @@ async function handleSubmit() {
 
 <template>
   <div class="max-w-2xl mx-auto">
-    <UButton
-      to="/attributes"
-      variant="ghost"
-      icon="i-heroicons-arrow-left"
-      class="mb-4"
-    >
-      Back to Attributes
-    </UButton>
-
     <UCard>
       <template #header>
         <h1 class="text-xl font-semibold">New Attribute</h1>
