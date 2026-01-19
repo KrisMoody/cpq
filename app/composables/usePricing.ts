@@ -22,6 +22,7 @@ export interface PriceTier {
   maxQuantity: number | null
   tierPrice: string
   tierType: string
+  discountPercent: string | null
 }
 
 export interface PriceBookEntry {
@@ -72,6 +73,7 @@ export interface PriceTierInput {
   maxQuantity?: number | null
   tierPrice: number
   tierType?: string
+  discountPercent?: number | null
 }
 
 export interface UpdatePriceBookEntryInput {

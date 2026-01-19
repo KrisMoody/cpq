@@ -351,6 +351,7 @@ model PriceTier {
   minQuantity      Int
   maxQuantity      Int?
   tierPrice        Decimal   @db.Decimal(10, 2)
+  discountPercent  Decimal?  @db.Decimal(5, 2) // For VOLUME_DISCOUNT_PERCENT tier type
   tierType         TierType  @default(UNIT_PRICE)
 
   priceBookEntry PriceBookEntry @relation(fields: [priceBookEntryId], references: [id], onDelete: Cascade)
@@ -359,8 +360,10 @@ model PriceTier {
 }
 
 enum TierType {
-  UNIT_PRICE
-  FLAT_PRICE
+  UNIT_PRICE              // Slab: all units at tier price
+  FLAT_PRICE              // Stairstep: fixed total for range
+  GRADUATED               // Incremental: each portion at its tier rate
+  VOLUME_DISCOUNT_PERCENT // Percentage off list price
 }
 
 // ============================================================================

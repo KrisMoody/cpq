@@ -156,14 +156,17 @@ model PriceTier {
   minQuantity      Int
   maxQuantity      Int?      // null = unlimited
   tierPrice        Decimal   @db.Decimal(10, 2)
+  discountPercent  Decimal?  @db.Decimal(5, 2)  // For VOLUME_DISCOUNT_PERCENT
   tierType         TierType  @default(UNIT_PRICE)
 
   @@index([priceBookEntryId, minQuantity])
 }
 
 enum TierType {
-  UNIT_PRICE   // Price per unit at this tier
-  FLAT_PRICE   // Total price for this tier
+  UNIT_PRICE              // Price per unit at this tier (Slab pricing)
+  FLAT_PRICE              // Total price for this tier (Stairstep pricing)
+  GRADUATED               // Each quantity portion at its tier rate
+  VOLUME_DISCOUNT_PERCENT // Percentage off list price
 }
 ```
 
@@ -198,6 +201,44 @@ Fixed price for the entire tier regardless of quantity.
 **Example:** Order 25 units = $400 (flat)
 
 **Use Case:** Software licenses sold in quantity bands.
+
+#### GRADUATED (Tax Bracket Style)
+
+Also known as **Incremental Pricing** or **Marginal Pricing**.
+
+Different portions of the quantity are priced at different rates, like tax brackets.
+
+| Quantity | Tier Price | Applies To |
+|----------|------------|------------|
+| 1-100 | $0.10/unit | First 100 units |
+| 101-1000 | $0.08/unit | Units 101-1000 |
+| 1001+ | $0.06/unit | Units 1001+ |
+
+**Example:** Order 2,500 units:
+- Tier 1: 100 × $0.10 = $10
+- Tier 2: 900 × $0.08 = $72
+- Tier 3: 1,500 × $0.06 = $90
+- **Total: $172**
+
+**Use Case:** Cloud storage, API calls, data transfer where usage is metered.
+
+#### VOLUME_DISCOUNT_PERCENT
+
+Percentage discount from list price based on quantity thresholds.
+
+| Quantity | Discount % | Unit Price (from $100 list) |
+|----------|------------|----------------------------|
+| 1-9 | 0% | $100 |
+| 10-49 | 10% | $90 |
+| 50-99 | 15% | $85 |
+| 100+ | 20% | $80 |
+
+**Example:** Order 75 units at $100 list price:
+- Discount: 15%
+- Unit Price: $100 × (1 - 0.15) = $85
+- **Total: 75 × $85 = $6,375**
+
+**Use Case:** Standard volume discount programs where the discount increases with quantity.
 
 ---
 
@@ -430,10 +471,13 @@ Before go-live, verify:
    Price books enable systematic segmentation (customer type, region, channel), different currencies, time-based pricing, and cleaner maintenance than per-quote discounting.
    </details>
 
-2. **What's the difference between UNIT_PRICE and FLAT_PRICE tier types?**
+2. **What's the difference between the four tier types?**
    <details>
    <summary>Answer</summary>
-   UNIT_PRICE: Total = quantity × tier price. FLAT_PRICE: Total = tier price regardless of quantity within the tier range.
+   - **UNIT_PRICE (Slab)**: All units priced at the tier rate. Total = quantity × tier price.
+   - **FLAT_PRICE (Stairstep)**: Fixed total for the tier range regardless of quantity.
+   - **GRADUATED**: Each portion of quantity priced at its tier rate (like tax brackets). Total = sum of each tier's contribution.
+   - **VOLUME_DISCOUNT_PERCENT**: Percentage discount from list price. Unit price = listPrice × (1 - discountPercent/100).
    </details>
 
 3. **In what order are price sources checked?**
