@@ -1,5 +1,117 @@
 import type { PriceBookEntry, PriceTier, TierType, Contract, ContractPriceEntry } from '../../app/generated/prisma/client'
 
+export interface TierInput {
+  minQuantity: number
+  maxQuantity?: number | null
+  tierPrice: number
+  tierType?: TierType
+  discountPercent?: number | null
+}
+
+export interface TierValidationError {
+  type: 'min_quantity' | 'max_quantity' | 'overlap' | 'graduated_contiguous' | 'graduated_start'
+  message: string
+  tierIndex?: number
+}
+
+/**
+ * Validate tier quantity ranges for consistency and correctness
+ * Returns null if valid, or an error object describing the issue
+ */
+export function validateTiers(tiers: TierInput[]): TierValidationError | null {
+  if (!tiers || tiers.length === 0) {
+    return null
+  }
+
+  const firstTier = tiers[0]
+  if (!firstTier) return null
+
+  const tierType = firstTier.tierType || 'UNIT_PRICE'
+
+  // Validate each tier individually
+  for (let i = 0; i < tiers.length; i++) {
+    const tier = tiers[i]
+    if (!tier) continue
+
+    // minQuantity must be >= 1
+    if (tier.minQuantity < 1) {
+      return {
+        type: 'min_quantity',
+        message: `Tier ${i + 1}: minQuantity must be at least 1`,
+        tierIndex: i,
+      }
+    }
+
+    // maxQuantity must be > minQuantity when set
+    if (tier.maxQuantity != null && tier.maxQuantity <= tier.minQuantity) {
+      return {
+        type: 'max_quantity',
+        message: `Tier ${i + 1}: maxQuantity must be greater than minQuantity`,
+        tierIndex: i,
+      }
+    }
+  }
+
+  // Sort tiers by minQuantity for overlap detection
+  const sortedTiers = [...tiers].sort((a, b) => a.minQuantity - b.minQuantity)
+
+  // Check for overlapping ranges
+  for (let i = 0; i < sortedTiers.length - 1; i++) {
+    const current = sortedTiers[i]
+    const next = sortedTiers[i + 1]
+    if (!current || !next) continue
+
+    // If current tier has no max, it extends to infinity - overlap with next
+    if (current.maxQuantity == null) {
+      return {
+        type: 'overlap',
+        message: `Tiers overlap: tier starting at ${current.minQuantity} has no upper bound but another tier starts at ${next.minQuantity}`,
+      }
+    }
+
+    // Check if next tier starts before current ends
+    if (next.minQuantity <= current.maxQuantity) {
+      return {
+        type: 'overlap',
+        message: `Tiers overlap: ranges ${current.minQuantity}-${current.maxQuantity} and ${next.minQuantity}-${next.maxQuantity ?? '∞'} overlap`,
+      }
+    }
+  }
+
+  // For GRADUATED tiers, enforce additional constraints
+  if (tierType === 'GRADUATED') {
+    const firstSorted = sortedTiers[0]
+    // Must start from 1
+    if (firstSorted && firstSorted.minQuantity !== 1) {
+      return {
+        type: 'graduated_start',
+        message: 'Graduated tiers must start from quantity 1',
+      }
+    }
+
+    // Must be contiguous (no gaps)
+    for (let i = 0; i < sortedTiers.length - 1; i++) {
+      const current = sortedTiers[i]
+      const next = sortedTiers[i + 1]
+      if (!current || !next) continue
+
+      if (current.maxQuantity == null) {
+        continue
+      }
+
+      // Next tier should start immediately after current ends
+      if (next.minQuantity !== current.maxQuantity + 1) {
+        return {
+          type: 'graduated_contiguous',
+          message: `Graduated tiers must be contiguous: gap between ${current.maxQuantity} and ${next.minQuantity}`,
+        }
+      }
+    }
+  }
+
+  return null
+}
+
 export interface PriceBookEntryWithTiers extends PriceBookEntry {
   priceTiers: PriceTier[]
 }
