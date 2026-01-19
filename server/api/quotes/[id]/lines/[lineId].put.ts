@@ -1,4 +1,5 @@
 import { usePrisma } from '../../../../utils/prisma'
+import { lookupPrice } from '../../../../services/priceLookup'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
@@ -60,7 +61,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Check for price tiers
+  // Check for price tiers using the pricing service
   const priceEntry = await prisma.priceBookEntry.findUnique({
     where: {
       priceBookId_productId: {
@@ -78,18 +79,9 @@ export default defineEventHandler(async (event) => {
   let listPrice = Number(lineItem.listPrice)
 
   if (priceEntry) {
-    // Check if there's a tier for this quantity
-    const applicableTier = priceEntry.priceTiers.find(
-      (tier) =>
-        quantity >= tier.minQuantity &&
-        (tier.maxQuantity === null || quantity <= tier.maxQuantity)
-    )
-
-    if (applicableTier) {
-      listPrice = Number(applicableTier.tierPrice)
-    } else {
-      listPrice = Number(priceEntry.listPrice)
-    }
+    // Use lookupPrice to properly handle all tier types (UNIT_PRICE, FLAT_PRICE, GRADUATED, VOLUME_DISCOUNT_PERCENT)
+    const priceResult = lookupPrice(priceEntry, quantity)
+    listPrice = priceResult.unitPrice
   }
 
   // Recalculate line item discount amounts for percentage discounts
