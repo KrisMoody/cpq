@@ -53,6 +53,7 @@ const editingEntry = ref({
 const expandedEntryId = ref<string | null>(null)
 const editingTiersEntryId = ref<string | null>(null)
 const editingTiers = ref<Array<{ minQuantity: number; maxQuantity: number | null; tierPrice: number; tierType: string; discountPercent: number | null }>>([])
+const editingTierType = ref<string>('UNIT_PRICE')
 
 const tierTypeOptions = [
   { label: 'Unit Price', value: 'UNIT_PRICE' },
@@ -226,6 +227,8 @@ function startEditTiers(entry: PriceBookEntry) {
     tierType: t.tierType,
     discountPercent: t.discountPercent ? parseFloat(t.discountPercent) : null,
   }))
+  // Initialize entry-level tier type from first tier or default to UNIT_PRICE
+  editingTierType.value = editingTiers.value[0]?.tierType || 'UNIT_PRICE'
   expandedEntryId.value = entry.id
 }
 
@@ -237,13 +240,12 @@ function cancelTierEdit() {
 function addTier() {
   const lastTier = editingTiers.value[editingTiers.value.length - 1]
   const minQty = lastTier ? (lastTier.maxQuantity ?? lastTier.minQuantity) + 1 : 2
-  const tierType = lastTier?.tierType || 'UNIT_PRICE'
   editingTiers.value.push({
     minQuantity: minQty,
     maxQuantity: null,
     tierPrice: 0,
-    tierType,
-    discountPercent: tierType === 'VOLUME_DISCOUNT_PERCENT' ? 0 : null,
+    tierType: editingTierType.value,
+    discountPercent: editingTierType.value === 'VOLUME_DISCOUNT_PERCENT' ? 0 : null,
   })
 }
 
@@ -251,11 +253,12 @@ function removeTier(index: number) {
   editingTiers.value.splice(index, 1)
 }
 
-function onTierTypeChange(changedTier: { tierType: string; discountPercent: number | null }) {
+function onEntryTierTypeChange(newType: string) {
+  editingTierType.value = newType
   // Update all tiers to use the same type (as required by validation)
   for (const tier of editingTiers.value) {
-    tier.tierType = changedTier.tierType
-    if (changedTier.tierType === 'VOLUME_DISCOUNT_PERCENT') {
+    tier.tierType = newType
+    if (newType === 'VOLUME_DISCOUNT_PERCENT') {
       tier.discountPercent = tier.discountPercent ?? 0
     } else {
       tier.discountPercent = null
@@ -621,7 +624,19 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
                       </div>
 
                       <!-- Edit Mode -->
-                      <div v-if="editingTiersEntryId === entry.id" class="space-y-2">
+                      <div v-if="editingTiersEntryId === entry.id" class="space-y-3">
+                        <!-- Entry-level tier type selector -->
+                        <div class="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                          <UFormField label="Pricing Type" class="w-48">
+                            <USelect
+                              :model-value="editingTierType"
+                              :items="tierTypeOptions"
+                              value-key="value"
+                              @update:model-value="onEntryTierTypeChange"
+                            />
+                          </UFormField>
+                        </div>
+
                         <div v-if="editingTiers.length === 0" class="text-sm text-gray-500 py-2">
                           No tiers configured. Click "Add Tier" to create volume pricing.
                         </div>
@@ -636,14 +651,11 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
                           <UFormField label="Max Qty" class="w-28">
                             <UInput v-model.number="tier.maxQuantity" type="number" min="1" placeholder="No max" />
                           </UFormField>
-                          <UFormField v-if="tier.tierType !== 'VOLUME_DISCOUNT_PERCENT'" label="Price" class="w-40">
+                          <UFormField v-if="editingTierType !== 'VOLUME_DISCOUNT_PERCENT'" label="Price" class="w-40">
                             <UInput v-model.number="tier.tierPrice" type="number" step="0.01" min="0" />
                           </UFormField>
-                          <UFormField v-if="tier.tierType === 'VOLUME_DISCOUNT_PERCENT'" label="Discount %" class="w-20">
+                          <UFormField v-if="editingTierType === 'VOLUME_DISCOUNT_PERCENT'" label="Discount %" class="w-28">
                             <UInput v-model.number="tier.discountPercent" type="number" step="0.01" min="0" max="100" />
-                          </UFormField>
-                          <UFormField label="Type" class="w-48">
-                            <USelect v-model="tier.tierType" :items="tierTypeOptions" value-key="value" @update:model-value="onTierTypeChange(tier)" />
                           </UFormField>
                           <UButton
                             size="xs"
@@ -661,35 +673,38 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
                         <div v-if="getEntryTiers(entry).length === 0" class="text-sm text-gray-500 py-2">
                           No volume pricing tiers configured.
                         </div>
-                        <table v-else class="min-w-full text-sm">
-                          <thead>
-                            <tr class="text-left text-xs text-gray-500 uppercase">
-                              <th class="pr-4 py-1">Quantity Range</th>
-                              <th class="pr-4 py-1">Price / Discount</th>
-                              <th class="py-1">Type</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr v-for="tier in getEntryTiers(entry)" :key="tier.id">
-                              <td class="pr-4 py-1">
-                                {{ tier.minQuantity }}{{ tier.maxQuantity ? ` - ${tier.maxQuantity}` : '+' }}
-                              </td>
-                              <td class="pr-4 py-1">
-                                <template v-if="tier.tierType === 'VOLUME_DISCOUNT_PERCENT'">
-                                  {{ tier.discountPercent }}% off
-                                </template>
-                                <template v-else>
-                                  {{ formatPrice(tier.tierPrice) }}
-                                </template>
-                              </td>
-                              <td class="py-1">
-                                <UBadge size="xs" variant="subtle" :color="getTierTypeColor(tier.tierType)">
-                                  {{ getTierTypeLabel(tier.tierType) }}
-                                </UBadge>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
+                        <template v-else>
+                          <!-- Entry-level tier type badge -->
+                          <div class="flex items-center gap-2 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700">
+                            <span class="text-xs text-gray-500">Pricing Type:</span>
+                            <UBadge size="xs" variant="subtle" :color="getTierTypeColor(getEntryTiers(entry)[0]?.tierType ?? 'UNIT_PRICE')">
+                              {{ getTierTypeLabel(getEntryTiers(entry)[0]?.tierType ?? 'UNIT_PRICE') }}
+                            </UBadge>
+                          </div>
+                          <table class="min-w-full text-sm">
+                            <thead>
+                              <tr class="text-left text-xs text-gray-500 uppercase">
+                                <th class="pr-4 py-1">Quantity Range</th>
+                                <th class="pr-4 py-1">{{ getEntryTiers(entry)[0]?.tierType === 'VOLUME_DISCOUNT_PERCENT' ? 'Discount' : 'Price' }}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr v-for="tier in getEntryTiers(entry)" :key="tier.id">
+                                <td class="pr-4 py-1">
+                                  {{ tier.minQuantity }}{{ tier.maxQuantity ? ` - ${tier.maxQuantity}` : '+' }}
+                                </td>
+                                <td class="pr-4 py-1">
+                                  <template v-if="tier.tierType === 'VOLUME_DISCOUNT_PERCENT'">
+                                    {{ tier.discountPercent }}% off
+                                  </template>
+                                  <template v-else>
+                                    {{ formatPrice(tier.tierPrice) }}
+                                  </template>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </template>
                       </div>
                     </div>
                   </td>

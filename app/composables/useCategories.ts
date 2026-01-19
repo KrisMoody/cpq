@@ -136,9 +136,8 @@ export function useCategories() {
 
   async function deleteCategory(id: string): Promise<boolean> {
     try {
-      await $fetch(`/api/categories/${id}`, {
-        method: 'DELETE',
-      })
+      // @ts-expect-error Nuxt's $fetch type inference doesn't recognize DELETE for dynamic routes
+      await $fetch(`/api/categories/${id}`, { method: 'DELETE' })
       await fetchCategories()
       return true
     } catch (e: unknown) {
