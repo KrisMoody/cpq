@@ -66,7 +66,8 @@ function parseMarkdown(content: string): ParsedContent {
   })
 
   // Simple markdown parsing
-  // Headers
+  // Headers (order matters - longest prefix first)
+  processedContent = processedContent.replace(/^#### (.*$)/gm, '<h4 class="text-base font-semibold mt-5 mb-2">$1</h4>')
   processedContent = processedContent.replace(/^### (.*$)/gm, '<h3 class="text-lg font-semibold mt-6 mb-3">$1</h3>')
   processedContent = processedContent.replace(/^## (.*$)/gm, '<h2 class="text-xl font-bold mt-8 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">$1</h2>')
   processedContent = processedContent.replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold mb-6">$1</h1>')
