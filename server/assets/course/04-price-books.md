@@ -171,6 +171,8 @@ enum TierType {
 
 #### UNIT_PRICE (Most Common)
 
+Also known as **Slab Pricing** or **All-Units Discount**.
+
 Each unit costs the tier price.
 
 | Quantity | Tier Price | Total |
@@ -182,6 +184,8 @@ Each unit costs the tier price.
 **Example:** Order 25 units = 25 × $8 = $200
 
 #### FLAT_PRICE (Less Common)
+
+Also known as **Stairstep Pricing** or **Block Pricing**.
 
 Fixed price for the entire tier regardless of quantity.
 
