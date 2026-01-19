@@ -66,15 +66,6 @@ async function handleSubmit() {
 
 <template>
   <div class="max-w-2xl mx-auto">
-    <UButton
-      to="/categories"
-      variant="ghost"
-      icon="i-heroicons-arrow-left"
-      class="mb-4"
-    >
-      Back to Categories
-    </UButton>
-
     <UCard>
       <template #header>
         <h1 class="text-xl font-bold">Create New Category</h1>

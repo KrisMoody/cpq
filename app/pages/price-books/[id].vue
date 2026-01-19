@@ -339,15 +339,6 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
 
 <template>
   <div class="max-w-5xl mx-auto">
-    <UButton
-      to="/price-books"
-      variant="ghost"
-      icon="i-heroicons-arrow-left"
-      class="mb-4"
-    >
-      Back to Price Books
-    </UButton>
-
     <!-- Loading -->
     <div v-if="loading" class="flex justify-center py-12">
       <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />

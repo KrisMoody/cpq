@@ -123,15 +123,6 @@ function cancelEdit() {
 
 <template>
   <div class="max-w-2xl mx-auto">
-    <UButton
-      to="/rules"
-      variant="ghost"
-      icon="i-heroicons-arrow-left"
-      class="mb-4"
-    >
-      Back to Rules
-    </UButton>
-
     <!-- Loading -->
     <div v-if="loading" class="flex justify-center py-12">
       <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />

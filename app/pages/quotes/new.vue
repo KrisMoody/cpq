@@ -62,15 +62,6 @@ async function handleSubmit() {
 
 <template>
   <div class="max-w-2xl mx-auto">
-    <UButton
-      to="/quotes"
-      variant="ghost"
-      icon="i-heroicons-arrow-left"
-      class="mb-4"
-    >
-      Back to Quotes
-    </UButton>
-
     <UCard :ui="{ body: 'overflow-visible' }">
       <template #header>
         <h1 class="text-xl font-bold">Create New Quote</h1>

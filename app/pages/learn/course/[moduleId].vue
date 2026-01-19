@@ -207,10 +207,7 @@ useHead({
 <template>
   <div v-if="currentModule" class="space-y-4">
     <!-- Navigation Header -->
-    <div class="flex items-center justify-between">
-      <UButton variant="ghost" icon="i-heroicons-arrow-left" to="/learn/course">
-        Back to Course
-      </UButton>
+    <div class="flex items-center justify-end">
       <div class="flex items-center gap-2">
         <UBadge v-if="isCompleted" color="success" variant="subtle">
           <UIcon name="i-heroicons-check-circle" class="w-4 h-4 mr-1" />
