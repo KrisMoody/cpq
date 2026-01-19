@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { getErrorMessage } from '~/utils/errors'
 import type { ProductType, BillingFrequency } from '~/generated/prisma/client'
+import type { Feature } from '~/components/cpq/BundleFeaturesEditor.vue'
+import type { Attribute } from '~/composables/useAttributes'
+import type { CategoryAttributeWithSuggestion } from '~/composables/useCategories'
+import type { AttributeValue } from '~/types/domain'
 
 const router = useRouter()
-const { createProduct, error: productError } = useProducts()
+const { createProduct, error: productError, products, fetchProducts } = useProducts()
 const { units, fetchUnits } = useUnits()
+const { fetchCategories, fetchCategoryAttributesBulk } = useCategories()
+const { attributes, groups, fetchAttributes, fetchGroups } = useAttributes()
 
 const initialFormState = {
   name: '',
@@ -16,6 +22,8 @@ const initialFormState = {
   defaultTermMonths: null as number | null,
   isTaxable: true,
   unitOfMeasureId: null as string | null,
+  categoryIds: [] as string[],
+  features: [] as Feature[],
 }
 
 const form = ref({ ...initialFormState })
@@ -25,6 +33,13 @@ const { confirmLeave } = useUnsavedChanges(form, initialValues)
 
 const loading = ref(false)
 const error = ref<string | null>(null)
+
+// Attribute values state
+const attributeValues = ref<Record<string, AttributeValue>>({})
+
+// Category-suggested attributes
+const suggestedAttributes = ref<CategoryAttributeWithSuggestion[]>([])
+const loadingSuggestedAttributes = ref(false)
 
 function handleCancel() {
   if (confirmLeave()) {
@@ -47,15 +62,60 @@ const billingFrequencies = [
 
 const isRecurring = computed(() => form.value.billingFrequency !== 'ONE_TIME')
 const isCustomFrequency = computed(() => form.value.billingFrequency === 'CUSTOM')
+const isBundle = computed(() => form.value.type === 'BUNDLE')
 
 const unitOptions = computed(() => [
   { label: 'No unit selected', value: null },
   ...units.value.map((u) => ({ label: `${u.name} (${u.abbreviation})`, value: u.id })),
 ])
 
-onMounted(() => {
-  fetchUnits()
+// Available products for bundle options (active standalone only)
+const availableOptionProducts = computed(() =>
+  products.value.filter((p) => p.type === 'STANDALONE' && p.isActive)
+)
+
+// Non-suggested attributes (all attributes not in suggested list)
+const suggestedAttributeIds = computed(() => new Set(suggestedAttributes.value.map((a) => a.id)))
+const otherAttributes = computed(() =>
+  attributes.value.filter((a) => !suggestedAttributeIds.value.has(a.id))
+)
+
+// Show attributes section expanded state
+const showAllAttributes = ref(false)
+
+onMounted(async () => {
+  await Promise.all([
+    fetchUnits(),
+    fetchCategories(),
+    fetchAttributes({ includeGroup: true }),
+    fetchGroups(),
+    fetchProducts(true),
+  ])
 })
+
+// Watch for category changes to load suggested attributes
+watch(
+  () => form.value.categoryIds,
+  async (newCategoryIds) => {
+    if (newCategoryIds.length > 0) {
+      loadingSuggestedAttributes.value = true
+      suggestedAttributes.value = await fetchCategoryAttributesBulk(newCategoryIds)
+      loadingSuggestedAttributes.value = false
+    } else {
+      suggestedAttributes.value = []
+    }
+  },
+  { deep: true }
+)
+
+// Getter/setter for attribute values
+function getAttributeValue(attrId: string): AttributeValue {
+  return attributeValues.value[attrId] ?? null
+}
+
+function setAttributeValue(attrId: string, value: AttributeValue) {
+  attributeValues.value[attrId] = value
+}
 
 async function handleSubmit() {
   // Client-side validation
@@ -68,10 +128,43 @@ async function handleSubmit() {
     return
   }
 
+  // Validate bundle features have names
+  if (isBundle.value) {
+    for (const feature of form.value.features) {
+      if (!feature.name.trim()) {
+        error.value = 'All features must have a name'
+        return
+      }
+    }
+  }
+
   loading.value = true
   error.value = null
 
   try {
+    // Prepare attributes array (only non-null values)
+    const attrValues = Object.entries(attributeValues.value)
+      .filter(([_, value]) => value !== null && value !== undefined && value !== '')
+      .map(([attributeId, value]) => ({ attributeId, value }))
+
+    // Prepare features for API (strip temp IDs, map to API format)
+    const featuresPayload = isBundle.value
+      ? form.value.features.map((f, i) => ({
+          name: f.name,
+          minOptions: f.minOptions,
+          maxOptions: f.maxOptions,
+          sortOrder: i,
+          options: f.options.map((o, j) => ({
+            optionProductId: o.optionProductId,
+            isRequired: o.isRequired,
+            isDefault: o.isDefault,
+            minQty: o.minQty,
+            maxQty: o.maxQty,
+            sortOrder: j,
+          })),
+        }))
+      : undefined
+
     const product = await createProduct({
       name: form.value.name.trim(),
       sku: form.value.sku.trim(),
@@ -82,6 +175,9 @@ async function handleSubmit() {
       defaultTermMonths: form.value.defaultTermMonths || undefined,
       isTaxable: form.value.isTaxable,
       unitOfMeasureId: form.value.unitOfMeasureId || undefined,
+      categoryIds: form.value.categoryIds.length > 0 ? form.value.categoryIds : undefined,
+      attributes: attrValues.length > 0 ? attrValues : undefined,
+      features: featuresPayload,
     })
 
     if (product) {
@@ -158,12 +254,131 @@ async function handleSubmit() {
               value-key="value"
             />
           </UFormField>
+        </div>
 
-          <UAlert v-if="form.type === 'BUNDLE'" color="info" variant="subtle" icon="i-heroicons-information-circle">
-            <template #description>
-              After creating the bundle, you can add features and options to make it configurable.
-            </template>
-          </UAlert>
+        <!-- Bundle Features (conditional) -->
+        <div v-if="isBundle" class="space-y-4">
+          <h3 class="text-sm font-medium text-gray-500 uppercase">Bundle Features</h3>
+          <p class="text-sm text-gray-500">
+            Define features and options for this configurable bundle.
+          </p>
+          <CpqBundleFeaturesEditor
+            v-model="form.features"
+            :available-products="availableOptionProducts"
+          />
+        </div>
+
+        <!-- Categories -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-medium text-gray-500 uppercase">Categories</h3>
+          <p class="text-sm text-gray-500">
+            Assign this product to one or more categories. Categories help organize products and can suggest relevant attributes.
+          </p>
+          <CpqCategorySelector
+            v-model="form.categoryIds"
+            placeholder="Select categories..."
+          />
+        </div>
+
+        <!-- Attributes -->
+        <div v-if="attributes.length > 0" class="space-y-4">
+          <h3 class="text-sm font-medium text-gray-500 uppercase">Attributes</h3>
+
+          <!-- Suggested Attributes (from selected categories) -->
+          <div v-if="loadingSuggestedAttributes" class="flex items-center gap-2 text-sm text-gray-500">
+            <UIcon name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
+            Loading suggested attributes...
+          </div>
+
+          <div v-else-if="suggestedAttributes.length > 0" class="space-y-4">
+            <div class="flex items-center gap-2">
+              <UBadge color="primary" variant="subtle" size="xs">Suggested</UBadge>
+              <span class="text-sm text-gray-500">Based on selected categories</span>
+            </div>
+
+            <div class="space-y-3">
+              <UFormField
+                v-for="attr in suggestedAttributes"
+                :key="attr.id"
+                :label="attr.name"
+                :required="attr.isRequired"
+              >
+                <template #hint>
+                  <span class="text-xs">{{ attr.suggestedByCategoryNames.join(', ') }}</span>
+                </template>
+                <CpqAttributeInput
+                  :model-value="getAttributeValue(attr.id)"
+                  :attribute="attr as unknown as Attribute"
+                  @update:model-value="setAttributeValue(attr.id, $event)"
+                />
+              </UFormField>
+            </div>
+          </div>
+
+          <div v-else-if="form.categoryIds.length === 0" class="text-sm text-gray-500 italic">
+            Select categories above to see suggested attributes.
+          </div>
+
+          <!-- All Other Attributes (expandable) -->
+          <div v-if="otherAttributes.length > 0">
+            <UButton
+              variant="ghost"
+              size="sm"
+              :icon="showAllAttributes ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
+              @click="showAllAttributes = !showAllAttributes"
+            >
+              {{ showAllAttributes ? 'Hide' : 'Show' }} all attributes ({{ otherAttributes.length }})
+            </UButton>
+
+            <div v-if="showAllAttributes" class="mt-4 space-y-4">
+              <div v-for="group in groups" :key="group.id">
+                <h4
+                  v-if="otherAttributes.some(a => a.groupId === group.id)"
+                  class="text-sm font-medium text-gray-500 border-b pb-1 mb-3 dark:border-gray-700"
+                >
+                  {{ group.name }}
+                </h4>
+                <div class="space-y-3">
+                  <UFormField
+                    v-for="attr in otherAttributes.filter(a => a.groupId === group.id)"
+                    :key="attr.id"
+                    :label="attr.name"
+                    :required="attr.isRequired"
+                  >
+                    <CpqAttributeInput
+                      :model-value="getAttributeValue(attr.id)"
+                      :attribute="attr"
+                      @update:model-value="setAttributeValue(attr.id, $event)"
+                    />
+                  </UFormField>
+                </div>
+              </div>
+
+              <!-- Ungrouped attributes -->
+              <div v-if="otherAttributes.some(a => !a.groupId)">
+                <h4
+                  v-if="groups.length > 0"
+                  class="text-sm font-medium text-gray-500 border-b pb-1 mb-3 dark:border-gray-700"
+                >
+                  Other
+                </h4>
+                <div class="space-y-3">
+                  <UFormField
+                    v-for="attr in otherAttributes.filter(a => !a.groupId)"
+                    :key="attr.id"
+                    :label="attr.name"
+                    :required="attr.isRequired"
+                  >
+                    <CpqAttributeInput
+                      :model-value="getAttributeValue(attr.id)"
+                      :attribute="attr"
+                      @update:model-value="setAttributeValue(attr.id, $event)"
+                    />
+                  </UFormField>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Billing & Pricing -->

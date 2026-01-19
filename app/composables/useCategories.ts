@@ -30,6 +30,21 @@ export interface CategoryAttribute {
   }
 }
 
+export interface CategoryAttributeWithSuggestion {
+  id: string
+  name: string
+  code: string
+  type: string
+  isRequired: boolean
+  groupId: string | null
+  options: Array<{ label: string; value: string }> | null
+  constraints: unknown
+  sortOrder: number
+  group?: { id: string; name: string } | null
+  suggestedByCategoryIds: string[]
+  suggestedByCategoryNames: string[]
+}
+
 export interface CategoryWithProducts extends Omit<Category, 'children'> {
   products: {
     id: string
@@ -203,6 +218,21 @@ export function useCategories() {
     return result
   }
 
+  // Fetch attributes suggested by multiple categories
+  async function fetchCategoryAttributesBulk(
+    categoryIds: string[]
+  ): Promise<CategoryAttributeWithSuggestion[]> {
+    if (categoryIds.length === 0) return []
+    try {
+      return await $fetch<CategoryAttributeWithSuggestion[]>(
+        `/api/categories/attributes?categoryIds=${categoryIds.join(',')}`
+      )
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Failed to fetch category attributes')
+      return []
+    }
+  }
+
   return {
     categories,
     loading,
@@ -218,5 +248,6 @@ export function useCategories() {
     addAttributeToCategory,
     removeAttributeFromCategory,
     flattenCategories,
+    fetchCategoryAttributesBulk,
   }
 }
