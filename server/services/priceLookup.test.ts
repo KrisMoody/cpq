@@ -35,6 +35,7 @@ function createEntry(
       maxQuantity: t.maxQuantity,
       tierPrice: t.tierPrice as unknown as Decimal,
       tierType: t.tierType,
+      discountPercent: null,
     })),
   }
 }
