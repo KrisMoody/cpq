@@ -30,6 +30,7 @@ export interface QuoteLineItem {
     name: string
     sku: string
     type: string
+    isActive?: boolean
     isTaxable?: boolean
   }
   childLines?: QuoteLineItem[]

@@ -10,38 +10,36 @@ interface ProductAttributeDisplay {
   value: AttributeValue
 }
 
-const props = defineProps<{
-  lineItem: QuoteLineItem & {
-    appliedDiscounts?: Array<{
-      id: string
-      type: string
-      value: string | number
-      calculatedAmount: string | number
-      discount?: { id: string; name: string } | null
+// Extended line item with additional product details
+type ExtendedLineItem = QuoteLineItem & {
+  product: QuoteLineItem['product'] & {
+    unitOfMeasure?: { id: string; name: string; abbreviation: string } | null
+    attributes?: Array<{
+      value: AttributeValue
+      attribute: {
+        id: string
+        name: string
+        code: string
+        type: string
+        options?: Array<{ label: string; value: string }> | null
+      }
     }>
-    product: QuoteLineItem['product'] & {
-      unitOfMeasure?: { id: string; name: string; abbreviation: string } | null
-      attributes?: Array<{
-        value: AttributeValue
-        attribute: {
-          id: string
-          name: string
-          code: string
-          type: string
-          options?: Array<{ label: string; value: string }> | null
-        }
-      }>
-    }
   }
+}
+
+const props = defineProps<{
+  lineItem: ExtendedLineItem
   isChild?: boolean
   editable?: boolean
   contractInfo?: ContractPriceInfo
+  isExpanded?: boolean
 }>()
 
 const emit = defineEmits<{
   'remove': [lineId: string]
   'update-quantity': [lineId: string, quantity: number]
   'apply-discount': [lineId: string]
+  'toggle-expand': [lineId: string]
 }>()
 
 const { formatPrice } = usePricing()
@@ -112,6 +110,29 @@ const isBundle = computed(() => {
   return props.lineItem.product.type === 'BUNDLE'
 })
 
+// Check if bundle has children
+const hasChildren = computed(() => {
+  return isBundle.value && props.lineItem.childLines && props.lineItem.childLines.length > 0
+})
+
+// Check for issues with child line items
+const childLineIssues = computed(() => {
+  if (!hasChildren.value) return []
+  const issues: Array<{ lineId: string; issue: string }> = []
+
+  for (const child of props.lineItem.childLines || []) {
+    if (!child.product) {
+      issues.push({ lineId: child.id, issue: 'Product not found' })
+    } else if (!child.product.isActive) {
+      issues.push({ lineId: child.id, issue: `${child.product.name} is inactive` })
+    }
+  }
+
+  return issues
+})
+
+const hasChildIssues = computed(() => childLineIssues.value.length > 0)
+
 // Get key attributes to display (first 3)
 const keyAttributes = computed<ProductAttributeDisplay[]>(() => {
   const attrs = props.lineItem.product?.attributes || []
@@ -143,44 +164,101 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
 </script>
 
 <template>
-  <div
-    :class="[
-      'py-3 px-4 rounded-lg',
-      isChild ? 'ml-6 bg-gray-50 dark:bg-gray-800/50' : 'bg-white dark:bg-gray-900 border dark:border-gray-800'
-    ]"
-  >
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-4 min-w-0 flex-1">
-        <div v-if="isChild" class="text-gray-400">
-          <UIcon name="i-heroicons-arrow-turn-down-right" class="w-4 h-4" />
-        </div>
-        <div class="min-w-0">
-          <div class="flex items-center gap-2">
-            <p class="font-medium truncate">{{ lineItem.product.name }}</p>
-            <UBadge
-              v-if="lineItem.product.isTaxable === false"
-              color="info"
-              variant="subtle"
-              size="xs"
-            >
-              Non-Taxable
-            </UBadge>
+  <div>
+    <div
+      :class="[
+        'py-3 px-4 rounded-lg',
+        isChild ? 'ml-6 bg-gray-50 dark:bg-gray-800/50' : 'bg-white dark:bg-gray-900 border dark:border-gray-800'
+      ]"
+    >
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4 min-w-0 flex-1">
+          <!-- Expand/collapse button for bundles -->
+          <button
+            v-if="hasChildren"
+            class="flex-shrink-0 p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+            @click="emit('toggle-expand', lineItem.id)"
+          >
+            <UIcon
+              :name="isExpanded ? 'i-heroicons-chevron-down' : 'i-heroicons-chevron-right'"
+              class="w-4 h-4 text-gray-500"
+            />
+          </button>
+          <div v-else-if="!isChild" class="w-6" />
+          <div v-if="isChild" class="text-gray-400">
+            <UIcon name="i-heroicons-arrow-turn-down-right" class="w-4 h-4" />
           </div>
-          <p class="text-xs text-gray-500">{{ lineItem.product.sku }}</p>
-          <!-- Key Attributes -->
-          <div v-if="keyAttributes.length > 0" class="mt-1 flex flex-wrap gap-1">
-            <UBadge
-              v-for="attr in keyAttributes"
-              :key="attr.id"
-              variant="subtle"
-              color="neutral"
-              size="xs"
-            >
-              {{ attr.name }}: {{ formatAttrValue(attr) }}
-            </UBadge>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <p class="font-medium truncate">{{ lineItem.product.name }}</p>
+              <UBadge
+                v-if="isBundle"
+                color="primary"
+                variant="subtle"
+                size="xs"
+              >
+                Bundle
+              </UBadge>
+              <UBadge
+                v-if="hasChildren"
+                color="neutral"
+                variant="subtle"
+                size="xs"
+              >
+                {{ lineItem.childLines?.length }} items
+              </UBadge>
+              <!-- Warning for bundles without children -->
+              <UTooltip
+                v-if="isBundle && !hasChildren"
+                text="Bundle has no configured components"
+              >
+                <UBadge
+                  color="warning"
+                  variant="subtle"
+                  size="xs"
+                >
+                  <UIcon name="i-heroicons-exclamation-triangle" class="w-3 h-3 mr-1" />
+                  No components
+                </UBadge>
+              </UTooltip>
+              <!-- Warning for child line issues -->
+              <UTooltip
+                v-if="hasChildIssues"
+                :text="childLineIssues.map(i => i.issue).join(', ')"
+              >
+                <UBadge
+                  color="error"
+                  variant="subtle"
+                  size="xs"
+                >
+                  <UIcon name="i-heroicons-exclamation-triangle" class="w-3 h-3 mr-1" />
+                  {{ childLineIssues.length }} issue(s)
+                </UBadge>
+              </UTooltip>
+              <UBadge
+                v-if="lineItem.product.isTaxable === false"
+                color="info"
+                variant="subtle"
+                size="xs"
+              >
+                Non-Taxable
+              </UBadge>
+            </div>
+            <p class="text-xs text-gray-500">{{ lineItem.product.sku }}</p>
+            <!-- Key Attributes -->
+            <div v-if="keyAttributes.length > 0" class="mt-1 flex flex-wrap gap-1">
+              <UBadge
+                v-for="attr in keyAttributes"
+                :key="attr.id"
+                variant="subtle"
+                color="neutral"
+                size="xs"
+              >
+                {{ attr.name }}: {{ formatAttrValue(attr) }}
+              </UBadge>
+            </div>
           </div>
         </div>
-      </div>
 
       <div class="flex items-center gap-4">
         <!-- Quantity -->
@@ -281,18 +359,30 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
       <span class="text-xs text-gray-500">(was {{ formatPrice(contractInfo.originalPrice) }})</span>
     </div>
 
-    <!-- Applied Discounts -->
-    <div v-if="hasDiscounts" class="mt-2 space-y-1">
-      <div
-        v-for="discount in lineItem.appliedDiscounts"
-        :key="discount.id"
-        class="flex items-center gap-2 text-sm text-gray-500"
-      >
-        <span class="text-gray-400">&#8627;</span>
-        <span>{{ discount.discount?.name || 'Manual Discount' }}</span>
-        <span v-if="discount.type === 'PERCENTAGE'" class="text-gray-400">({{ discount.value }}%)</span>
-        <span class="text-red-500 font-medium">-{{ formatPrice(discount.calculatedAmount) }}</span>
+      <!-- Applied Discounts -->
+      <div v-if="hasDiscounts" class="mt-2 space-y-1">
+        <div
+          v-for="discount in lineItem.appliedDiscounts"
+          :key="discount.id"
+          class="flex items-center gap-2 text-sm text-gray-500"
+        >
+          <span class="text-gray-400">&#8627;</span>
+          <span>{{ discount.discount?.name || 'Manual Discount' }}</span>
+          <span v-if="discount.type === 'PERCENTAGE'" class="text-gray-400">({{ discount.value }}%)</span>
+          <span class="text-red-500 font-medium">-{{ formatPrice(discount.calculatedAmount) }}</span>
+        </div>
       </div>
+    </div>
+
+    <!-- Child Line Items (Bundle Components) -->
+    <div v-if="hasChildren && isExpanded" class="mt-2 space-y-2">
+      <CpqQuoteLineItem
+        v-for="child in lineItem.childLines"
+        :key="child.id"
+        :line-item="child"
+        :is-child="true"
+        :editable="false"
+      />
     </div>
   </div>
 </template>

@@ -43,7 +43,9 @@ const scopeOptions = [
 ]
 
 const categoryOptions = computed(() =>
-  categories.value.map((c) => ({ label: c.name, value: c.id }))
+  categories.value
+    .filter((c) => c.isActive)
+    .map((c) => ({ label: c.name, value: c.id }))
 )
 
 const isCategoryScope = computed(() => form.value.scope === 'PRODUCT_CATEGORY')

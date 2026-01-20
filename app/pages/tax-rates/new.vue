@@ -66,7 +66,9 @@ async function handleSubmit() {
 }
 
 const categoryOptions = computed(() =>
-  categories.value.map((c) => ({ label: c.name, value: c.id }))
+  categories.value
+    .filter((c) => c.isActive)
+    .map((c) => ({ label: c.name, value: c.id }))
 )
 </script>
 

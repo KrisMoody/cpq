@@ -18,9 +18,11 @@ onMounted(() => {
 })
 
 const filteredCustomers = computed(() => {
-  if (!search.value) return customers.value.slice(0, 10)
+  // Only show active customers
+  const activeCustomers = customers.value.filter((c) => c.isActive)
+  if (!search.value) return activeCustomers.slice(0, 10)
   const searchLower = search.value.toLowerCase()
-  return customers.value
+  return activeCustomers
     .filter((c) =>
       c.name.toLowerCase().includes(searchLower) ||
       c.company?.toLowerCase().includes(searchLower) ||

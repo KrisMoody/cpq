@@ -138,6 +138,42 @@ async function loadProduct() {
 
 const isBundle = computed(() => product.value?.type === 'BUNDLE')
 
+// Bundle validation status
+const bundleValidation = computed(() => {
+  if (!isBundle.value || !product.value) return null
+
+  const features = product.value.features || []
+  const issues: string[] = []
+
+  if (features.length === 0) {
+    issues.push('No features configured')
+  } else {
+    const emptyFeatures = features.filter((f) => !f.options?.length)
+    if (emptyFeatures.length > 0) {
+      issues.push(`${emptyFeatures.length} feature(s) have no options`)
+    }
+
+    const optionsWithoutPricing = features.flatMap((f) =>
+      (f.options || []).filter((o) => !o.product?.priceBookEntries?.length)
+    )
+    if (optionsWithoutPricing.length > 0) {
+      issues.push(`${optionsWithoutPricing.length} option(s) have no pricing`)
+    }
+
+    const missingProducts = features.flatMap((f) =>
+      (f.options || []).filter((o) => !o.product)
+    )
+    if (missingProducts.length > 0) {
+      issues.push(`${missingProducts.length} option(s) reference missing products`)
+    }
+  }
+
+  return {
+    isValid: issues.length === 0,
+    issues,
+  }
+})
+
 const configuredOptions = computed(() => {
   if (!product.value?.features) return []
   return Object.entries(selectedOptions.value).map(([featureId, optionId]) => {
@@ -903,6 +939,21 @@ function isAttributeSuggested(attributeId: string): boolean {
           </div>
         </template>
 
+        <!-- Bundle validation warnings -->
+        <UAlert
+          v-if="bundleValidation && !bundleValidation.isValid"
+          color="warning"
+          icon="i-heroicons-exclamation-triangle"
+          class="mb-4"
+        >
+          <template #title>Bundle Configuration Issues</template>
+          <template #description>
+            <ul class="list-disc list-inside mt-1 space-y-0.5">
+              <li v-for="issue in bundleValidation.issues" :key="issue">{{ issue }}</li>
+            </ul>
+          </template>
+        </UAlert>
+
         <div v-if="!product.features?.length" class="text-center py-8 text-gray-500">
           <UIcon name="i-heroicons-squares-2x2" class="w-10 h-10 mx-auto mb-2 text-gray-300" />
           <p>No features defined yet.</p>
@@ -934,6 +985,25 @@ function isAttributeSuggested(attributeId: string): boolean {
                     Select {{ feature.minOptions }}-{{ feature.maxOptions }} option(s)
                   </p>
                 </div>
+                <!-- Validation warnings -->
+                <UBadge
+                  v-if="!feature.options?.length"
+                  color="warning"
+                  variant="subtle"
+                  size="xs"
+                >
+                  <UIcon name="i-heroicons-exclamation-triangle" class="w-3 h-3 mr-1" />
+                  No options
+                </UBadge>
+                <UBadge
+                  v-else-if="feature.minOptions > feature.options.length"
+                  color="warning"
+                  variant="subtle"
+                  size="xs"
+                >
+                  <UIcon name="i-heroicons-exclamation-triangle" class="w-3 h-3 mr-1" />
+                  Not enough options
+                </UBadge>
               </div>
               <div class="flex gap-2">
                 <UButton
@@ -974,6 +1044,34 @@ function isAttributeSuggested(attributeId: string): boolean {
                   <span class="font-medium">{{ option.product?.name || 'Unknown product' }}</span>
                   <UBadge v-if="option.isDefault" size="xs" color="primary" variant="subtle">Default</UBadge>
                   <UBadge v-if="option.isRequired" size="xs" color="warning" variant="subtle">Required</UBadge>
+                  <!-- Status warnings -->
+                  <UBadge
+                    v-if="!option.product"
+                    size="xs"
+                    color="error"
+                    variant="subtle"
+                  >
+                    <UIcon name="i-heroicons-exclamation-triangle" class="w-3 h-3 mr-1" />
+                    Product not found
+                  </UBadge>
+                  <UBadge
+                    v-else-if="option.product.isActive === false"
+                    size="xs"
+                    color="error"
+                    variant="subtle"
+                  >
+                    <UIcon name="i-heroicons-exclamation-triangle" class="w-3 h-3 mr-1" />
+                    Inactive
+                  </UBadge>
+                  <UBadge
+                    v-else-if="!option.product.priceBookEntries?.length"
+                    size="xs"
+                    color="warning"
+                    variant="subtle"
+                  >
+                    <UIcon name="i-heroicons-currency-dollar" class="w-3 h-3 mr-1" />
+                    No pricing
+                  </UBadge>
                 </div>
                 <div class="flex items-center gap-2">
                   <span class="text-sm text-gray-500">Qty: {{ option.minQty }}-{{ option.maxQty }}</span>

@@ -42,6 +42,7 @@ export default defineEventHandler(async (event) => {
               name: true,
               sku: true,
               type: true,
+              isActive: true,
               isTaxable: true,
               billingFrequency: true,
               customBillingMonths: true,
