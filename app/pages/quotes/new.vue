@@ -96,7 +96,7 @@ async function handleSubmit() {
         <UFormField label="Price Book" hint="Leave empty to use customer's price book or system default">
           <USelectMenu
             v-model="form.priceBookId"
-            :items="priceBooks.map(pb => ({ label: pb.name + (pb.isDefault ? ' (Default)' : ''), value: pb.id }))"
+            :items="priceBooks.filter(pb => pb.isActive).map(pb => ({ label: pb.name + (pb.isDefault ? ' (Default)' : ''), value: pb.id }))"
             placeholder="Use default"
             value-key="value"
           />

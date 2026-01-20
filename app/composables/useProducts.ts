@@ -7,6 +7,14 @@ export interface ProductCategory {
   name: string
 }
 
+export interface BundleInfo {
+  featureCount: number
+  totalOptions: number
+  hasEmptyFeatures: boolean
+  hasPricing: boolean
+  isConfigured: boolean
+}
+
 export interface Product {
   id: string
   name: string
@@ -22,6 +30,7 @@ export interface Product {
   unitOfMeasureId?: string | null
   unitOfMeasure?: UnitOfMeasure | null
   categories?: ProductCategory[]
+  _bundleInfo?: BundleInfo | null
 }
 
 export interface ProductOption {
@@ -38,6 +47,7 @@ export interface ProductOption {
     name: string
     description: string | null
     sku: string
+    isActive?: boolean
     priceBookEntries: Array<{ listPrice: string }>
   }
 }

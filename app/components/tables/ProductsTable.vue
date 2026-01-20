@@ -152,12 +152,35 @@ const table = useVueTable({
                 </span>
               </template>
               <template v-else-if="cell.column.id === 'type'">
-                <UBadge
-                  :color="cell.getValue() === 'Bundle' ? 'primary' : 'neutral'"
-                  variant="subtle"
-                >
-                  {{ cell.getValue() }}
-                </UBadge>
+                <div class="flex items-center gap-1.5">
+                  <UBadge
+                    :color="cell.getValue() === 'Bundle' ? 'primary' : 'neutral'"
+                    variant="subtle"
+                  >
+                    {{ cell.getValue() }}
+                  </UBadge>
+                  <!-- Bundle validation warnings -->
+                  <template v-if="row.original.type === 'BUNDLE' && row.original._bundleInfo">
+                    <UTooltip
+                      v-if="row.original._bundleInfo.featureCount === 0"
+                      text="No features configured"
+                    >
+                      <UIcon name="i-heroicons-exclamation-triangle" class="w-4 h-4 text-warning-500" />
+                    </UTooltip>
+                    <UTooltip
+                      v-else-if="row.original._bundleInfo.hasEmptyFeatures"
+                      text="Some features have no options"
+                    >
+                      <UIcon name="i-heroicons-exclamation-triangle" class="w-4 h-4 text-warning-500" />
+                    </UTooltip>
+                    <UTooltip
+                      v-else-if="!row.original._bundleInfo.hasPricing"
+                      text="No pricing configured"
+                    >
+                      <UIcon name="i-heroicons-currency-dollar" class="w-4 h-4 text-warning-500" />
+                    </UTooltip>
+                  </template>
+                </div>
               </template>
               <template v-else-if="cell.column.id === 'description'">
                 <span
@@ -231,6 +254,30 @@ const table = useVueTable({
           >
             {{ row.original.type === 'BUNDLE' ? 'Bundle' : 'Standalone' }}
           </UBadge>
+          <!-- Bundle validation warnings for mobile -->
+          <template v-if="row.original.type === 'BUNDLE' && row.original._bundleInfo">
+            <UBadge
+              v-if="row.original._bundleInfo.featureCount === 0"
+              color="warning"
+              variant="subtle"
+            >
+              No features
+            </UBadge>
+            <UBadge
+              v-else-if="row.original._bundleInfo.hasEmptyFeatures"
+              color="warning"
+              variant="subtle"
+            >
+              Empty features
+            </UBadge>
+            <UBadge
+              v-else-if="!row.original._bundleInfo.hasPricing"
+              color="warning"
+              variant="subtle"
+            >
+              No pricing
+            </UBadge>
+          </template>
           <UBadge
             :color="row.original.isTaxable ? 'neutral' : 'info'"
             variant="subtle"

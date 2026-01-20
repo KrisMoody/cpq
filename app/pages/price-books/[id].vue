@@ -155,6 +155,79 @@ const availableProducts = computed(() => {
   return products.value.filter((p) => p.isActive && !existingProductIds.has(p.id))
 })
 
+// Get selected product for add entry modal
+const selectedNewProduct = computed(() => {
+  if (!newEntry.value.productId) return null
+  return products.value.find((p) => p.id === newEntry.value.productId) || null
+})
+
+// Check if selected bundle has missing option coverage
+const bundleOptionWarning = ref<string | null>(null)
+const loadingBundleCheck = ref(false)
+
+watch(() => newEntry.value.productId, async (productId) => {
+  bundleOptionWarning.value = null
+  if (!productId) return
+
+  const product = products.value.find((p) => p.id === productId)
+  if (!product || product.type !== 'BUNDLE') return
+
+  loadingBundleCheck.value = true
+  try {
+    // Fetch bundle with features to check options
+    const bundle = await $fetch<any>(`/api/products/${productId}`)
+    if (bundle.features && bundle.features.length > 0) {
+      const entryProductIds = new Set(entries.value.map((e) => e.productId))
+      const missingOptions: string[] = []
+
+      for (const feature of bundle.features) {
+        for (const option of feature.options || []) {
+          if (!entryProductIds.has(option.optionProductId)) {
+            // Option product is not in this price book
+            const optProduct = products.value.find((p) => p.id === option.optionProductId)
+            missingOptions.push(optProduct?.name || option.optionProductId)
+          }
+        }
+      }
+
+      if (missingOptions.length > 0) {
+        bundleOptionWarning.value = `This bundle has ${missingOptions.length} option product(s) not in this price book: ${missingOptions.slice(0, 3).join(', ')}${missingOptions.length > 3 ? ` and ${missingOptions.length - 3} more` : ''}`
+      }
+    }
+  } catch {
+    // Ignore errors
+  } finally {
+    loadingBundleCheck.value = false
+  }
+})
+
+// Bundle coverage analysis - find bundles with missing option prices
+const bundleCoverage = computed(() => {
+  const priceBookProductIds = new Set(entries.value.map((e) => e.productId))
+
+  // Get all bundle products
+  const bundles = products.value.filter((p) => p.type === 'BUNDLE' && p.isActive)
+
+  return bundles.map((bundle) => {
+    const bundleInfo = bundle._bundleInfo
+    const hasBundlePrice = priceBookProductIds.has(bundle.id)
+
+    // For now, we can only check if the bundle itself has a price
+    // Full option coverage would require fetching bundle features
+    return {
+      id: bundle.id,
+      name: bundle.name,
+      sku: bundle.sku,
+      hasBundlePrice,
+      featureCount: bundleInfo?.featureCount ?? 0,
+      totalOptions: bundleInfo?.totalOptions ?? 0,
+      isConfigured: bundleInfo?.isConfigured ?? false,
+    }
+  }).filter((b) => !b.hasBundlePrice || !b.isConfigured)
+})
+
+const hasBundleCoverageIssues = computed(() => bundleCoverage.value.length > 0)
+
 async function handleAddEntry() {
   if (!newEntry.value.productId) {
     error.value = 'Please select a product'
@@ -461,6 +534,29 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
         </dl>
       </UCard>
 
+      <!-- Bundle Coverage Warning -->
+      <UAlert
+        v-if="hasBundleCoverageIssues"
+        color="warning"
+        icon="i-heroicons-exclamation-triangle"
+        class="mb-4"
+      >
+        <template #title>Bundle Pricing Issues</template>
+        <template #description>
+          <p class="mb-2">The following bundles have missing prices or configuration issues:</p>
+          <ul class="list-disc list-inside space-y-1">
+            <li v-for="bundle in bundleCoverage" :key="bundle.id">
+              <NuxtLink :to="`/products/${bundle.id}`" class="text-primary-600 hover:underline">
+                {{ bundle.name }}
+              </NuxtLink>
+              <span class="text-gray-500 text-xs ml-1">({{ bundle.sku }})</span>
+              <span v-if="!bundle.hasBundlePrice" class="text-warning-600 text-xs ml-2">— No price in this price book</span>
+              <span v-else-if="!bundle.isConfigured" class="text-warning-600 text-xs ml-2">— Bundle not fully configured</span>
+            </li>
+          </ul>
+        </template>
+      </UAlert>
+
       <!-- Entries -->
       <UCard>
         <template #header>
@@ -722,11 +818,32 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
             <UFormField label="Product" required>
               <USelect
                 v-model="newEntry.productId"
-                :items="availableProducts.map(p => ({ label: `${p.name} (${p.sku})`, value: p.id }))"
+                :items="availableProducts.map(p => ({ label: `${p.name} (${p.sku})${p.type === 'BUNDLE' ? ' [Bundle]' : ''}`, value: p.id }))"
                 placeholder="Select a product"
                 value-key="value"
               />
             </UFormField>
+
+            <!-- Bundle warning -->
+            <UAlert
+              v-if="selectedNewProduct?.type === 'BUNDLE'"
+              :color="bundleOptionWarning ? 'warning' : 'info'"
+              :icon="bundleOptionWarning ? 'i-heroicons-exclamation-triangle' : 'i-heroicons-information-circle'"
+              variant="subtle"
+            >
+              <template #description>
+                <div v-if="loadingBundleCheck" class="flex items-center gap-2">
+                  <UIcon name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
+                  Checking bundle options...
+                </div>
+                <div v-else-if="bundleOptionWarning">
+                  {{ bundleOptionWarning }}
+                </div>
+                <div v-else>
+                  This is a bundle product. Bundle options are also in this price book.
+                </div>
+              </template>
+            </UAlert>
 
             <UFormField label="List Price" required>
               <UInput

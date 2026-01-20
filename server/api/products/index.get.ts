@@ -108,6 +108,23 @@ export default defineEventHandler(async (event) => {
           },
         },
       },
+      // Include feature/option counts for bundles
+      features: {
+        select: {
+          id: true,
+          _count: {
+            select: {
+              options: true,
+            },
+          },
+        },
+      },
+      // Include price book entry count
+      _count: {
+        select: {
+          priceBookEntries: true,
+        },
+      },
       ...(includeAttributes && {
         attributes: {
           select: {
@@ -132,9 +149,27 @@ export default defineEventHandler(async (event) => {
     },
   })
 
-  // Flatten categories for easier consumption
-  return products.map((p) => ({
-    ...p,
-    categories: p.categories.map((pc) => pc.category),
-  }))
+  // Flatten categories and compute bundle validation status
+  return products.map((p) => {
+    const featureCount = p.features.length
+    const totalOptions = p.features.reduce((sum, f) => sum + f._count.options, 0)
+    const hasEmptyFeatures = p.features.some((f) => f._count.options === 0)
+    const hasPricing = p._count.priceBookEntries > 0
+
+    return {
+      ...p,
+      categories: p.categories.map((pc) => pc.category),
+      // Bundle validation info
+      _bundleInfo: p.type === 'BUNDLE' ? {
+        featureCount,
+        totalOptions,
+        hasEmptyFeatures,
+        hasPricing,
+        isConfigured: featureCount > 0 && totalOptions > 0 && !hasEmptyFeatures,
+      } : null,
+      // Remove internal fields
+      features: undefined,
+      _count: undefined,
+    }
+  })
 })

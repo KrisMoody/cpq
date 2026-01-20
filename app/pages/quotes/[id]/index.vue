@@ -27,6 +27,10 @@ const {
 const { products, fetchProducts } = useProducts()
 const { formatPrice: _formatPrice } = usePricing()
 
+// Track products in the quote's price book
+const priceBookProductIds = ref<Set<string>>(new Set())
+const loadingPriceBookProducts = ref(false)
+
 const quote = ref<QuoteWithLineItems | null>(null)
 const evaluation = ref<EvaluationSummary | null>(null)
 const loading = ref(true)
@@ -45,6 +49,20 @@ const showCustomerSelector = ref(false)
 // Discount modal
 const showDiscountModal = ref(false)
 const discountTargetLineId = ref<string | undefined>(undefined)
+
+// Bundle configurator modal
+const showBundleConfigurator = ref(false)
+const bundleProduct = ref<any>(null)
+const bundlePrice = ref(0)
+const loadingBundleProduct = ref(false)
+const addingBundle = ref(false)
+
+// Pre-validation for bundle options
+const bundlePreValidation = ref<{ hasIssues: boolean; requiredMissing: number; optionalMissing: number } | null>(null)
+const loadingBundleValidation = ref(false)
+
+// Track expanded bundles
+const expandedBundles = ref<Set<string>>(new Set())
 
 const quoteId = useRequiredParam('id')
 
@@ -76,11 +94,27 @@ async function loadQuote(showLoading = true) {
     quote.value = await fetchQuote(quoteId)
     if (!quote.value) {
       error.value = 'Quote not found'
+    } else {
+      // Fetch products in this quote's price book
+      await loadPriceBookProducts(quote.value.priceBookId)
     }
   } catch (e: unknown) {
     error.value = getErrorMessage(e, 'Failed to load quote')
   } finally {
     loading.value = false
+  }
+}
+
+async function loadPriceBookProducts(priceBookId: string) {
+  loadingPriceBookProducts.value = true
+  try {
+    const entries = await $fetch<Array<{ productId: string }>>(`/api/price-books/${priceBookId}/entries`)
+    priceBookProductIds.value = new Set(entries.map((e) => e.productId))
+  } catch {
+    // If we can't load price book products, allow all products (fallback)
+    priceBookProductIds.value = new Set()
+  } finally {
+    loadingPriceBookProducts.value = false
   }
 }
 
@@ -103,6 +137,14 @@ async function handleCalculate() {
 async function handleAddProduct() {
   if (!quote.value || !selectedProductId.value) return
 
+  // Check if selected product is a bundle
+  const selectedProduct = products.value.find((p) => p.id === selectedProductId.value)
+  if (selectedProduct?.type === 'BUNDLE') {
+    // Open bundle configurator instead of direct add
+    await openBundleConfigurator()
+    return
+  }
+
   addingProduct.value = true
   try {
     await addLineItem(quote.value.id, {
@@ -117,6 +159,107 @@ async function handleAddProduct() {
     error.value = getErrorMessage(e, 'Failed to add product')
   } finally {
     addingProduct.value = false
+  }
+}
+
+async function openBundleConfigurator() {
+  if (!quote.value || !selectedProductId.value) return
+
+  try {
+    loadingBundleProduct.value = true
+
+    // Fetch product with features and options enriched with price book data
+    const priceBookId = quote.value.priceBookId
+    const response = await $fetch<any>(`/api/products/${selectedProductId.value}`, {
+      query: priceBookId ? { priceBookId } : undefined,
+    })
+
+    bundleProduct.value = response
+
+    // Get the bundle's own price from the price book
+    const bundlePriceEntry = response.priceBookEntries?.find(
+      (e: any) => e.priceBookId === priceBookId
+    )
+    bundlePrice.value = bundlePriceEntry ? Number(bundlePriceEntry.listPrice) : 0
+
+    // Check if bundle has features - if not, add directly
+    if (!response.features || response.features.length === 0) {
+      // No features, add bundle directly without configuration
+      showAddProduct.value = false
+      addingProduct.value = true
+      await addLineItem(quote.value.id, {
+        productId: selectedProductId.value,
+        quantity: productQuantity.value,
+      })
+      await loadQuote()
+      selectedProductId.value = ''
+      productQuantity.value = 1
+      addingProduct.value = false
+      return
+    }
+
+    // Close add product modal and open configurator
+    showAddProduct.value = false
+    loadingBundleProduct.value = false
+    // Use nextTick to ensure the DOM has updated before opening new modal
+    await nextTick()
+    showBundleConfigurator.value = true
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to load bundle configuration')
+    loadingBundleProduct.value = false
+  }
+}
+
+async function handleBundleConfirm(selections: Array<{ optionId: string; quantity: number }>) {
+  if (!quote.value || !bundleProduct.value) return
+
+  addingBundle.value = true
+  try {
+    // Call the bundle creation endpoint
+    const result = await $fetch(`/api/quotes/${quote.value.id}/bundles`, {
+      method: 'POST',
+      body: {
+        productId: bundleProduct.value.id,
+        quantity: productQuantity.value,
+        selections,
+      },
+    })
+
+    // Auto-expand the new bundle
+    if (result && typeof result === 'object' && 'id' in result) {
+      expandedBundles.value.add((result as any).id)
+    }
+
+    await loadQuote()
+    showBundleConfigurator.value = false
+    bundleProduct.value = null
+    selectedProductId.value = ''
+    productQuantity.value = 1
+
+    toast.add({
+      title: 'Bundle added',
+      description: 'Bundle and its components have been added to the quote.',
+      color: 'success',
+    })
+  } catch (e: unknown) {
+    error.value = getErrorMessage(e, 'Failed to add bundle to quote')
+  } finally {
+    addingBundle.value = false
+  }
+}
+
+function handleBundleCancel() {
+  showBundleConfigurator.value = false
+  bundleProduct.value = null
+  // Re-open the add product modal so user can choose another product
+  showAddProduct.value = true
+}
+
+function toggleBundleExpand(lineId: string) {
+  if (expandedBundles.value.has(lineId)) {
+    expandedBundles.value.delete(lineId)
+  } else {
+    expandedBundles.value.add(lineId)
   }
 }
 
@@ -243,16 +386,72 @@ const statusColor = computed(() => {
 const isEditable = computed(() => quote.value?.status === 'DRAFT')
 
 const availableProducts = computed(() => {
-  return products.value.map((p) => ({
+  // Filter products to only those in the quote's price book
+  const filteredProducts = priceBookProductIds.value.size > 0
+    ? products.value.filter((p) => priceBookProductIds.value.has(p.id))
+    : products.value
+
+  return filteredProducts.map((p) => ({
     label: `${p.name} (${p.sku})${p.isTaxable === false ? ' [Non-Taxable]' : ''}`,
     value: p.id,
     isTaxable: p.isTaxable,
   }))
 })
 
+// Count of products NOT in price book (for warning)
+const productsNotInPriceBook = computed(() => {
+  if (priceBookProductIds.value.size === 0) return 0
+  return products.value.filter((p) => !priceBookProductIds.value.has(p.id)).length
+})
+
 const selectedProduct = computed(() => {
   if (!selectedProductId.value) return null
   return products.value.find((p) => p.id === selectedProductId.value) || null
+})
+
+// Pre-validate bundle options when a bundle is selected
+watch(selectedProductId, async (productId) => {
+  bundlePreValidation.value = null
+  if (!productId || !quote.value) return
+
+  const product = products.value.find((p) => p.id === productId)
+  if (!product || product.type !== 'BUNDLE') return
+
+  loadingBundleValidation.value = true
+  try {
+    const response = await $fetch<any>(`/api/products/${productId}`, {
+      query: { priceBookId: quote.value.priceBookId },
+    })
+
+    if (response.features && response.features.length > 0) {
+      let requiredMissing = 0
+      let optionalMissing = 0
+
+      for (const feature of response.features) {
+        for (const option of feature.options || []) {
+          // Check for both missing pricing and inactive products
+          const isUnavailable = !option.product?.hasPrice || option.product?.isActive === false
+          if (isUnavailable) {
+            if (option.isRequired) {
+              requiredMissing++
+            } else {
+              optionalMissing++
+            }
+          }
+        }
+      }
+
+      bundlePreValidation.value = {
+        hasIssues: requiredMissing > 0 || optionalMissing > 0,
+        requiredMissing,
+        optionalMissing,
+      }
+    }
+  } catch {
+    // Ignore errors
+  } finally {
+    loadingBundleValidation.value = false
+  }
 })
 
 const quoteSubtotal = computed(() => {
@@ -438,9 +637,11 @@ async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
                 :line-item="line"
                 :editable="isEditable"
                 :contract-info="evaluation?.contractPricing?.lineItems?.[line.id]"
+                :is-expanded="expandedBundles.has(line.id)"
                 @remove="handleRemoveLine"
                 @update-quantity="handleUpdateQuantity"
                 @apply-discount="openDiscountModal"
+                @toggle-expand="toggleBundleExpand"
               />
             </div>
           </UCard>
@@ -535,28 +736,110 @@ async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
           </template>
 
           <div class="space-y-4">
+            <!-- Info about filtering -->
+            <UAlert
+              v-if="productsNotInPriceBook > 0"
+              color="info"
+              icon="i-heroicons-information-circle"
+              variant="subtle"
+            >
+              <template #description>
+                Showing {{ availableProducts.length }} products in the "{{ quote?.priceBook?.name }}" price book.
+                {{ productsNotInPriceBook }} product(s) hidden.
+              </template>
+            </UAlert>
+
             <UFormField label="Product">
               <USelectMenu
                 v-model="selectedProductId"
                 :items="availableProducts"
                 placeholder="Select a product"
                 value-key="value"
+                :loading="loadingPriceBookProducts"
               />
             </UFormField>
 
-            <!-- Show taxable status for selected product -->
-            <div v-if="selectedProduct" class="flex items-center gap-2">
-              <UBadge
-                :color="selectedProduct.isTaxable ? 'neutral' : 'info'"
-                variant="subtle"
-                size="sm"
-              >
-                <UIcon :name="selectedProduct.isTaxable ? 'i-heroicons-receipt-percent' : 'i-heroicons-receipt-percent'" class="w-3 h-3 mr-1" />
-                {{ selectedProduct.isTaxable ? 'Taxable' : 'Non-Taxable' }}
-              </UBadge>
-              <span v-if="!selectedProduct.isTaxable" class="text-xs text-gray-500">
-                This product will not incur sales tax
-              </span>
+            <!-- Show product info and warnings for selected product -->
+            <div v-if="selectedProduct" class="space-y-2">
+              <div class="flex items-center gap-2">
+                <UBadge
+                  :color="selectedProduct.isTaxable ? 'neutral' : 'info'"
+                  variant="subtle"
+                  size="sm"
+                >
+                  <UIcon :name="selectedProduct.isTaxable ? 'i-heroicons-receipt-percent' : 'i-heroicons-receipt-percent'" class="w-3 h-3 mr-1" />
+                  {{ selectedProduct.isTaxable ? 'Taxable' : 'Non-Taxable' }}
+                </UBadge>
+                <span v-if="!selectedProduct.isTaxable" class="text-xs text-gray-500">
+                  This product will not incur sales tax
+                </span>
+              </div>
+
+              <!-- Bundle warnings -->
+              <template v-if="selectedProduct.type === 'BUNDLE'">
+                <!-- Pre-validation loading -->
+                <div v-if="loadingBundleValidation" class="flex items-center gap-2 text-sm text-gray-500">
+                  <UIcon name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
+                  Checking bundle options...
+                </div>
+
+                <!-- Pre-validation result: Required options missing -->
+                <UAlert
+                  v-else-if="bundlePreValidation?.requiredMissing"
+                  color="error"
+                  icon="i-heroicons-exclamation-triangle"
+                >
+                  <template #description>
+                    <strong>Cannot add this bundle:</strong> {{ bundlePreValidation.requiredMissing }} required option(s) are not available in this price book.
+                  </template>
+                </UAlert>
+
+                <!-- Pre-validation result: Optional options missing -->
+                <UAlert
+                  v-else-if="bundlePreValidation?.optionalMissing"
+                  color="warning"
+                  icon="i-heroicons-exclamation-triangle"
+                  variant="subtle"
+                >
+                  <template #description>
+                    {{ bundlePreValidation.optionalMissing }} optional option(s) are not available in this price book and cannot be selected.
+                  </template>
+                </UAlert>
+
+                <!-- Bundle structure warnings from _bundleInfo -->
+                <template v-else-if="selectedProduct._bundleInfo">
+                  <UAlert
+                    v-if="selectedProduct._bundleInfo.featureCount === 0"
+                    color="warning"
+                    icon="i-heroicons-exclamation-triangle"
+                    variant="subtle"
+                  >
+                    <template #description>
+                      This bundle has no features configured. It will be added as a standalone item.
+                    </template>
+                  </UAlert>
+                  <UAlert
+                    v-else-if="selectedProduct._bundleInfo.hasEmptyFeatures"
+                    color="warning"
+                    icon="i-heroicons-exclamation-triangle"
+                    variant="subtle"
+                  >
+                    <template #description>
+                      Some features in this bundle have no options. Configuration may be incomplete.
+                    </template>
+                  </UAlert>
+                  <UAlert
+                    v-else
+                    color="info"
+                    icon="i-heroicons-information-circle"
+                    variant="subtle"
+                  >
+                    <template #description>
+                      This is a configurable bundle. You'll be able to select options after clicking "Add to Quote".
+                    </template>
+                  </UAlert>
+                </template>
+              </template>
             </div>
 
             <UFormField label="Quantity">
@@ -577,8 +860,8 @@ async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
                 Cancel
               </UButton>
               <UButton
-                :loading="addingProduct"
-                :disabled="!selectedProductId"
+                :loading="addingProduct || loadingBundleValidation"
+                :disabled="!selectedProductId || (bundlePreValidation?.requiredMissing ?? 0) > 0"
                 @click="handleAddProduct"
               >
                 Add to Quote
@@ -620,6 +903,17 @@ async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
       :line-item-id="discountTargetLineId"
       :subtotal="quoteSubtotal"
       @applied="handleDiscountApplied"
+    />
+
+    <!-- Bundle Configurator Modal -->
+    <CpqBundleConfiguratorModal
+      v-model:open="showBundleConfigurator"
+      :product="bundleProduct"
+      :bundle-price="bundlePrice"
+      :quantity="productQuantity"
+      :loading="addingBundle"
+      @confirm="handleBundleConfirm"
+      @cancel="handleBundleCancel"
     />
   </div>
 </template>
