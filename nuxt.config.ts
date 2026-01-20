@@ -15,8 +15,10 @@ export default defineNuxtConfig({
     databaseUrl: process.env.DATABASE_URL || '',
     anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
     neonAuthUrl: process.env.NEON_AUTH_URL || '',
+    disableAuth: process.env.DISABLE_AUTH === 'true',
     public: {
-      neonAuthUrl: process.env.NEON_AUTH_URL || ''
+      neonAuthUrl: process.env.NEON_AUTH_URL || '',
+      disableAuth: process.env.DISABLE_AUTH === 'true'
     }
   },
 

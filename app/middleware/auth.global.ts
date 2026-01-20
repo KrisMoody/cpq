@@ -10,6 +10,12 @@ const AUTH_PAGES = [
 ]
 
 export default defineNuxtRouteMiddleware((to) => {
+  // Development bypass: skip authentication if DISABLE_AUTH is enabled
+  const config = useRuntimeConfig()
+  if (config.public.disableAuth) {
+    return
+  }
+
   // Skip auth check for auth pages
   if (AUTH_PAGES.some(page => to.path === page || to.path.startsWith(page + '/'))) {
     return
