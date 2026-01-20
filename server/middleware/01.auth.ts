@@ -7,6 +7,10 @@ import { getNeonSession } from '../utils/auth'
  *
  * Excluded paths:
  * - /api/auth/* - Auth proxy routes must be public
+ *
+ * Authentication bypass:
+ * - When DISABLE_AUTH=true, authentication is bypassed for development/testing
+ * - WARNING: Never enable bypass in production environments
  */
 export default defineEventHandler(async (event) => {
   const url = getRequestURL(event)
@@ -19,6 +23,17 @@ export default defineEventHandler(async (event) => {
 
   // Skip auth routes - these must be public for login/register to work
   if (pathname.startsWith('/api/auth/')) {
+    return
+  }
+
+  // Development bypass: skip authentication if DISABLE_AUTH is enabled
+  const config = useRuntimeConfig()
+  if (config.disableAuth) {
+    // Attach mock session to context for use in route handlers
+    const session = await getNeonSession(event)
+    if (session) {
+      event.context.neonAuth = session
+    }
     return
   }
 

@@ -3,11 +3,41 @@ import { appendResponseHeader, createError, getHeader } from 'h3'
 import type { NeonAuthResponse } from '~/types/auth'
 
 /**
+ * Mock session data for development bypass mode
+ * WARNING: Only used when DISABLE_AUTH=true
+ */
+const MOCK_SESSION: NeonAuthResponse = {
+  user: {
+    id: 'dev-user-bypass',
+    email: 'dev@local',
+    name: 'Development User',
+    image: null,
+    emailVerified: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  session: {
+    id: 'dev-session-bypass',
+    userId: 'dev-user-bypass',
+    expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year
+    token: 'dev-token-bypass',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
+}
+
+/**
  * Get the current session from Neon Auth by forwarding cookies
  * Returns null if no valid session exists
+ * In development mode with DISABLE_AUTH=true, returns a mock session
  */
 export async function getNeonSession(event: H3Event): Promise<NeonAuthResponse | null> {
   const config = useRuntimeConfig()
+
+  // Development bypass: return mock session if enabled
+  if (config.disableAuth) {
+    return MOCK_SESSION
+  }
 
   if (!config.neonAuthUrl) {
     return null
