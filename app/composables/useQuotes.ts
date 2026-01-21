@@ -1,4 +1,4 @@
-import type { QuoteStatus } from '../generated/prisma/client'
+import type { QuoteStatus, BillingFrequency } from '../generated/prisma/client'
 import { getErrorMessage } from '../utils/errors'
 import type { TaxBreakdownItem } from './useTaxRates'
 import type { Currency } from './useCurrencies'
@@ -25,6 +25,7 @@ export interface QuoteLineItem {
   discount: string
   netPrice: string
   sortOrder: number
+  termMonths?: number | null
   product: {
     id: string
     name: string
@@ -32,6 +33,9 @@ export interface QuoteLineItem {
     type: string
     isActive?: boolean
     isTaxable?: boolean
+    billingFrequency: BillingFrequency
+    customBillingMonths?: number | null
+    defaultTermMonths?: number | null
   }
   childLines?: QuoteLineItem[]
   appliedDiscounts?: AppliedDiscount[]

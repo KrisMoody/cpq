@@ -43,6 +43,7 @@ const emit = defineEmits<{
 }>()
 
 const { formatPrice } = usePricing()
+const { getBillingLabel, getBillingSuffix, isRecurring, getEffectiveTerm, formatTerm } = useBillingDisplay()
 
 const isEditing = ref(false)
 const editQuantity = ref(props.lineItem.quantity)
@@ -243,6 +244,15 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
               >
                 Non-Taxable
               </UBadge>
+              <!-- Billing Frequency Badge -->
+              <UBadge
+                v-if="isRecurring(lineItem.product.billingFrequency)"
+                color="info"
+                variant="subtle"
+                size="xs"
+              >
+                {{ getBillingLabel(lineItem.product.billingFrequency, lineItem.product.customBillingMonths) }}
+              </UBadge>
             </div>
             <p class="text-xs text-gray-500">{{ lineItem.product.sku }}</p>
             <!-- Key Attributes -->
@@ -294,6 +304,14 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
           </button>
         </div>
 
+        <!-- Term (for recurring products) -->
+        <div v-if="isRecurring(lineItem.product.billingFrequency)" class="text-right w-16">
+          <p class="text-xs text-gray-500">Term</p>
+          <p class="font-medium text-gray-600">
+            {{ formatTerm(getEffectiveTerm(lineItem.termMonths, lineItem.product.defaultTermMonths)) }}
+          </p>
+        </div>
+
         <!-- Unit Price -->
         <div class="text-right w-28">
           <p class="text-xs text-gray-500">Unit Price</p>
@@ -302,7 +320,7 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
               {{ formatPrice(contractInfo.originalPrice) }}
             </p>
             <p class="font-medium" :class="{ 'text-info-600 dark:text-info-400': contractInfo }">
-              {{ formatPrice(lineItem.listPrice) }}<span v-if="lineItem.product.unitOfMeasure" class="text-gray-500 font-normal text-xs">/{{ lineItem.product.unitOfMeasure.abbreviation }}</span>
+              {{ formatPrice(lineItem.listPrice) }}<span class="text-gray-400 font-normal text-xs">{{ getBillingSuffix(lineItem.product.billingFrequency, lineItem.product.customBillingMonths) }}</span><span v-if="lineItem.product.unitOfMeasure" class="text-gray-500 font-normal text-xs">/{{ lineItem.product.unitOfMeasure.abbreviation }}</span>
             </p>
           </div>
         </div>

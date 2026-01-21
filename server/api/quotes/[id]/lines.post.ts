@@ -1,4 +1,5 @@
 import { usePrisma } from '../../../utils/prisma'
+import { lookupPriceWithContract, type ContractWithPrices } from '../../../services/priceLookup'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
@@ -12,10 +13,10 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Get the quote to find its price book
+  // Get the quote with customer to check for contract pricing
   const quote = await prisma.quote.findUnique({
     where: { id: quoteId },
-    select: { priceBookId: true },
+    select: { priceBookId: true, customerId: true },
   })
 
   if (!quote) {
@@ -25,13 +26,16 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Look up the price from the quote's price book
+  // Look up the price from the quote's price book (with tiers)
   const priceEntry = await prisma.priceBookEntry.findUnique({
     where: {
       priceBookId_productId: {
         priceBookId: quote.priceBookId,
         productId: body.productId,
       },
+    },
+    include: {
+      priceTiers: true,
     },
   })
 
@@ -42,8 +46,32 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  // Look up active contract for customer (if any)
+  let activeContract: ContractWithPrices | null = null
+  if (quote.customerId) {
+    const now = new Date()
+    const contract = await prisma.contract.findFirst({
+      where: {
+        customerId: quote.customerId,
+        status: 'ACTIVE',
+        startDate: { lte: now },
+        endDate: { gte: now },
+      },
+      include: {
+        priceEntries: true,
+      },
+    })
+    if (contract) {
+      activeContract = contract
+    }
+  }
+
   const quantity = body.quantity || 1
-  const listPrice = Number(priceEntry.listPrice)
+
+  // Use lookupPriceWithContract to apply tier pricing and contract pricing
+  const priceResult = lookupPriceWithContract(priceEntry, quantity, activeContract)
+  const listPrice = priceResult.unitPrice
+
   const discount = body.discount || 0
   const netPrice = (listPrice * quantity) - discount
 
@@ -76,6 +104,7 @@ export default defineEventHandler(async (event) => {
           sku: true,
           type: true,
           billingFrequency: true,
+          customBillingMonths: true,
           defaultTermMonths: true,
         },
       },
