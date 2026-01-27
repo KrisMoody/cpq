@@ -140,6 +140,7 @@ export default defineEventHandler(async (event) => {
   const bundleListPrice = Number(bundlePriceEntry.listPrice)
 
   // Create parent bundle line item
+  // Bundle parent has netPrice = 0 (pricing comes from selected components)
   const parentLineItem = await prisma.quoteLineItem.create({
     data: {
       quoteId,
@@ -147,7 +148,7 @@ export default defineEventHandler(async (event) => {
       quantity: bundleQuantity,
       listPrice: bundleListPrice,
       discount: 0,
-      netPrice: bundleListPrice * bundleQuantity,
+      netPrice: 0,
       sortOrder: sortOrder++,
     },
     include: {

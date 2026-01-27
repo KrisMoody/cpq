@@ -108,6 +108,9 @@ export default defineEventHandler(async (event) => {
     )
 
     if (priceEntry) {
+      // Check if this is a bundle parent - bundles have netPrice = 0 (pricing comes from components)
+      const isBundle = lineItem.product.type === 'BUNDLE'
+
       // Use lookupPriceWithContract to handle tier pricing and contract pricing
       const priceResult = lookupPriceWithContract(
         { ...priceEntry, priceTiers: priceEntry.priceTiers },
@@ -130,7 +133,9 @@ export default defineEventHandler(async (event) => {
         return sum + Number(ad.calculatedAmount)
       }, 0)
 
-      const netPrice = listPrice * lineItem.quantity - lineDiscountAmount
+      // For bundles: netPrice = 0 (pricing comes from components)
+      // For standalone/components: netPrice = (unitPrice × quantity) - discount
+      const netPrice = isBundle ? 0 : listPrice * lineItem.quantity - lineDiscountAmount
 
       await prisma.quoteLineItem.update({
         where: { id: lineItem.id },
@@ -302,6 +307,31 @@ export default defineEventHandler(async (event) => {
               name: true,
               sku: true,
               type: true,
+              isActive: true,
+              isTaxable: true,
+              billingFrequency: true,
+              customBillingMonths: true,
+              defaultTermMonths: true,
+              unitOfMeasure: {
+                select: { id: true, name: true, abbreviation: true },
+              },
+              attributes: {
+                select: {
+                  value: true,
+                  attribute: {
+                    select: {
+                      id: true,
+                      name: true,
+                      code: true,
+                      type: true,
+                      options: true,
+                    },
+                  },
+                },
+                orderBy: {
+                  attribute: { sortOrder: 'asc' },
+                },
+              },
             },
           },
           appliedDiscounts: {
@@ -320,8 +350,28 @@ export default defineEventHandler(async (event) => {
     },
   })
 
+  // Organize line items into parent/child hierarchy (same as GET endpoint)
+  const parentLines = updatedQuote.lineItems.filter((li) => !li.parentLineId)
+  const childLinesMap = new Map<string, typeof updatedQuote.lineItems>()
+
+  updatedQuote.lineItems.forEach((li) => {
+    if (li.parentLineId) {
+      const children = childLinesMap.get(li.parentLineId) || []
+      children.push(li)
+      childLinesMap.set(li.parentLineId, children)
+    }
+  })
+
+  const hierarchicalLineItems = parentLines.map((parent) => ({
+    ...parent,
+    childLines: childLinesMap.get(parent.id) || [],
+  }))
+
   return {
-    quote: updatedQuote,
+    quote: {
+      ...updatedQuote,
+      lineItems: hierarchicalLineItems,
+    },
     evaluation: evaluationSummary,
   }
 })
