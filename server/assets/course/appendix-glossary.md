@@ -108,6 +108,9 @@ A tier pricing type where the total price is fixed regardless of quantity within
 
 ## G
 
+### Graduated Pricing
+A tier pricing type where different portions of the quantity are priced at different rates, similar to tax brackets. Each tier contributes to the total based on how many units fall within that tier's range. Also known as **Incremental Pricing** or **Marginal Pricing**.
+
 ### Guided Selling
 Features that help sales reps find appropriate products through recommendations and questionnaires.
 
@@ -253,7 +256,11 @@ The complete value of a deal over the contract term.
 A quantity range with specific pricing or discount.
 
 ### Tier Type
-How tier pricing is calculated: UNIT_PRICE (per item, also known as Slab Pricing) or FLAT_PRICE (total for range, also known as Stairstep Pricing).
+How tier pricing is calculated:
+- **UNIT_PRICE** (Slab Pricing): All units priced at the tier rate
+- **FLAT_PRICE** (Stairstep Pricing): Fixed total for the tier range
+- **GRADUATED** (Incremental Pricing): Each portion at its tier rate, like tax brackets
+- **VOLUME_DISCOUNT_PERCENT**: Percentage discount from list price based on quantity
 
 ---
 
@@ -280,6 +287,9 @@ European consumption tax similar to sales tax.
 
 ### Volume Discount
 Price reduction based on quantity purchased.
+
+### Volume Discount Percent
+A tier pricing type where a percentage discount is applied to the list price based on quantity thresholds. Higher quantities unlock larger percentage discounts.
 
 ### Volume Pricing
 Price tiers based on quantity ordered.
