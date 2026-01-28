@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const links = [
+const { isNavPathVisible } = usePhaseContext()
+
+const allLinks = [
   {
     icon: 'i-heroicons-document-text',
     title: 'Quotes',
@@ -19,6 +21,8 @@ const links = [
     to: '/contracts',
   },
 ]
+
+const links = computed(() => allLinks.filter(link => isNavPathVisible(link.to)))
 </script>
 
 <template>

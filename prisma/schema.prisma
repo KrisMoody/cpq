@@ -49,6 +49,7 @@ model ExchangeRate {
 
 model UnitOfMeasure {
   id               String  @id @default(cuid())
+  introducedInPhase Int    @default(1)
   name             String
   abbreviation     String
   baseUnitId       String?
@@ -61,6 +62,7 @@ model UnitOfMeasure {
 
   @@unique([name])
   @@unique([abbreviation])
+  @@index([introducedInPhase])
 }
 
 // ============================================================================
@@ -69,6 +71,7 @@ model UnitOfMeasure {
 
 model Product {
   id                  String           @id @default(cuid())
+  introducedInPhase   Int              @default(1)
   name                String
   description         String?
   sku                 String           @unique
@@ -93,6 +96,8 @@ model Product {
   affinitiesAsTarget      ProductAffinity[]        @relation("AffinityTarget")
   questionMappings        QuestionProductMapping[]
   recommendationLogs      RecommendationLog[]
+
+  @@index([introducedInPhase])
 }
 
 // ============================================================================
@@ -176,13 +181,16 @@ model ProductOption {
 // ============================================================================
 
 model AttributeGroup {
-  id        String   @id @default(cuid())
-  name      String
+  id                String   @id @default(cuid())
+  introducedInPhase Int      @default(1)
+  name              String
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   attributes Attribute[]
+
+  @@index([introducedInPhase])
 }
 
 enum AttributeType {
@@ -194,8 +202,9 @@ enum AttributeType {
 }
 
 model Attribute {
-  id          String        @id @default(cuid())
-  name        String
+  id                String        @id @default(cuid())
+  introducedInPhase Int           @default(1)
+  name              String
   code        String        @unique
   type        AttributeType
   groupId     String?
@@ -209,6 +218,8 @@ model Attribute {
   group              AttributeGroup?     @relation(fields: [groupId], references: [id])
   productAttributes  ProductAttribute[]
   categoryAttributes CategoryAttribute[]
+
+  @@index([introducedInPhase])
 }
 
 model ProductAttribute {
@@ -245,6 +256,7 @@ model CategoryAttribute {
 
 model Customer {
   id                   String    @id @default(cuid())
+  introducedInPhase    Int       @default(1)
   name                 String
   email                String?
   phone                String?
@@ -268,6 +280,8 @@ model Customer {
   currency  Currency?  @relation(fields: [currencyId], references: [id])
   quotes    Quote[]
   contracts Contract[]
+
+  @@index([introducedInPhase])
 }
 
 // ============================================================================
@@ -275,8 +289,9 @@ model Customer {
 // ============================================================================
 
 model Contract {
-  id              String         @id @default(cuid())
-  name            String
+  id                String         @id @default(cuid())
+  introducedInPhase Int            @default(1)
+  name              String
   customerId      String
   startDate       DateTime
   endDate         DateTime
@@ -290,6 +305,7 @@ model Contract {
 
   @@index([customerId])
   @@index([status])
+  @@index([introducedInPhase])
 }
 
 model ContractPriceEntry {
@@ -316,8 +332,9 @@ enum ContractStatus {
 // ============================================================================
 
 model PriceBook {
-  id         String    @id @default(cuid())
-  name       String
+  id                String    @id @default(cuid())
+  introducedInPhase Int       @default(1)
+  name              String
   currencyId String?   // Currency for this price book
   isDefault  Boolean   @default(false)
   isActive   Boolean   @default(true)
@@ -328,6 +345,8 @@ model PriceBook {
   entries   PriceBookEntry[]
   quotes    Quote[]
   customers Customer[]
+
+  @@index([introducedInPhase])
 }
 
 model PriceBookEntry {
@@ -371,8 +390,9 @@ enum TierType {
 // ============================================================================
 
 model Quote {
-  id               String      @id @default(cuid())
-  name             String
+  id                String      @id @default(cuid())
+  introducedInPhase Int         @default(1)
+  name              String
   customerId       String?
   status           QuoteStatus @default(DRAFT)
   priceBookId      String
@@ -401,6 +421,8 @@ model Quote {
   lineItems          QuoteLineItem[]
   appliedDiscounts   AppliedDiscount[]
   recommendationLogs RecommendationLog[]
+
+  @@index([introducedInPhase])
 }
 
 enum QuoteStatus {
@@ -440,8 +462,9 @@ model QuoteLineItem {
 // ============================================================================
 
 model Rule {
-  id          String      @id @default(cuid())
-  name        String
+  id                String      @id @default(cuid())
+  introducedInPhase Int         @default(1)
+  name              String
   description String?
   type        RuleType
   trigger     RuleTrigger
@@ -451,6 +474,8 @@ model Rule {
   isActive    Boolean     @default(true)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+
+  @@index([introducedInPhase])
 }
 
 enum RuleType {
@@ -470,8 +495,9 @@ enum RuleTrigger {
 // ============================================================================
 
 model Discount {
-  id            String        @id @default(cuid())
-  name          String
+  id                String        @id @default(cuid())
+  introducedInPhase Int           @default(1)
+  name              String
   description   String?
   type          DiscountType
   value         Decimal       @db.Decimal(10, 2)
@@ -491,6 +517,8 @@ model Discount {
   category         Category?        @relation(fields: [categoryId], references: [id])
   tiers            DiscountTier[]
   appliedDiscounts AppliedDiscount[]
+
+  @@index([introducedInPhase])
 }
 
 enum DiscountType {
@@ -541,8 +569,9 @@ model AppliedDiscount {
 // ============================================================================
 
 model TaxRate {
-  id         String    @id @default(cuid())
-  name       String
+  id                String    @id @default(cuid())
+  introducedInPhase Int       @default(1)
+  name              String
   rate       Decimal   @db.Decimal(5, 4) // Supports rates like 0.0825 (8.25%)
   country    String
   state      String?   // State/region, optional for country-level taxes
@@ -557,6 +586,7 @@ model TaxRate {
 
   @@index([country, state])
   @@index([isActive])
+  @@index([introducedInPhase])
 }
 
 // ============================================================================
@@ -574,6 +604,7 @@ enum AffinityType {
 
 model ProductAffinity {
   id                     String            @id @default(cuid())
+  introducedInPhase      Int               @default(1)
   sourceProductId        String?           // If null, uses sourceCategory
   targetProductId        String?           // If null, uses targetCategory
   sourceCategoryId       String?           // Category-level affinity source
@@ -597,6 +628,7 @@ model ProductAffinity {
   @@index([sourceCategoryId])
   @@index([targetCategoryId])
   @@index([type])
+  @@index([introducedInPhase])
 }
 
 enum QuestionType {
@@ -607,14 +639,17 @@ enum QuestionType {
 }
 
 model Questionnaire {
-  id          String   @id @default(cuid())
-  name        String
+  id                String   @id @default(cuid())
+  introducedInPhase Int      @default(1)
+  name              String
   description String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   questions Question[]
+
+  @@index([introducedInPhase])
 }
 
 model Question {
@@ -683,8 +718,9 @@ model RecommendationLog {
 // ============================================================================
 
 model QuoteLayout {
-  id            String   @id @default(cuid())
-  entityId      String   @default("default") // For multi-tenancy support
+  id                String   @id @default(cuid())
+  introducedInPhase Int      @default(1)
+  entityId          String   @default("default") // For multi-tenancy support
   name          String
   description   String?
   isTemplate    Boolean  @default(false) // Reusable template vs one-off
@@ -696,4 +732,5 @@ model QuoteLayout {
 
   @@index([entityId])
   @@index([isTemplate])
+  @@index([introducedInPhase])
 }

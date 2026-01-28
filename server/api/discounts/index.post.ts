@@ -1,7 +1,9 @@
 import { usePrisma } from '../../utils/prisma'
+import { getPhase } from '../../utils/phase'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
+  const phase = getPhase(event)
   const body = await readBody(event)
 
   if (!body.name) {
@@ -47,6 +49,7 @@ export default defineEventHandler(async (event) => {
       isActive: body.isActive ?? true,
       stackable: body.stackable ?? false,
       priority: body.priority ?? 100,
+      introducedInPhase: phase,
       tiers: body.tiers ? {
         create: (body.tiers as Array<{ minQuantity: number; maxQuantity?: number | null; value: number }>).map((tier, index) => ({
           tierNumber: index + 1,

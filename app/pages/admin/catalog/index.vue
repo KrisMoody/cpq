@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const links = [
+const { isNavPathVisible } = usePhaseContext()
+
+const allLinks = [
   {
     icon: 'i-heroicons-cube',
     title: 'Products',
@@ -31,6 +33,8 @@ const links = [
     to: '/units',
   },
 ]
+
+const links = computed(() => allLinks.filter(link => isNavPathVisible(link.to)))
 </script>
 
 <template>

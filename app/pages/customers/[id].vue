@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { getErrorMessage } from '~/utils/errors'
+
+const { features } = usePhaseContext()
 const _route = useRoute()
 const router = useRouter()
 const { fetchCustomer, updateCustomer, deleteCustomer } = useCustomers()
@@ -311,8 +313,8 @@ function cancelEdit() {
               </template>
             </UAlert>
 
-            <!-- Tax Exemption Section -->
-            <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+            <!-- Tax Exemption Section (Phase 3+) -->
+            <div v-if="features.taxes" class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
               <h3 class="font-medium mb-3">Tax Exemption</h3>
 
               <UCheckbox v-model="form.isTaxExempt" label="Tax Exempt" class="mb-4" />
@@ -368,8 +370,8 @@ function cancelEdit() {
               <span>Price Book: {{ customer.priceBook.name }}</span>
             </div>
 
-            <!-- Tax Exemption Status -->
-            <div v-if="customer.isTaxExempt" class="border-t pt-4 mt-4 dark:border-gray-700">
+            <!-- Tax Exemption Status (Phase 3+) -->
+            <div v-if="features.taxes && customer.isTaxExempt" class="border-t pt-4 mt-4 dark:border-gray-700">
               <div class="flex items-center gap-2 mb-3">
                 <UIcon name="i-heroicons-receipt-percent" class="w-5 h-5 text-gray-400" />
                 <UBadge
@@ -442,8 +444,8 @@ function cancelEdit() {
         </UCard>
       </div>
 
-      <!-- Contracts Section -->
-      <UCard>
+      <!-- Contracts Section (Phase 3+) -->
+      <UCard v-if="features.contracts">
         <template #header>
           <div class="flex items-center justify-between">
             <h2 class="font-semibold">Contracts</h2>

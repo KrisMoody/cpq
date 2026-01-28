@@ -1,5 +1,6 @@
 import { AffinityType } from '../../../app/generated/prisma/client'
 import { usePrisma } from '../../utils/prisma'
+import { getPhase, phaseWhere } from '../../utils/phase'
 
 function isValidAffinityType(value: string): value is AffinityType {
   return Object.values(AffinityType).includes(value as AffinityType)
@@ -7,12 +8,14 @@ function isValidAffinityType(value: string): value is AffinityType {
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
+  const phase = getPhase(event)
   const query = getQuery(event)
   const includeInactive = query.includeInactive === 'true'
   const type = query.type as string | undefined
 
   const affinities = await prisma.productAffinity.findMany({
     where: {
+      ...phaseWhere(phase),
       ...(includeInactive ? {} : { isActive: true }),
       ...(type && isValidAffinityType(type) ? { type } : {}),
     },

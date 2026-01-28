@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { TaxBreakdownItem } from '~/composables/useTaxRates'
 
+const { features } = usePhaseContext()
+
 const props = defineProps<{
   subtotal: string | number
   discountTotal: string | number
@@ -101,7 +103,7 @@ function formatTaxRate(rate: number): string {
       <div class="flex items-center justify-between">
         <h3 class="font-semibold">Quote Summary</h3>
         <UButton
-          v-if="editable && (!appliedDiscounts || appliedDiscounts.length === 0)"
+          v-if="features.discounts && editable && (!appliedDiscounts || appliedDiscounts.length === 0)"
           variant="ghost"
           size="xs"
           icon="i-heroicons-tag"
@@ -123,8 +125,8 @@ function formatTaxRate(rate: number): string {
         <span class="font-medium">{{ formatPrice(subtotalNum) }}</span>
       </div>
 
-      <!-- Discount Breakdown -->
-      <div v-if="appliedDiscounts && appliedDiscounts.length > 0" class="space-y-2">
+      <!-- Discount Breakdown (Phase 2+) -->
+      <div v-if="features.discounts && appliedDiscounts && appliedDiscounts.length > 0" class="space-y-2">
         <div
           v-for="discount in appliedDiscounts"
           :key="discount.id"
@@ -140,20 +142,20 @@ function formatTaxRate(rate: number): string {
         </div>
       </div>
 
-      <div v-else-if="discountNum > 0" class="flex justify-between text-red-500">
+      <div v-else-if="features.discounts && discountNum > 0" class="flex justify-between text-red-500">
         <span>Discount</span>
         <span class="font-medium">-{{ formatPrice(discountNum) }}</span>
       </div>
 
-      <!-- Savings Badge -->
-      <div v-if="discountNum > 0" class="flex justify-end">
+      <!-- Savings Badge (Phase 2+) -->
+      <div v-if="features.discounts && discountNum > 0" class="flex justify-end">
         <UBadge color="success" variant="subtle" size="xs">
           You save {{ savingsPercentage }}%
         </UBadge>
       </div>
 
-      <!-- Tax Section -->
-      <div v-if="isTaxExempt" class="flex justify-between text-green-600 dark:text-green-400">
+      <!-- Tax Section (Phase 3+) -->
+      <div v-if="features.taxes && isTaxExempt" class="flex justify-between text-green-600 dark:text-green-400">
         <span class="flex items-center gap-1">
           <UIcon name="i-heroicons-check-badge" class="w-4 h-4" />
           Tax Exempt
@@ -161,7 +163,7 @@ function formatTaxRate(rate: number): string {
         <span class="font-medium">$0.00</span>
       </div>
 
-      <div v-else-if="taxBreakdown && taxBreakdown.length > 0" class="space-y-2">
+      <div v-else-if="features.taxes && taxBreakdown && taxBreakdown.length > 0" class="space-y-2">
         <div
           v-for="(tax, index) in taxBreakdown"
           :key="index"
@@ -175,12 +177,12 @@ function formatTaxRate(rate: number): string {
         </div>
       </div>
 
-      <div v-else-if="taxAmountNum > 0" class="flex justify-between">
+      <div v-else-if="features.taxes && taxAmountNum > 0" class="flex justify-between">
         <span class="text-gray-500">Tax</span>
         <span class="font-medium">{{ formatPrice(taxAmountNum) }}</span>
       </div>
 
-      <div v-else-if="taxStatusMessage" class="flex justify-between text-sm">
+      <div v-else-if="features.taxes && taxStatusMessage" class="flex justify-between text-sm">
         <span class="text-gray-400 flex items-center gap-1">
           <UIcon name="i-heroicons-information-circle" class="w-4 h-4" />
           Tax
@@ -200,8 +202,8 @@ function formatTaxRate(rate: number): string {
         <span class="font-bold text-primary-600">{{ formatPrice(totalNum) }}</span>
       </div>
 
-      <!-- Recurring Revenue Metrics -->
-      <template v-if="hasRecurringItems">
+      <!-- Recurring Revenue Metrics (Phase 3+) -->
+      <template v-if="features.subscriptions && hasRecurringItems">
         <USeparator />
 
         <div class="space-y-2 pt-2">

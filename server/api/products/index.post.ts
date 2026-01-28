@@ -1,4 +1,5 @@
 import { usePrisma } from '../../utils/prisma'
+import { getPhase } from '../../utils/phase'
 import { ProductType, BillingFrequency } from '../../../app/generated/prisma/client'
 
 interface FeatureInput {
@@ -23,6 +24,7 @@ interface AttributeInput {
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
+  const phase = getPhase(event)
   const body = await readBody(event)
 
   // Validate unit of measure if provided
@@ -113,7 +115,7 @@ export default defineEventHandler(async (event) => {
 
   // Create product with all associations in a transaction
   const product = await prisma.$transaction(async (tx) => {
-    // Create the product
+    // Create the product with current phase
     const newProduct = await tx.product.create({
       data: {
         name: body.name,
@@ -125,6 +127,7 @@ export default defineEventHandler(async (event) => {
         defaultTermMonths: body.defaultTermMonths || null,
         isActive: body.isActive ?? true,
         unitOfMeasureId: body.unitOfMeasureId || null,
+        introducedInPhase: phase,
       },
     })
 

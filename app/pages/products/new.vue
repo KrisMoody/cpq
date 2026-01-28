@@ -6,6 +6,7 @@ import type { Attribute } from '~/composables/useAttributes'
 import type { CategoryAttributeWithSuggestion } from '~/composables/useCategories'
 import type { AttributeValue } from '~/types/domain'
 
+const { features: phaseFeatures } = usePhaseContext()
 const router = useRouter()
 const { createProduct, error: productError, products, fetchProducts } = useProducts()
 const { units, fetchUnits } = useUnits()
@@ -47,10 +48,13 @@ function handleCancel() {
   }
 }
 
-const productTypes = [
-  { label: 'Standalone Product', value: 'STANDALONE' },
-  { label: 'Bundle (Configurable)', value: 'BUNDLE' },
-]
+const productTypes = computed(() => {
+  const types = [{ label: 'Standalone Product', value: 'STANDALONE' }]
+  if (phaseFeatures.value.bundles) {
+    types.push({ label: 'Bundle (Configurable)', value: 'BUNDLE' })
+  }
+  return types
+})
 
 const billingFrequencies = [
   { label: 'One-Time', value: 'ONE_TIME' },
@@ -234,8 +238,8 @@ async function handleSubmit() {
           </UFormField>
         </div>
 
-        <!-- Product Type -->
-        <div class="space-y-4">
+        <!-- Product Type (Phase 2+ for Bundle option) -->
+        <div v-if="phaseFeatures.bundles" class="space-y-4">
           <h3 class="text-sm font-medium text-gray-500 uppercase">Product Type</h3>
 
           <UFormField label="Type" hint="Bundles can have configurable features and options">
@@ -247,8 +251,8 @@ async function handleSubmit() {
           </UFormField>
         </div>
 
-        <!-- Bundle Features (conditional) -->
-        <div v-if="isBundle" class="space-y-4">
+        <!-- Bundle Features (Phase 2+) -->
+        <div v-if="phaseFeatures.bundles && isBundle" class="space-y-4">
           <h3 class="text-sm font-medium text-gray-500 uppercase">Bundle Features</h3>
           <p class="text-sm text-gray-500">
             Define features and options for this configurable bundle.
@@ -271,8 +275,8 @@ async function handleSubmit() {
           />
         </div>
 
-        <!-- Attributes -->
-        <div v-if="attributes.length > 0" class="space-y-4">
+        <!-- Attributes (Phase 4+) -->
+        <div v-if="phaseFeatures.attributes && attributes.length > 0" class="space-y-4">
           <h3 class="text-sm font-medium text-gray-500 uppercase">Attributes</h3>
 
           <!-- Suggested Attributes (from selected categories) -->
@@ -376,7 +380,7 @@ async function handleSubmit() {
         <div class="space-y-4">
           <h3 class="text-sm font-medium text-gray-500 uppercase">Billing & Pricing</h3>
 
-          <UFormField label="Billing Frequency" hint="How often this product is billed">
+          <UFormField v-if="phaseFeatures.subscriptions" label="Billing Frequency" hint="How often this product is billed">
             <USelect
               v-model="form.billingFrequency"
               :items="billingFrequencies"
@@ -384,7 +388,7 @@ async function handleSubmit() {
             />
           </UFormField>
 
-          <UFormField v-if="isCustomFrequency" label="Custom Billing Period (months)" required>
+          <UFormField v-if="phaseFeatures.subscriptions && isCustomFrequency" label="Custom Billing Period (months)" required>
             <UInput
               v-model.number="form.customBillingMonths"
               type="number"
@@ -393,7 +397,7 @@ async function handleSubmit() {
             />
           </UFormField>
 
-          <UFormField v-if="isRecurring" label="Default Contract Term (months)" hint="Default subscription term for quotes">
+          <UFormField v-if="phaseFeatures.subscriptions && isRecurring" label="Default Contract Term (months)" hint="Default subscription term for quotes">
             <UInput
               v-model.number="form.defaultTermMonths"
               type="number"
@@ -402,13 +406,13 @@ async function handleSubmit() {
             />
           </UFormField>
 
-          <UAlert v-if="isRecurring" color="info" variant="subtle" icon="i-heroicons-information-circle">
+          <UAlert v-if="phaseFeatures.subscriptions && isRecurring" color="info" variant="subtle" icon="i-heroicons-information-circle">
             <template #description>
               Recurring products will show MRR/ARR metrics on quotes. The term can be overridden per line item.
             </template>
           </UAlert>
 
-          <UFormField label="Unit of Measure" hint="How this product is measured and priced (e.g., per hour, per license)">
+          <UFormField v-if="phaseFeatures.unitsOfMeasure" label="Unit of Measure" hint="How this product is measured and priced (e.g., per hour, per license)">
             <USelect
               v-model="form.unitOfMeasureId"
               :items="unitOptions"
@@ -417,6 +421,7 @@ async function handleSubmit() {
           </UFormField>
 
           <UCheckbox
+            v-if="phaseFeatures.taxes"
             v-model="form.isTaxable"
             label="Taxable"
             hint="Uncheck for products exempt from sales tax (e.g., some services, digital goods)"

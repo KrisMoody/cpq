@@ -1,7 +1,9 @@
 import { usePrisma } from '../../utils/prisma'
+import { getPhase } from '../../utils/phase'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
+  const phase = getPhase(event)
   const body = await readBody(event)
 
   if (!body.name) {
@@ -54,6 +56,7 @@ export default defineEventHandler(async (event) => {
       taxExemptReason: body.taxExemptReason || null,
       taxExemptCertificate: body.taxExemptCertificate || null,
       taxExemptExpiry: body.taxExemptExpiry ? new Date(body.taxExemptExpiry) : null,
+      introducedInPhase: phase,
     },
     include: {
       priceBook: {

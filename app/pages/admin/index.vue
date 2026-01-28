@@ -1,5 +1,23 @@
 <script setup lang="ts">
-const sections = [
+const { isPhaseVisible } = usePhaseContext()
+
+// Map item names to their required phases
+const itemPhases: Record<string, number> = {
+  'Products': 1,
+  'Categories': 1,
+  'Price Books': 1,
+  'Attributes': 4,
+  'Units': 2,
+  'Rules': 4,
+  'Discounts': 2,
+  'Tax Rates': 3,
+  'Currencies': 1,
+  'Affinities': 5,
+  'Questionnaires': 5,
+  'Quote Layouts': 5,
+}
+
+const allSections = [
   {
     icon: 'i-heroicons-squares-2x2',
     title: 'Catalog',
@@ -15,6 +33,12 @@ const sections = [
     items: ['Rules', 'Discounts', 'Tax Rates', 'Currencies', 'Affinities', 'Questionnaires', 'Quote Layouts'],
   },
 ]
+
+// Filter items within each section based on current phase
+const sections = computed(() => allSections.map(section => ({
+  ...section,
+  items: section.items.filter(item => isPhaseVisible(itemPhases[item] ?? 1))
+})))
 </script>
 
 <template>
