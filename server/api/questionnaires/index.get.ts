@@ -1,12 +1,17 @@
 import { usePrisma } from '../../utils/prisma'
+import { getPhase, phaseWhere } from '../../utils/phase'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
+  const phase = getPhase(event)
   const query = getQuery(event)
   const includeInactive = query.includeInactive === 'true'
 
   const questionnaires = await prisma.questionnaire.findMany({
-    where: includeInactive ? {} : { isActive: true },
+    where: {
+      ...phaseWhere(phase),
+      ...(includeInactive ? {} : { isActive: true }),
+    },
     include: {
       questions: {
         orderBy: { sortOrder: 'asc' },

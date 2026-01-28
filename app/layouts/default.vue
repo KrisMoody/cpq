@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const route = useRoute();
 const { phaseForPath } = usePhase();
+const { isNavPathVisible } = usePhaseContext();
 
 // Mobile sidebar state
 const mobileMenuOpen = ref(false);
@@ -40,6 +41,30 @@ type NavItem = {
   to?: string;
   children?: NavItem[];
 };
+
+// Check if a nav item should be visible based on current phase
+function isItemVisible(item: NavItem): boolean {
+  if (!item.to) return true;
+  return isNavPathVisible(item.to);
+}
+
+// Filter navigation items based on current phase
+function filterNavigation(items: NavItem[]): NavItem[] {
+  return items
+    .map((item) => {
+      // For groups, filter children first
+      if (item.children) {
+        const visibleChildren = item.children.filter(isItemVisible);
+        // Hide group if no children are visible
+        if (visibleChildren.length === 0) return null;
+        return { ...item, children: visibleChildren };
+      }
+      // For standalone items, check visibility
+      if (item.type !== "section" && !isItemVisible(item)) return null;
+      return item;
+    })
+    .filter((item): item is NavItem => item !== null);
+}
 
 // Navigation structure with section headers
 const navigation: NavItem[] = [
@@ -251,6 +276,9 @@ const navigation: NavItem[] = [
   },
 ];
 
+// Computed filtered navigation based on current phase
+const filteredNavigation = computed(() => filterNavigation(navigation));
+
 // Check if a route is active (exact match or starts with path)
 function isActive(path: string): boolean {
   if (path === "/") {
@@ -347,9 +375,7 @@ const parentRoute = computed(() => {
         class="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800"
       >
         <!-- Sidebar Header -->
-        <div
-          class="flex items-center gap-3 h-16 px-4 border-b border-gray-200 dark:border-gray-800"
-        >
+        <div class="px-4 py-4 border-b border-gray-200 dark:border-gray-800 space-y-3">
           <NuxtLink to="/" class="flex items-center gap-3">
             <UIcon
               name="i-heroicons-squares-2x2"
@@ -357,12 +383,13 @@ const parentRoute = computed(() => {
             />
             <span class="font-bold text-lg">CPQ Learning</span>
           </NuxtLink>
+          <PhaseSelector />
         </div>
 
         <!-- Navigation -->
         <nav class="flex-1 overflow-y-auto py-4 px-3">
           <ul class="space-y-1">
-            <template v-for="item in navigation" :key="item.id">
+            <template v-for="item in filteredNavigation" :key="item.id">
               <!-- Section header -->
               <li v-if="item.type === 'section'" class="pt-4 first:pt-0">
                 <div class="flex items-center gap-2 px-3 pb-2">
@@ -476,33 +503,34 @@ const parentRoute = computed(() => {
         <template #content>
           <div class="flex flex-col h-full bg-white dark:bg-gray-900">
             <!-- Mobile Sidebar Header -->
-            <div
-              class="flex items-center justify-between h-14 px-4 border-b border-gray-200 dark:border-gray-800"
-            >
-              <NuxtLink
-                to="/"
-                class="flex items-center gap-2"
-                @click="mobileMenuOpen = false"
-              >
-                <UIcon
-                  name="i-heroicons-squares-2x2"
-                  class="w-6 h-6 text-primary-500"
-                />
-                <span class="font-semibold">CPQ Learning</span>
-              </NuxtLink>
-              <button
-                type="button"
-                class="p-2 -mr-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                @click="mobileMenuOpen = false"
-              >
-                <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
-              </button>
+            <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <NuxtLink
+                  to="/"
+                  class="flex items-center gap-2"
+                  @click="mobileMenuOpen = false"
+                >
+                  <UIcon
+                    name="i-heroicons-squares-2x2"
+                    class="w-6 h-6 text-primary-500"
+                  />
+                  <span class="font-semibold">CPQ Learning</span>
+                </NuxtLink>
+                <button
+                  type="button"
+                  class="p-2 -mr-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  @click="mobileMenuOpen = false"
+                >
+                  <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
+                </button>
+              </div>
+              <PhaseSelector @change="mobileMenuOpen = false" />
             </div>
 
             <!-- Mobile Navigation -->
             <nav class="flex-1 overflow-y-auto py-4 px-3">
               <ul class="space-y-1">
-                <template v-for="item in navigation" :key="item.id">
+                <template v-for="item in filteredNavigation" :key="item.id">
                   <!-- Section header -->
                   <li v-if="item.type === 'section'" class="pt-4 first:pt-0">
                     <div class="flex items-center gap-2 px-3 pb-2">

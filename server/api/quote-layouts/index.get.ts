@@ -1,10 +1,14 @@
 import { usePrisma } from '../../utils/prisma'
+import { getPhase, phaseWhere } from '../../utils/phase'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
+  const phase = getPhase(event)
   const query = getQuery(event)
 
-  const where: Record<string, unknown> = {}
+  const where: Record<string, unknown> = {
+    ...phaseWhere(phase),
+  }
 
   // Filter by template
   if (query.template === 'true') {

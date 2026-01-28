@@ -1,7 +1,9 @@
 import { usePrisma } from '../../utils/prisma'
+import { getPhase } from '../../utils/phase'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
+  const phase = getPhase(event)
   const body = await readBody(event)
 
   if (!body.name) {
@@ -57,6 +59,7 @@ export default defineEventHandler(async (event) => {
       validFrom: body.validFrom ? new Date(body.validFrom) : null,
       validTo: body.validTo ? new Date(body.validTo) : null,
       isActive: body.isActive !== false,
+      introducedInPhase: phase,
     },
     include: {
       category: {
