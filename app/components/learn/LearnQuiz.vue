@@ -48,16 +48,16 @@ function handleClose() {
       <div class="grid md:grid-cols-2 gap-6">
         <!-- Start quiz panel -->
         <div class="space-y-4">
-          <div class="text-center p-6 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg">
+          <div class="text-center p-6 border-2 border-dashed border-ga-gray-300 rounded-lg">
             <UIcon name="i-heroicons-academic-cap" class="w-12 h-12 mx-auto mb-3 text-primary-500" />
             <h3 class="text-lg font-medium mb-2">Test Your CPQ Knowledge</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <p class="text-sm text-ga-gray-600 mb-4">
               Answer questions about CPQ concepts, terminology, and relationships.
             </p>
 
             <!-- Questions per domain selector -->
             <div class="flex items-center justify-center gap-3 mb-4">
-              <label class="text-sm text-gray-600 dark:text-gray-400">Questions per domain:</label>
+              <label class="text-sm text-ga-gray-700">Questions per domain:</label>
               <USelect
                 v-model="questionsPerDomain"
                 :items="[
@@ -75,7 +75,7 @@ function handleClose() {
               Start Quiz
             </UButton>
 
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-3">
+            <p class="text-xs text-ga-gray-500 mt-3">
               ~{{ questionsPerDomain * 14 }} questions across 14 domains
             </p>
           </div>

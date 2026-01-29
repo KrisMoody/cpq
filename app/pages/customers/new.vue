@@ -87,7 +87,7 @@ async function handleSubmit() {
 
         <!-- Basic Info -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Basic Information</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Basic Information</h3>
 
           <UFormField label="Name" required>
             <UInput
@@ -127,7 +127,7 @@ async function handleSubmit() {
 
         <!-- Address -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Address</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Address</h3>
 
           <UFormField label="Street">
             <UInput
@@ -159,7 +159,7 @@ async function handleSubmit() {
 
         <!-- Pricing -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Pricing</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Pricing</h3>
 
           <UFormField label="Currency" hint="Default currency for quotes">
             <USelect

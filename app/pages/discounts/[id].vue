@@ -183,7 +183,7 @@ function cancelEdit() {
   <div class="max-w-2xl mx-auto">
     <!-- Loading -->
     <div v-if="loading" class="flex justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-ga-navy-500" />
     </div>
 
     <!-- Error -->
@@ -255,7 +255,7 @@ function cancelEdit() {
 
         <!-- Thresholds -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Thresholds</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Thresholds</h3>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Min Quantity">
@@ -274,13 +274,13 @@ function cancelEdit() {
 
         <!-- Volume Tiers -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Volume Tiers</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Volume Tiers</h3>
 
           <div class="space-y-3">
             <div
               v-for="(tier, index) in form.tiers"
               :key="index"
-              class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+              class="flex items-center gap-3 p-3 bg-ga-gray-100 rounded-lg"
             >
               <UFormField label="Min Qty" class="flex-1">
                 <UInput v-model.number="tier.minQuantity" type="number" :min="1" />
@@ -309,7 +309,7 @@ function cancelEdit() {
 
         <!-- Validity -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Validity Period</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Validity Period</h3>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Valid From">
@@ -324,7 +324,7 @@ function cancelEdit() {
 
         <!-- Settings -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Settings</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Settings</h3>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Priority">

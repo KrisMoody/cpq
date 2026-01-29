@@ -100,7 +100,7 @@ const confirmationOptions = [
           <span class="font-semibold">AI Assistant</span>
           <UIcon
             :name="isExpanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
-            class="w-4 h-4 text-gray-400"
+            class="w-4 h-4 text-ga-gray-600"
           />
         </button>
 
@@ -128,14 +128,14 @@ const confirmationOptions = [
     <!-- Collapsible Content -->
     <div v-show="isExpanded" class="space-y-4">
       <!-- Tabs -->
-      <div class="flex gap-1 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex gap-1 border-b border-ga-gray-400">
         <button
           v-for="tab in tabs"
           :key="tab.value"
           class="flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors"
           :class="{
-            'text-primary-600 border-b-2 border-primary-500': activeTab === tab.value,
-            'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300': activeTab !== tab.value,
+            'text-ga-navy-500 border-b-2 border-ga-navy-500': activeTab === tab.value,
+            'text-ga-gray-600 hover:text-ga-gray-800': activeTab !== tab.value,
           }"
           @click="activeTab = tab.value"
         >
@@ -166,8 +166,8 @@ const confirmationOptions = [
           v-else-if="!optimizationResult"
           class="text-center py-8"
         >
-          <UIcon name="i-heroicons-light-bulb" class="w-12 h-12 mx-auto text-gray-400 mb-3" />
-          <p class="text-sm text-gray-500 mb-4">Analyze your quote with AI to get optimization suggestions</p>
+          <UIcon name="i-heroicons-light-bulb" class="w-12 h-12 mx-auto text-ga-gray-500 mb-3" />
+          <p class="text-sm text-ga-gray-600 mb-4">Analyze your quote with AI to get optimization suggestions</p>
           <UButton
             icon="i-heroicons-sparkles"
             @click="handleOptimize"
@@ -179,14 +179,14 @@ const confirmationOptions = [
         <!-- Results -->
         <template v-else>
           <!-- Analysis Summary -->
-          <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <p class="text-sm text-gray-600 dark:text-gray-400">{{ optimizationResult.summary }}</p>
+          <div class="p-4 bg-ga-gray-100 rounded-lg">
+            <p class="text-sm text-ga-gray-700">{{ optimizationResult.summary }}</p>
 
             <!-- SWOT Grid -->
             <div v-if="optimizationResult.analysis" class="grid grid-cols-2 gap-3 mt-4">
               <div v-if="optimizationResult.analysis.strengths.length > 0">
-                <p class="text-xs font-medium text-green-600 dark:text-green-400 mb-1">Strengths</p>
-                <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                <p class="text-xs font-medium text-green-600 mb-1">Strengths</p>
+                <ul class="text-xs text-ga-gray-700 space-y-1">
                   <li v-for="s in optimizationResult.analysis.strengths" :key="s" class="flex items-start gap-1">
                     <UIcon name="i-heroicons-check" class="w-3 h-3 text-green-500 mt-0.5 flex-shrink-0" />
                     {{ s }}
@@ -194,8 +194,8 @@ const confirmationOptions = [
                 </ul>
               </div>
               <div v-if="optimizationResult.analysis.opportunities.length > 0">
-                <p class="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">Opportunities</p>
-                <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                <p class="text-xs font-medium text-blue-600 mb-1">Opportunities</p>
+                <ul class="text-xs text-ga-gray-700 space-y-1">
                   <li v-for="o in optimizationResult.analysis.opportunities" :key="o" class="flex items-start gap-1">
                     <UIcon name="i-heroicons-arrow-trending-up" class="w-3 h-3 text-blue-500 mt-0.5 flex-shrink-0" />
                     {{ o }}
@@ -203,8 +203,8 @@ const confirmationOptions = [
                 </ul>
               </div>
               <div v-if="optimizationResult.analysis.weaknesses.length > 0">
-                <p class="text-xs font-medium text-amber-600 dark:text-amber-400 mb-1">Weaknesses</p>
-                <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                <p class="text-xs font-medium text-amber-600 mb-1">Weaknesses</p>
+                <ul class="text-xs text-ga-gray-700 space-y-1">
                   <li v-for="w in optimizationResult.analysis.weaknesses" :key="w" class="flex items-start gap-1">
                     <UIcon name="i-heroicons-exclamation-triangle" class="w-3 h-3 text-amber-500 mt-0.5 flex-shrink-0" />
                     {{ w }}
@@ -212,8 +212,8 @@ const confirmationOptions = [
                 </ul>
               </div>
               <div v-if="optimizationResult.analysis.risks.length > 0">
-                <p class="text-xs font-medium text-red-600 dark:text-red-400 mb-1">Risks</p>
-                <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                <p class="text-xs font-medium text-red-600 mb-1">Risks</p>
+                <ul class="text-xs text-ga-gray-700 space-y-1">
                   <li v-for="r in optimizationResult.analysis.risks" :key="r" class="flex items-start gap-1">
                     <UIcon name="i-heroicons-shield-exclamation" class="w-3 h-3 text-red-500 mt-0.5 flex-shrink-0" />
                     {{ r }}
@@ -285,10 +285,10 @@ const confirmationOptions = [
 
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label class="block text-sm font-medium text-ga-gray-800 mb-2">
                 Action Confirmation
               </label>
-              <p class="text-xs text-gray-500 mb-3">
+              <p class="text-xs text-ga-gray-600 mb-3">
                 Choose when to show confirmation dialogs before applying AI suggestions
               </p>
               <URadioGroup

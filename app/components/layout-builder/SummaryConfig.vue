@@ -22,7 +22,7 @@ const isExpanded = ref(true)
         <h3 class="font-semibold">Summary Display</h3>
         <UIcon
           :name="isExpanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
-          class="w-4 h-4 text-gray-500"
+          class="w-4 h-4 text-ga-gray-600"
         />
       </div>
     </template>
@@ -33,7 +33,7 @@ const isExpanded = ref(true)
     >
       <div :class="isExpanded ? 'overflow-visible' : 'overflow-hidden'">
         <div class="space-y-3">
-          <p class="text-xs text-gray-500">Choose which summary items to display on the quote.</p>
+          <p class="text-xs text-ga-gray-600">Choose which summary items to display on the quote.</p>
 
           <div class="grid grid-cols-2 gap-3">
             <UCheckbox

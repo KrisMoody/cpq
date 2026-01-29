@@ -176,7 +176,7 @@ async function handleSubmit() {
 
         <!-- Thresholds -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Thresholds (Optional)</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Thresholds (Optional)</h3>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Min Quantity">
@@ -212,7 +212,7 @@ async function handleSubmit() {
         <!-- Volume Tiers -->
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-sm font-medium text-gray-500 uppercase">Volume Tiers</h3>
+            <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Volume Tiers</h3>
             <UCheckbox v-model="form.useTiers" label="Use tiered pricing" />
           </div>
 
@@ -220,7 +220,7 @@ async function handleSubmit() {
             <div
               v-for="(tier, index) in form.tiers"
               :key="index"
-              class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+              class="flex items-center gap-3 p-3 bg-ga-gray-100 rounded-lg"
             >
               <UFormField label="Min Qty" class="w-28">
                 <UInput v-model.number="tier.minQuantity" type="number" :min="1" />
@@ -259,7 +259,7 @@ async function handleSubmit() {
 
         <!-- Validity -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Validity Period (Optional)</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Validity Period (Optional)</h3>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Valid From">
@@ -274,7 +274,7 @@ async function handleSubmit() {
 
         <!-- Settings -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Settings</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Settings</h3>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Priority" hint="Lower numbers apply first">

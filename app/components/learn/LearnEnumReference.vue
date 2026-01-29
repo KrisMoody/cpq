@@ -198,7 +198,7 @@ function isValueHighlighted(value: string, description: string): boolean {
         icon="i-heroicons-magnifying-glass"
         class="w-full sm:w-64"
       />
-      <span class="text-sm text-gray-500 dark:text-gray-400">
+      <span class="text-sm text-ga-gray-600">
         {{ filteredEnums.length }} of {{ enums.length }} enums
       </span>
     </div>
@@ -207,18 +207,18 @@ function isValueHighlighted(value: string, description: string): boolean {
       <div
         v-for="domain in domains"
         :key="domain.name"
-        class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+        class="border border-ga-gray-300 rounded-lg overflow-hidden"
       >
         <button
-          class="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+          class="w-full flex items-center justify-between p-3 hover:bg-ga-gray-200 transition-colors cursor-pointer"
           @click="toggleDomain(domain.name)"
         >
           <span class="font-medium">{{ domain.name }}</span>
           <div class="flex items-center gap-2">
-            <span class="text-sm text-gray-500">{{ domain.items.length }} enums</span>
+            <span class="text-sm text-ga-gray-600">{{ domain.items.length }} enums</span>
             <UIcon
               :name="expandedDomains.includes(domain.name) ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
-              class="w-4 h-4 text-gray-400"
+              class="w-4 h-4 text-ga-gray-500"
             />
           </div>
         </button>
@@ -228,13 +228,13 @@ function isValueHighlighted(value: string, description: string): boolean {
           :class="expandedDomains.includes(domain.name) || searchQuery.trim() ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
         >
           <div class="overflow-hidden">
-            <div class="p-3 pt-0 space-y-3 border-t border-gray-200 dark:border-gray-700">
+            <div class="p-3 pt-0 space-y-3 border-t border-ga-gray-300">
               <div
                 v-for="e in domain.items.filter(item => filteredEnums.includes(item))"
                 :key="e.name"
-                class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3"
+                class="bg-ga-gray-100 rounded-lg p-3"
               >
-                <h4 class="font-mono text-sm font-medium text-primary-600 dark:text-primary-400 mb-2">
+                <h4 class="font-mono text-sm font-medium text-ga-navy-600 mb-2">
                   {{ e.name }}
                 </h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -242,12 +242,12 @@ function isValueHighlighted(value: string, description: string): boolean {
                     v-for="v in e.values"
                     :key="v.value"
                     class="flex items-start gap-2 text-sm"
-                    :class="isValueHighlighted(v.value, v.description) ? 'bg-yellow-100 dark:bg-yellow-900/30 -mx-1 px-1 rounded' : ''"
+                    :class="isValueHighlighted(v.value, v.description) ? 'bg-yellow-100 -mx-1 px-1 rounded' : ''"
                   >
-                    <code class="font-mono text-xs bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded flex-shrink-0">
+                    <code class="font-mono text-xs bg-ga-gray-300 px-1.5 py-0.5 rounded flex-shrink-0">
                       {{ v.value }}
                     </code>
-                    <span class="text-gray-600 dark:text-gray-400 text-xs">{{ v.description }}</span>
+                    <span class="text-ga-gray-700 text-xs">{{ v.description }}</span>
                   </div>
                 </div>
               </div>

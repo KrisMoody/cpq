@@ -97,17 +97,17 @@ function confirmApply() {
 </script>
 
 <template>
-  <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+  <div class="p-4 bg-ga-gray-100 rounded-lg border border-ga-gray-400">
     <!-- Header -->
     <div class="flex items-start justify-between gap-3">
       <div class="flex items-start gap-3 min-w-0 flex-1">
         <div
           class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
           :class="{
-            'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400': recommendation.type === 'ADD_PRODUCT',
-            'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400': recommendation.type === 'APPLY_DISCOUNT',
-            'bg-amber-100 text-amber-600 dark:bg-amber-900 dark:text-amber-400': recommendation.type === 'ADJUST_QUANTITY',
-            'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400': recommendation.type === 'REMOVE_PRODUCT',
+            'bg-green-100 text-green-600': recommendation.type === 'ADD_PRODUCT',
+            'bg-blue-100 text-blue-600': recommendation.type === 'APPLY_DISCOUNT',
+            'bg-amber-100 text-amber-600': recommendation.type === 'ADJUST_QUANTITY',
+            'bg-red-100 text-red-600': recommendation.type === 'REMOVE_PRODUCT',
           }"
         >
           <UIcon :name="typeIcon" class="w-5 h-5" />
@@ -121,7 +121,7 @@ function confirmApply() {
             <UBadge :color="priorityColor" variant="outline" size="xs">
               {{ recommendation.priority }}
             </UBadge>
-            <span class="text-xs text-gray-500">
+            <span class="text-xs text-ga-gray-600">
               {{ confidencePercent }}% confidence
             </span>
           </div>
@@ -129,7 +129,7 @@ function confirmApply() {
           <!-- Product/Discount name -->
           <p v-if="recommendation.productName" class="font-medium text-sm mt-1">
             {{ recommendation.productName }}
-            <span v-if="recommendation.quantity" class="text-gray-500">
+            <span v-if="recommendation.quantity" class="text-ga-gray-600">
               (Qty: {{ recommendation.quantity }})
             </span>
           </p>
@@ -138,7 +138,7 @@ function confirmApply() {
           </p>
 
           <!-- Reason -->
-          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p class="text-sm text-ga-gray-700 mt-1">
             {{ recommendation.reason }}
           </p>
 
@@ -221,13 +221,13 @@ function confirmApply() {
             <p>
               Are you sure you want to <strong>{{ typeLabel.toLowerCase() }}</strong>?
             </p>
-            <p v-if="recommendation.productName" class="text-gray-600">
+            <p v-if="recommendation.productName" class="text-ga-gray-700">
               Product: {{ recommendation.productName }}
             </p>
-            <p v-if="recommendation.discountName" class="text-gray-600">
+            <p v-if="recommendation.discountName" class="text-ga-gray-700">
               Discount: {{ recommendation.discountName }}
             </p>
-            <p class="text-sm text-gray-500">{{ recommendation.reason }}</p>
+            <p class="text-sm text-ga-gray-600">{{ recommendation.reason }}</p>
           </div>
 
           <template #footer>

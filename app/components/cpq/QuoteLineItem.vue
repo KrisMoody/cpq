@@ -171,7 +171,7 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
     <div
       :class="[
         'py-3 px-4 rounded-lg',
-        isChild ? 'ml-6 bg-gray-50 dark:bg-gray-800/50' : 'bg-white dark:bg-gray-900 border dark:border-gray-800'
+        isChild ? 'ml-6 bg-ga-gray-100' : 'bg-white border border-ga-gray-300'
       ]"
     >
       <div class="flex items-center justify-between">
@@ -179,16 +179,16 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
           <!-- Expand/collapse button for bundles -->
           <button
             v-if="hasChildren"
-            class="flex-shrink-0 p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+            class="flex-shrink-0 p-1 hover:bg-ga-gray-200 rounded transition-colors"
             @click="emit('toggle-expand', lineItem.id)"
           >
             <UIcon
               :name="isExpanded ? 'i-heroicons-chevron-down' : 'i-heroicons-chevron-right'"
-              class="w-4 h-4 text-gray-500"
+              class="w-4 h-4 text-ga-gray-600"
             />
           </button>
           <div v-else-if="!isChild" class="w-6" />
-          <div v-if="isChild" class="text-gray-400">
+          <div v-if="isChild" class="text-ga-gray-500">
             <UIcon name="i-heroicons-arrow-turn-down-right" class="w-4 h-4" />
           </div>
           <div class="min-w-0">
@@ -256,7 +256,7 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
                 {{ getBillingLabel(lineItem.product.billingFrequency, lineItem.product.customBillingMonths) }}
               </UBadge>
             </div>
-            <p class="text-xs text-gray-500">{{ lineItem.product.sku }}</p>
+            <p class="text-xs text-ga-gray-600">{{ lineItem.product.sku }}</p>
             <!-- Key Attributes (Phase 4+) -->
             <div v-if="features.attributes && keyAttributes.length > 0" class="mt-1 flex flex-wrap gap-1">
               <UBadge
@@ -275,7 +275,7 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
       <div class="flex items-center gap-4">
         <!-- Quantity -->
         <div class="text-right w-24">
-          <p class="text-xs text-gray-500">Qty</p>
+          <p class="text-xs text-ga-gray-600">Qty</p>
           <div v-if="isEditing" class="mt-1">
             <UInput
               v-model.number="editQuantity"
@@ -295,7 +295,7 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
             @click="startEditing"
           >
             {{ lineItem.quantity }}
-            <span v-if="features.unitsOfMeasure && lineItem.product.unitOfMeasure" class="text-gray-500 font-normal">
+            <span v-if="features.unitsOfMeasure && lineItem.product.unitOfMeasure" class="text-ga-gray-600 font-normal">
               {{ lineItem.product.unitOfMeasure.abbreviation }}
             </span>
             <UIcon
@@ -308,41 +308,41 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
 
         <!-- Term (for recurring products) - Phase 3+ -->
         <div v-if="features.subscriptions && isRecurring(lineItem.product.billingFrequency)" class="text-right w-16">
-          <p class="text-xs text-gray-500">Term</p>
-          <p class="font-medium text-gray-600">
+          <p class="text-xs text-ga-gray-600">Term</p>
+          <p class="font-medium text-ga-gray-700">
             {{ formatTerm(getEffectiveTerm(lineItem.termMonths, lineItem.product.defaultTermMonths)) }}
           </p>
         </div>
 
         <!-- Unit Price -->
         <div class="text-right w-28">
-          <p class="text-xs text-gray-500">Unit Price</p>
+          <p class="text-xs text-ga-gray-600">Unit Price</p>
           <div class="flex items-center justify-end gap-1">
-            <p v-if="contractInfo" class="text-xs text-gray-400 line-through">
+            <p v-if="contractInfo" class="text-xs text-ga-gray-500 line-through">
               {{ formatPrice(contractInfo.originalPrice) }}
             </p>
-            <p class="font-medium" :class="{ 'text-info-600 dark:text-info-400': contractInfo }">
-              {{ formatPrice(lineItem.listPrice) }}<span class="text-gray-400 font-normal text-xs">{{ getBillingSuffix(lineItem.product.billingFrequency, lineItem.product.customBillingMonths) }}</span><span v-if="features.unitsOfMeasure && lineItem.product.unitOfMeasure" class="text-gray-500 font-normal text-xs">/{{ lineItem.product.unitOfMeasure.abbreviation }}</span>
+            <p class="font-medium" :class="{ 'text-ga-blue-500': contractInfo }">
+              {{ formatPrice(lineItem.listPrice) }}<span class="text-ga-gray-500 font-normal text-xs">{{ getBillingSuffix(lineItem.product.billingFrequency, lineItem.product.customBillingMonths) }}</span><span v-if="features.unitsOfMeasure && lineItem.product.unitOfMeasure" class="text-ga-gray-600 font-normal text-xs">/{{ lineItem.product.unitOfMeasure.abbreviation }}</span>
             </p>
           </div>
         </div>
 
         <!-- Line Total (before discounts) - Phase 2+ -->
         <div v-if="features.discounts && discountAmount > 0" class="text-right w-24">
-          <p class="text-xs text-gray-500">Line Total</p>
-          <p class="font-medium text-gray-400 line-through">{{ formatPrice(lineTotal) }}</p>
+          <p class="text-xs text-ga-gray-600">Line Total</p>
+          <p class="font-medium text-ga-gray-500 line-through">{{ formatPrice(lineTotal) }}</p>
         </div>
 
         <!-- Discount - Phase 2+ -->
         <div v-if="features.discounts && discountAmount > 0" class="text-right w-24">
-          <p class="text-xs text-gray-500">Discount</p>
-          <p class="font-medium text-red-500">-{{ formatPrice(discountAmount) }}</p>
+          <p class="text-xs text-ga-gray-600">Discount</p>
+          <p class="font-medium text-ga-red-500">-{{ formatPrice(discountAmount) }}</p>
         </div>
 
         <!-- Net Price -->
         <div class="text-right w-24">
-          <p class="text-xs text-gray-500">{{ isBundle ? 'Bundle' : 'Net Price' }}</p>
-          <p v-if="isBundle" class="text-xs text-gray-500 italic">Sum of components</p>
+          <p class="text-xs text-ga-gray-600">{{ isBundle ? 'Bundle' : 'Net Price' }}</p>
+          <p v-if="isBundle" class="text-xs text-ga-gray-600 italic">Sum of components</p>
           <p v-else class="font-semibold">{{ formatPrice(lineItem.netPrice) }}</p>
         </div>
 
@@ -377,7 +377,7 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
           {{ contractInfo.priceType === 'fixed' ? 'Fixed Price' : `${contractInfo.discountPercent}% off` }}
         </UBadge>
       </NuxtLink>
-      <span class="text-xs text-gray-500">(was {{ formatPrice(contractInfo.originalPrice) }})</span>
+      <span class="text-xs text-ga-gray-600">(was {{ formatPrice(contractInfo.originalPrice) }})</span>
     </div>
 
       <!-- Applied Discounts (Phase 2+) -->
@@ -385,12 +385,12 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
         <div
           v-for="discount in lineItem.appliedDiscounts"
           :key="discount.id"
-          class="flex items-center gap-2 text-sm text-gray-500"
+          class="flex items-center gap-2 text-sm text-ga-gray-600"
         >
-          <span class="text-gray-400">&#8627;</span>
+          <span class="text-ga-gray-500">&#8627;</span>
           <span>{{ discount.discount?.name || 'Manual Discount' }}</span>
-          <span v-if="discount.type === 'PERCENTAGE'" class="text-gray-400">({{ discount.value }}%)</span>
-          <span class="text-red-500 font-medium">-{{ formatPrice(discount.calculatedAmount) }}</span>
+          <span v-if="discount.type === 'PERCENTAGE'" class="text-ga-gray-500">({{ discount.value }}%)</span>
+          <span class="text-ga-red-500 font-medium">-{{ formatPrice(discount.calculatedAmount) }}</span>
         </div>
       </div>
     </div>

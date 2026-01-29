@@ -76,15 +76,15 @@ async function handleResend() {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
+  <div class="min-h-screen flex items-center justify-center bg-ga-gray-100 px-4">
     <div class="w-full max-w-md">
       <div class="text-center mb-8">
         <div class="flex items-center justify-center gap-3 mb-4">
           <UIcon name="i-heroicons-squares-2x2" class="w-10 h-10 text-primary-500" />
           <span class="font-bold text-2xl">CPQ Learning</span>
         </div>
-        <h1 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Verify your email</h1>
-        <p v-if="email" class="text-gray-500 mt-2">
+        <h1 class="text-xl font-semibold">Verify your email</h1>
+        <p v-if="email" class="text-ga-gray-600 mt-2">
           We sent a verification code to <strong>{{ email }}</strong>
         </p>
       </div>
@@ -156,8 +156,8 @@ async function handleResend() {
         </form>
 
         <template #footer>
-          <p class="text-center text-sm text-gray-500">
-            <NuxtLink to="/login" class="text-primary-500 hover:text-primary-600 font-medium">
+          <p class="text-center text-sm text-ga-gray-600">
+            <NuxtLink to="/login" class="text-ga-navy-500 hover:text-ga-navy-600 font-medium">
               Back to sign in
             </NuxtLink>
           </p>

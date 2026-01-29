@@ -65,9 +65,9 @@ watch(displayMessages, async () => {
       <!-- Empty State -->
       <div
         v-if="displayMessages.length === 0"
-        class="flex flex-col items-center justify-center h-full text-center text-gray-500"
+        class="flex flex-col items-center justify-center h-full text-center text-ga-gray-600"
       >
-        <UIcon name="i-heroicons-chat-bubble-left-right" class="w-12 h-12 mb-3 text-gray-400" />
+        <UIcon name="i-heroicons-chat-bubble-left-right" class="w-12 h-12 mb-3 text-ga-gray-500" />
         <p class="text-sm font-medium">Start a conversation</p>
         <p class="text-xs mt-1">Ask questions about the quote or request changes</p>
       </div>
@@ -82,40 +82,40 @@ watch(displayMessages, async () => {
         <!-- Assistant Avatar -->
         <div
           v-if="message.role === 'assistant'"
-          class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center"
+          class="flex-shrink-0 w-8 h-8 rounded-full bg-ga-navy-50 flex items-center justify-center"
         >
-          <UIcon name="i-heroicons-sparkles" class="w-5 h-5 text-primary-600 dark:text-primary-400" />
+          <UIcon name="i-heroicons-sparkles" class="w-5 h-5 text-ga-navy-500" />
         </div>
 
         <!-- Message Bubble -->
         <div
           class="max-w-[80%] rounded-lg px-4 py-2"
           :class="{
-            'bg-primary-500 text-white': message.role === 'user',
-            'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100': message.role === 'assistant',
+            'bg-ga-navy-500 text-white': message.role === 'user',
+            'bg-ga-gray-200 text-ga-gray-950': message.role === 'assistant',
           }"
         >
           <p class="text-sm whitespace-pre-wrap">{{ message.content }}</p>
           <!-- Streaming Indicator -->
           <span
             v-if="message.isStreaming"
-            class="inline-block w-2 h-4 ml-1 bg-gray-600 dark:bg-gray-400 animate-pulse"
+            class="inline-block w-2 h-4 ml-1 bg-ga-gray-600 animate-pulse"
           />
         </div>
 
         <!-- User Avatar -->
         <div
           v-if="message.role === 'user'"
-          class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center"
+          class="flex-shrink-0 w-8 h-8 rounded-full bg-ga-gray-300 flex items-center justify-center"
         >
-          <UIcon name="i-heroicons-user" class="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <UIcon name="i-heroicons-user" class="w-5 h-5 text-ga-gray-700" />
         </div>
       </div>
 
       <!-- Tool Execution Indicator -->
       <div
         v-if="isStreaming && !streamingContent"
-        class="flex items-center gap-2 text-gray-500"
+        class="flex items-center gap-2 text-ga-gray-600"
       >
         <UIcon name="i-heroicons-cog-6-tooth" class="w-5 h-5 animate-spin" />
         <span class="text-sm">AI is thinking...</span>
@@ -134,7 +134,7 @@ watch(displayMessages, async () => {
     </UAlert>
 
     <!-- Input Area -->
-    <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+    <div class="border-t border-ga-gray-400 p-4">
       <div class="flex items-end gap-2">
         <UTextarea
           v-model="messageInput"

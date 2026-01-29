@@ -21,7 +21,7 @@ async function handleDelete(id: string) {
     <div class="flex items-center justify-between mb-6">
       <div>
         <h1 class="text-2xl font-bold">Units of Measure</h1>
-        <p class="text-gray-500 text-sm mt-1">Configure units for product pricing and quantities</p>
+        <p class="text-ga-gray-600 text-sm mt-1">Configure units for product pricing and quantities</p>
       </div>
       <UButton to="/units/new" icon="i-heroicons-plus">
         Add Unit
@@ -29,7 +29,7 @@ async function handleDelete(id: string) {
     </div>
 
     <div class="mb-4 flex items-center justify-between">
-      <span class="text-sm text-gray-500">{{ units.length }} unit{{ units.length !== 1 ? 's' : '' }}</span>
+      <span class="text-sm text-ga-gray-600">{{ units.length }} unit{{ units.length !== 1 ? 's' : '' }}</span>
       <UCheckbox v-model="showInactive" label="Show inactive" />
     </div>
 

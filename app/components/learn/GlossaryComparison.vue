@@ -35,29 +35,29 @@ const emit = defineEmits<{
       <div
         v-for="term in terms"
         :key="term.term"
-        class="space-y-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
+        class="space-y-3 p-4 bg-ga-gray-100 rounded-lg"
       >
         <h4 class="font-semibold text-lg text-primary">{{ term.term }}</h4>
 
         <div>
-          <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Definition</p>
-          <p class="text-sm text-gray-700 dark:text-gray-300">{{ term.definition }}</p>
+          <p class="text-xs font-medium text-ga-gray-600 uppercase tracking-wide mb-1">Definition</p>
+          <p class="text-sm text-ga-gray-800">{{ term.definition }}</p>
         </div>
 
         <div>
-          <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Example</p>
-          <p class="text-sm text-gray-600 dark:text-gray-400 italic">{{ term.example }}</p>
+          <p class="text-xs font-medium text-ga-gray-600 uppercase tracking-wide mb-1">Example</p>
+          <p class="text-sm text-ga-gray-700 italic">{{ term.example }}</p>
         </div>
 
         <div v-if="term.distinction">
-          <p class="text-xs font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wide mb-1">Key Distinction</p>
-          <p class="text-sm text-amber-700 dark:text-amber-300 font-medium">{{ term.distinction }}</p>
+          <p class="text-xs font-medium text-amber-600 uppercase tracking-wide mb-1">Key Distinction</p>
+          <p class="text-sm text-amber-700 font-medium">{{ term.distinction }}</p>
         </div>
       </div>
     </div>
 
     <template #footer>
-      <p class="text-xs text-gray-500">
+      <p class="text-xs text-ga-gray-600">
         Tip: Look at the "Key Distinction" section to quickly understand how these terms differ.
       </p>
     </template>

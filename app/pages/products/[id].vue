@@ -750,7 +750,7 @@ function isAttributeSuggested(attributeId: string): boolean {
               {{ isBundle ? 'Configurable Bundle' : 'Standalone' }}
             </UBadge>
           </div>
-          <p class="text-gray-500 mt-1">
+          <p class="text-ga-gray-600 mt-1">
             SKU: {{ product.sku }}
             <span v-if="phaseFeatures.unitsOfMeasure && product.unitOfMeasure" class="ml-3">
               Unit: {{ product.unitOfMeasure.name }} ({{ product.unitOfMeasure.abbreviation }})
@@ -866,7 +866,7 @@ function isAttributeSuggested(attributeId: string): boolean {
         <template #header>
           <h2 class="font-semibold">Description</h2>
         </template>
-        <p class="text-gray-600 dark:text-gray-300">{{ product.description }}</p>
+        <p class="text-ga-gray-700">{{ product.description }}</p>
       </UCard>
 
       <!-- Categories Section (View Mode) -->
@@ -880,7 +880,7 @@ function isAttributeSuggested(attributeId: string): boolean {
           </div>
         </template>
 
-        <div v-if="productCategories.length === 0" class="text-gray-500 text-sm">
+        <div v-if="productCategories.length === 0" class="text-ga-gray-600 text-sm">
           No categories assigned
         </div>
 
@@ -910,12 +910,12 @@ function isAttributeSuggested(attributeId: string): boolean {
 
         <div class="space-y-4">
           <div v-for="[groupId, attrs] in groupedProductAttributes" :key="groupId ?? 'ungrouped'">
-            <h3 v-if="groupedProductAttributes.size > 1" class="text-sm font-medium text-gray-500 mb-2">
+            <h3 v-if="groupedProductAttributes.size > 1" class="text-sm font-medium text-ga-gray-600 mb-2">
               {{ getGroupName(groupId) }}
             </h3>
             <div class="grid grid-cols-2 gap-x-6 gap-y-2">
               <div v-for="{ attribute, value } in attrs" :key="attribute.id" class="flex justify-between">
-                <span class="text-gray-500">{{ attribute.name }}</span>
+                <span class="text-ga-gray-600">{{ attribute.name }}</span>
                 <span class="font-medium">{{ formatAttributeValue(attribute, value) }}</span>
               </div>
             </div>
@@ -960,8 +960,8 @@ function isAttributeSuggested(attributeId: string): boolean {
           </template>
         </UAlert>
 
-        <div v-if="!product.features?.length" class="text-center py-8 text-gray-500">
-          <UIcon name="i-heroicons-squares-2x2" class="w-10 h-10 mx-auto mb-2 text-gray-300" />
+        <div v-if="!product.features?.length" class="text-center py-8 text-ga-gray-600">
+          <UIcon name="i-heroicons-squares-2x2" class="w-10 h-10 mx-auto mb-2 text-ga-gray-400" />
           <p>No features defined yet.</p>
           <p class="text-sm">Add features to make this bundle configurable.</p>
         </div>
@@ -971,7 +971,7 @@ function isAttributeSuggested(attributeId: string): boolean {
             v-for="feature in product.features"
             :key="feature.id"
             draggable="true"
-            class="border rounded-lg p-4 dark:border-gray-700 transition-all cursor-move"
+            class="border rounded-lg p-4 border-ga-gray-300 transition-all cursor-move"
             :class="{
               'opacity-50': draggedFeatureId === feature.id,
               'border-primary-500 border-2': dragOverFeatureId === feature.id,
@@ -984,10 +984,10 @@ function isAttributeSuggested(attributeId: string): boolean {
           >
             <div class="flex items-center justify-between mb-3">
               <div class="flex items-center gap-2">
-                <UIcon name="i-heroicons-bars-3" class="w-4 h-4 text-gray-400" />
+                <UIcon name="i-heroicons-bars-3" class="w-4 h-4 text-ga-gray-500" />
                 <div>
                   <h3 class="font-medium">{{ feature.name }}</h3>
-                  <p class="text-sm text-gray-500">
+                  <p class="text-sm text-ga-gray-600">
                     Select {{ feature.minOptions }}-{{ feature.maxOptions }} option(s)
                   </p>
                 </div>
@@ -1034,7 +1034,7 @@ function isAttributeSuggested(attributeId: string): boolean {
                 v-for="option in feature.options"
                 :key="option.id"
                 draggable="true"
-                class="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-800 rounded cursor-move transition-all"
+                class="flex items-center justify-between py-2 px-3 bg-ga-gray-100 rounded cursor-move transition-all"
                 :class="{
                   'opacity-50': draggedOptionId === option.id,
                   'ring-2 ring-primary-500': dragOverOptionId === option.id,
@@ -1046,7 +1046,7 @@ function isAttributeSuggested(attributeId: string): boolean {
                 @dragend.stop="handleOptionDragEnd"
               >
                 <div class="flex items-center gap-3">
-                  <UIcon name="i-heroicons-bars-2" class="w-3 h-3 text-gray-400" />
+                  <UIcon name="i-heroicons-bars-2" class="w-3 h-3 text-ga-gray-500" />
                   <span class="font-medium">{{ option.product?.name || 'Unknown product' }}</span>
                   <UBadge v-if="option.isDefault" size="xs" color="primary" variant="subtle">Default</UBadge>
                   <UBadge v-if="option.isRequired" size="xs" color="warning" variant="subtle">Required</UBadge>
@@ -1080,7 +1080,7 @@ function isAttributeSuggested(attributeId: string): boolean {
                   </UBadge>
                 </div>
                 <div class="flex items-center gap-2">
-                  <span class="text-sm text-gray-500">Qty: {{ option.minQty }}-{{ option.maxQty }}</span>
+                  <span class="text-sm text-ga-gray-600">Qty: {{ option.minQty }}-{{ option.maxQty }}</span>
                   <UButton
                     size="xs"
                     variant="ghost"
@@ -1133,11 +1133,11 @@ function isAttributeSuggested(attributeId: string): boolean {
             <div
               v-for="config in configuredOptions"
               :key="config.featureId"
-              class="flex items-center justify-between py-2 border-b dark:border-gray-800 last:border-0"
+              class="flex items-center justify-between py-2 border-b border-ga-gray-300 last:border-0"
             >
               <div>
                 <span class="font-medium">{{ config.featureName }}</span>
-                <span class="text-gray-500 mx-2">→</span>
+                <span class="text-ga-gray-600 mx-2">→</span>
                 <span>{{ config.optionName }}</span>
               </div>
             </div>
@@ -1242,7 +1242,7 @@ function isAttributeSuggested(attributeId: string): boolean {
           </template>
 
           <form class="space-y-6" @submit.prevent="handleSaveAttributes">
-            <div v-if="attributes.length === 0" class="text-center py-8 text-gray-500">
+            <div v-if="attributes.length === 0" class="text-center py-8 text-ga-gray-600">
               <p>No attributes defined yet.</p>
               <NuxtLink to="/attributes/new" class="text-primary-500 hover:underline">
                 Create attributes first
@@ -1254,7 +1254,7 @@ function isAttributeSuggested(attributeId: string): boolean {
               <div v-if="suggestedAttributes.length > 0" class="space-y-3">
                 <div class="flex items-center gap-2">
                   <UBadge color="primary" variant="subtle" size="xs">Suggested</UBadge>
-                  <span class="text-sm text-gray-500">Based on assigned categories</span>
+                  <span class="text-sm text-ga-gray-600">Based on assigned categories</span>
                 </div>
                 <div class="space-y-3">
                   <UFormField
@@ -1276,7 +1276,7 @@ function isAttributeSuggested(attributeId: string): boolean {
               </div>
 
               <div v-for="group in groups" :key="group.id" class="space-y-3">
-                <h4 class="text-sm font-medium text-gray-500 border-b pb-1 dark:border-gray-700">
+                <h4 class="text-sm font-medium text-ga-gray-600 border-b pb-1 border-ga-gray-300">
                   {{ group.name }}
                 </h4>
                 <div class="space-y-3">
@@ -1297,7 +1297,7 @@ function isAttributeSuggested(attributeId: string): boolean {
 
               <!-- Ungrouped attributes -->
               <div v-if="attributes.some(a => !a.groupId && !isAttributeSuggested(a.id))" class="space-y-3">
-                <h4 v-if="groups.length > 0" class="text-sm font-medium text-gray-500 border-b pb-1 dark:border-gray-700">
+                <h4 v-if="groups.length > 0" class="text-sm font-medium text-ga-gray-600 border-b pb-1 border-ga-gray-300">
                   Other
                 </h4>
                 <div class="space-y-3">
@@ -1337,7 +1337,7 @@ function isAttributeSuggested(attributeId: string): boolean {
           </template>
 
           <form class="space-y-4" @submit.prevent="handleSaveCategories">
-            <p class="text-sm text-gray-500">
+            <p class="text-sm text-ga-gray-600">
               Select categories for this product. Categories help organize products and suggest relevant attributes.
             </p>
 

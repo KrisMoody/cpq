@@ -178,12 +178,12 @@ async function applyManualDiscount() {
 
         <div class="space-y-4">
           <!-- Tabs -->
-          <div class="flex border-b border-gray-200 dark:border-gray-700">
+          <div class="flex border-b border-ga-gray-300">
             <button
               class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
               :class="activeTab === 'catalog'
-                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
+                ? 'border-ga-navy-500 text-ga-navy-500'
+                : 'border-transparent text-ga-gray-600 hover:text-ga-gray-800'"
               @click="activeTab = 'catalog'"
             >
               Catalog
@@ -191,8 +191,8 @@ async function applyManualDiscount() {
             <button
               class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
               :class="activeTab === 'manual'
-                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
+                ? 'border-ga-navy-500 text-ga-navy-500'
+                : 'border-transparent text-ga-gray-600 hover:text-ga-gray-800'"
               @click="activeTab = 'manual'"
             >
               Manual
@@ -217,8 +217,8 @@ async function applyManualDiscount() {
               icon="i-heroicons-magnifying-glass"
             />
 
-            <div v-if="filteredDiscounts.length === 0" class="text-center py-6 text-gray-500">
-              <UIcon name="i-heroicons-tag" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
+            <div v-if="filteredDiscounts.length === 0" class="text-center py-6 text-ga-gray-600">
+              <UIcon name="i-heroicons-tag" class="w-8 h-8 mx-auto mb-2 text-ga-gray-400" />
               <p>No applicable discounts found</p>
               <p class="text-sm mt-1">Try the Manual tab to create a custom discount</p>
             </div>
@@ -227,7 +227,7 @@ async function applyManualDiscount() {
               <div
                 v-for="discount in filteredDiscounts"
                 :key="discount.id"
-                class="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                class="p-3 border border-ga-gray-300 rounded-lg hover:bg-ga-gray-200 cursor-pointer transition-colors"
                 @click="applyCatalogDiscount(discount.id)"
               >
                 <div class="flex items-start justify-between">
@@ -242,27 +242,27 @@ async function applyManualDiscount() {
                         {{ formatDiscountValue(discount) }}
                       </UBadge>
                     </div>
-                    <p v-if="discount.description" class="text-sm text-gray-500 mt-1">
+                    <p v-if="discount.description" class="text-sm text-ga-gray-600 mt-1">
                       {{ discount.description }}
                     </p>
                   </div>
 
                   <div class="text-right flex-shrink-0 ml-4">
-                    <p class="text-sm text-gray-500">Est. savings</p>
-                    <p class="font-medium text-red-500">
+                    <p class="text-sm text-ga-gray-600">Est. savings</p>
+                    <p class="font-medium text-ga-red-500">
                       -{{ formatPrice(calculateEstimatedSavings(discount)) }}
                     </p>
                   </div>
                 </div>
 
-                <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                <div class="flex items-center gap-4 mt-2 text-xs text-ga-gray-600">
                   <span v-if="discount.minOrderValue">
                     Min order: {{ formatPrice(discount.minOrderValue) }}
                   </span>
                   <span v-if="discount.validTo">
                     Expires: {{ new Date(discount.validTo).toLocaleDateString() }}
                   </span>
-                  <span v-if="discount.stackable" class="text-green-600">Stackable</span>
+                  <span v-if="discount.stackable" class="text-ga-green-600">Stackable</span>
                 </div>
               </div>
             </div>
@@ -290,7 +290,7 @@ async function applyManualDiscount() {
                 :class="discountType === 'PERCENTAGE' ? 'w-20' : 'w-40'"
               />
               <template #hint>
-                <span v-if="discountType === 'PERCENTAGE' && discountValue > 100" class="text-red-500">
+                <span v-if="discountType === 'PERCENTAGE' && discountValue > 100" class="text-ga-red-500">
                   Percentage cannot exceed 100%
                 </span>
               </template>
@@ -303,7 +303,7 @@ async function applyManualDiscount() {
                 :rows="3"
               />
               <template #hint>
-                <span v-if="!reason.trim()" class="text-amber-500">
+                <span v-if="!reason.trim()" class="text-ga-yellow-600">
                   Reason is required for manual discounts
                 </span>
               </template>

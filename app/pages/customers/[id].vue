@@ -188,7 +188,7 @@ function cancelEdit() {
   <div class="max-w-4xl mx-auto">
     <!-- Loading -->
     <div v-if="loading" class="flex justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-ga-navy-500" />
     </div>
 
     <!-- Error -->
@@ -208,7 +208,7 @@ function cancelEdit() {
       <div class="flex items-start justify-between">
         <div>
           <h1 class="text-2xl font-bold">{{ customer.name }}</h1>
-          <p v-if="customer.company" class="text-gray-500">{{ customer.company }}</p>
+          <p v-if="customer.company" class="text-ga-gray-600">{{ customer.company }}</p>
           <UBadge v-if="!customer.isActive" color="warning" variant="subtle" class="mt-2">
             Inactive
           </UBadge>
@@ -314,7 +314,7 @@ function cancelEdit() {
             </UAlert>
 
             <!-- Tax Exemption Section (Phase 3+) -->
-            <div v-if="features.taxes" class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+            <div v-if="features.taxes" class="border-t border-ga-gray-300 pt-4 mt-4">
               <h3 class="font-medium mb-3">Tax Exemption</h3>
 
               <UCheckbox v-model="form.isTaxExempt" label="Tax Exempt" class="mb-4" />
@@ -344,15 +344,15 @@ function cancelEdit() {
 
           <dl v-else class="space-y-4">
             <div v-if="customer.email" class="flex items-center gap-3">
-              <UIcon name="i-heroicons-envelope" class="w-5 h-5 text-gray-400" />
+              <UIcon name="i-heroicons-envelope" class="w-5 h-5 text-ga-gray-500" />
               <span>{{ customer.email }}</span>
             </div>
             <div v-if="customer.phone" class="flex items-center gap-3">
-              <UIcon name="i-heroicons-phone" class="w-5 h-5 text-gray-400" />
+              <UIcon name="i-heroicons-phone" class="w-5 h-5 text-ga-gray-500" />
               <span>{{ customer.phone }}</span>
             </div>
             <div v-if="customer.street || customer.city" class="flex items-start gap-3">
-              <UIcon name="i-heroicons-map-pin" class="w-5 h-5 text-gray-400 mt-0.5" />
+              <UIcon name="i-heroicons-map-pin" class="w-5 h-5 text-ga-gray-500 mt-0.5" />
               <div>
                 <p v-if="customer.street">{{ customer.street }}</p>
                 <p>
@@ -362,18 +362,18 @@ function cancelEdit() {
               </div>
             </div>
             <div v-if="customer.currency" class="flex items-center gap-3">
-              <UIcon name="i-heroicons-currency-dollar" class="w-5 h-5 text-gray-400" />
+              <UIcon name="i-heroicons-currency-dollar" class="w-5 h-5 text-ga-gray-500" />
               <span>Currency: {{ customer.currency.code }} ({{ customer.currency.symbol }})</span>
             </div>
             <div v-if="customer.priceBook" class="flex items-center gap-3">
-              <UIcon name="i-heroicons-book-open" class="w-5 h-5 text-gray-400" />
+              <UIcon name="i-heroicons-book-open" class="w-5 h-5 text-ga-gray-500" />
               <span>Price Book: {{ customer.priceBook.name }}</span>
             </div>
 
             <!-- Tax Exemption Status (Phase 3+) -->
-            <div v-if="features.taxes && customer.isTaxExempt" class="border-t pt-4 mt-4 dark:border-gray-700">
+            <div v-if="features.taxes && customer.isTaxExempt" class="border-t pt-4 mt-4 border-ga-gray-300">
               <div class="flex items-center gap-2 mb-3">
-                <UIcon name="i-heroicons-receipt-percent" class="w-5 h-5 text-gray-400" />
+                <UIcon name="i-heroicons-receipt-percent" class="w-5 h-5 text-ga-gray-500" />
                 <UBadge
                   :color="isTaxExemptExpired ? 'warning' : 'success'"
                   variant="subtle"
@@ -382,14 +382,14 @@ function cancelEdit() {
                 </UBadge>
               </div>
               <div class="ml-7 space-y-1 text-sm">
-                <p v-if="customer.taxExemptReason" class="text-gray-600 dark:text-gray-300">
-                  <span class="text-gray-500">Reason:</span> {{ customer.taxExemptReason }}
+                <p v-if="customer.taxExemptReason" class="text-ga-gray-700">
+                  <span class="text-ga-gray-600">Reason:</span> {{ customer.taxExemptReason }}
                 </p>
-                <p v-if="customer.taxExemptCertificate" class="text-gray-600 dark:text-gray-300">
-                  <span class="text-gray-500">Certificate:</span> {{ customer.taxExemptCertificate }}
+                <p v-if="customer.taxExemptCertificate" class="text-ga-gray-700">
+                  <span class="text-ga-gray-600">Certificate:</span> {{ customer.taxExemptCertificate }}
                 </p>
-                <p v-if="customer.taxExemptExpiry" class="text-gray-600 dark:text-gray-300">
-                  <span class="text-gray-500">Expires:</span>
+                <p v-if="customer.taxExemptExpiry" class="text-ga-gray-700">
+                  <span class="text-ga-gray-600">Expires:</span>
                   <span :class="{ 'text-warning-500': isTaxExemptExpired }">
                     {{ new Date(customer.taxExemptExpiry).toLocaleDateString() }}
                   </span>
@@ -405,7 +405,7 @@ function cancelEdit() {
             <h2 class="font-semibold">Recent Quotes</h2>
           </template>
 
-          <div v-if="customer.quotes?.length === 0" class="text-center py-4 text-gray-500">
+          <div v-if="customer.quotes?.length === 0" class="text-center py-4 text-ga-gray-600">
             No quotes yet
           </div>
 
@@ -414,12 +414,12 @@ function cancelEdit() {
               v-for="quote in customer.quotes"
               :key="quote.id"
               :to="`/quotes/${quote.id}`"
-              class="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              class="block p-3 rounded-lg hover:bg-ga-gray-200 transition-colors"
             >
               <div class="flex justify-between items-start">
                 <div>
-                  <p class="font-medium text-primary-600 dark:text-primary-400">{{ quote.name }}</p>
-                  <p class="text-xs text-gray-500">
+                  <p class="font-medium text-ga-navy-600">{{ quote.name }}</p>
+                  <p class="text-xs text-ga-gray-600">
                     {{ new Date(quote.createdAt).toLocaleDateString() }}
                   </p>
                 </div>
@@ -460,8 +460,8 @@ function cancelEdit() {
           </div>
         </template>
 
-        <div v-if="customerContracts.length === 0" class="text-center py-8 text-gray-500">
-          <UIcon name="i-heroicons-document-text" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
+        <div v-if="customerContracts.length === 0" class="text-center py-8 text-ga-gray-600">
+          <UIcon name="i-heroicons-document-text" class="w-8 h-8 mx-auto mb-2 text-ga-gray-400" />
           <p>No contracts for this customer</p>
         </div>
 
@@ -473,14 +473,14 @@ function cancelEdit() {
             :class="[
               'block p-4 rounded-lg border transition-colors',
               contract.status === 'ACTIVE' && new Date(contract.startDate) <= new Date() && new Date(contract.endDate) >= new Date()
-                ? 'border-green-300 dark:border-green-800 bg-green-50/50 dark:bg-green-900/10 hover:bg-green-50 dark:hover:bg-green-900/20'
-                : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                ? 'border-ga-green-300 bg-ga-green-50/50 hover:bg-ga-green-50'
+                : 'border-ga-gray-300 hover:bg-ga-gray-200'
             ]"
           >
             <div class="flex justify-between items-start">
               <div>
                 <div class="flex items-center gap-2">
-                  <p class="font-medium text-primary-600 dark:text-primary-400">{{ contract.name }}</p>
+                  <p class="font-medium text-ga-navy-600">{{ contract.name }}</p>
                   <UBadge
                     v-if="contract.status === 'ACTIVE' && new Date(contract.startDate) <= new Date() && new Date(contract.endDate) >= new Date()"
                     color="success"
@@ -490,7 +490,7 @@ function cancelEdit() {
                     Currently Active
                   </UBadge>
                 </div>
-                <p class="text-sm text-gray-500">
+                <p class="text-sm text-ga-gray-600">
                   {{ formatDate(contract.startDate) }} - {{ formatDate(contract.endDate) }}
                 </p>
                 <div class="flex items-center gap-2 mt-1">
@@ -502,7 +502,7 @@ function cancelEdit() {
                   >
                     {{ contract.discountPercent }}% discount
                   </UBadge>
-                  <span v-if="contract.priceEntryCount" class="text-xs text-gray-400">
+                  <span v-if="contract.priceEntryCount" class="text-xs text-ga-gray-500">
                     + {{ contract.priceEntryCount }} custom price{{ contract.priceEntryCount !== 1 ? 's' : '' }}
                   </span>
                 </div>

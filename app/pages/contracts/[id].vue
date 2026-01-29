@@ -246,7 +246,7 @@ function formatDate(date: string) {
   <div class="max-w-4xl mx-auto">
     <!-- Loading -->
     <div v-if="loading" class="flex justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-ga-navy-500" />
     </div>
 
     <!-- Error -->
@@ -266,7 +266,7 @@ function formatDate(date: string) {
       <div class="flex items-start justify-between">
         <div>
           <h1 class="text-2xl font-bold">{{ contract.name }}</h1>
-          <p class="text-gray-500">
+          <p class="text-ga-gray-600">
             {{ contract.customer.company || contract.customer.name }}
           </p>
           <div class="flex gap-2 mt-2">
@@ -362,7 +362,7 @@ function formatDate(date: string) {
 
           <dl v-else class="space-y-4">
             <div class="flex justify-between">
-              <dt class="text-gray-500">Customer</dt>
+              <dt class="text-ga-gray-600">Customer</dt>
               <dd>
                 <NuxtLink :to="`/customers/${contract.customer.id}`" class="text-primary-600 hover:underline">
                   {{ contract.customer.name }}
@@ -370,18 +370,18 @@ function formatDate(date: string) {
               </dd>
             </div>
             <div class="flex justify-between">
-              <dt class="text-gray-500">Validity Period</dt>
+              <dt class="text-ga-gray-600">Validity Period</dt>
               <dd>{{ formatDate(contract.startDate) }} - {{ formatDate(contract.endDate) }}</dd>
             </div>
             <div class="flex justify-between">
-              <dt class="text-gray-500">Default Discount</dt>
+              <dt class="text-ga-gray-600">Default Discount</dt>
               <dd>
                 <span v-if="contract.discountPercent">{{ contract.discountPercent }}%</span>
-                <span v-else class="text-gray-400">None</span>
+                <span v-else class="text-ga-gray-500">None</span>
               </dd>
             </div>
             <div class="flex justify-between">
-              <dt class="text-gray-500">Created</dt>
+              <dt class="text-ga-gray-600">Created</dt>
               <dd>{{ formatDate(contract.createdAt) }}</dd>
             </div>
           </dl>
@@ -395,11 +395,11 @@ function formatDate(date: string) {
 
           <dl class="space-y-4">
             <div>
-              <dt class="text-sm text-gray-500">Custom Prices</dt>
+              <dt class="text-sm text-ga-gray-600">Custom Prices</dt>
               <dd class="text-2xl font-bold">{{ contract.priceEntries.length }}</dd>
             </div>
             <div v-if="contract.discountPercent">
-              <dt class="text-sm text-gray-500">Default Discount</dt>
+              <dt class="text-sm text-ga-gray-600">Default Discount</dt>
               <dd class="text-2xl font-bold">{{ contract.discountPercent }}%</dd>
             </div>
           </dl>
@@ -424,7 +424,7 @@ function formatDate(date: string) {
         </template>
 
         <!-- Add Price Form -->
-        <div v-if="showAddPrice" class="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div v-if="showAddPrice" class="mb-6 p-4 bg-ga-gray-100 rounded-lg">
           <h3 class="font-medium mb-4">Add Custom Price</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <UFormField label="Product" class="md:col-span-2">
@@ -451,43 +451,43 @@ function formatDate(date: string) {
         </div>
 
         <!-- Price Entries Table -->
-        <div v-if="contract.priceEntries.length === 0 && !showAddPrice" class="text-center py-8 text-gray-500">
-          <UIcon name="i-heroicons-tag" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
+        <div v-if="contract.priceEntries.length === 0 && !showAddPrice" class="text-center py-8 text-ga-gray-600">
+          <UIcon name="i-heroicons-tag" class="w-8 h-8 mx-auto mb-2 text-ga-gray-400" />
           <p>No custom prices defined</p>
           <p class="text-sm">Add product-specific prices to override the default discount</p>
         </div>
 
         <div v-else-if="contract.priceEntries.length > 0" class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-            <thead class="bg-gray-50 dark:bg-gray-900">
+          <table class="min-w-full divide-y divide-ga-gray-300">
+            <thead class="bg-ga-gray-100">
               <tr>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">SKU</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Standard Price</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contract Price</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Savings</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-ga-gray-600 uppercase tracking-wider">Product</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-ga-gray-600 uppercase tracking-wider">SKU</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-ga-gray-600 uppercase tracking-wider">Standard Price</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-ga-gray-600 uppercase tracking-wider">Contract Price</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-ga-gray-600 uppercase tracking-wider">Savings</th>
                 <th class="px-4 py-3"/>
               </tr>
             </thead>
-            <tbody class="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
+            <tbody class="bg-white divide-y divide-ga-gray-300">
               <tr
                 v-for="entry in contract.priceEntries"
                 :key="entry.id"
-                class="hover:bg-gray-50 dark:hover:bg-gray-900"
+                class="hover:bg-ga-gray-200"
               >
                 <td class="px-4 py-3">
                   <NuxtLink :to="`/products/${entry.product.id}`" class="font-medium text-primary-600 hover:underline">
                     {{ entry.product.name }}
                   </NuxtLink>
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-500">
+                <td class="px-4 py-3 text-sm text-ga-gray-600">
                   {{ entry.product.sku }}
                 </td>
                 <td class="px-4 py-3 text-sm">
-                  <span v-if="entry.standardPrice" class="text-gray-500">
+                  <span v-if="entry.standardPrice" class="text-ga-gray-600">
                     {{ formatPrice(entry.standardPrice) }}
                   </span>
-                  <span v-else class="text-gray-400 italic">N/A</span>
+                  <span v-else class="text-ga-gray-500 italic">N/A</span>
                 </td>
                 <td class="px-4 py-3">
                   <div v-if="editingPriceId === entry.id" class="flex items-center gap-2">
@@ -508,19 +508,19 @@ function formatDate(date: string) {
                   <template v-if="entry.standardPrice">
                     <span
                       v-if="parseFloat(entry.fixedPrice) < parseFloat(entry.standardPrice)"
-                      class="text-green-600 font-medium"
+                      class="text-ga-green-500 font-medium"
                     >
                       -{{ ((1 - parseFloat(entry.fixedPrice) / parseFloat(entry.standardPrice)) * 100).toFixed(1) }}%
                     </span>
                     <span
                       v-else-if="parseFloat(entry.fixedPrice) > parseFloat(entry.standardPrice)"
-                      class="text-red-600 font-medium"
+                      class="text-ga-red-500 font-medium"
                     >
                       +{{ ((parseFloat(entry.fixedPrice) / parseFloat(entry.standardPrice) - 1) * 100).toFixed(1) }}%
                     </span>
-                    <span v-else class="text-gray-400">Same</span>
+                    <span v-else class="text-ga-gray-500">Same</span>
                   </template>
-                  <span v-else class="text-gray-400">-</span>
+                  <span v-else class="text-ga-gray-500">-</span>
                 </td>
                 <td class="px-4 py-3">
                   <div v-if="editingPriceId !== entry.id" class="flex justify-end gap-2">

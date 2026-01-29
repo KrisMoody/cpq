@@ -198,7 +198,7 @@ function getAttributeTypeLabel(type: string): string {
   <div class="max-w-4xl mx-auto">
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-ga-navy-500" />
     </div>
 
     <!-- Not Found -->
@@ -215,7 +215,7 @@ function getAttributeTypeLabel(type: string): string {
             <h1 class="text-2xl font-bold">{{ category.name }}</h1>
             <UBadge v-if="!category.isActive" color="neutral">Inactive</UBadge>
           </div>
-          <p v-if="category.parent" class="text-gray-500 mt-1">
+          <p v-if="category.parent" class="text-ga-gray-600 mt-1">
             Parent: {{ category.parent.name }}
           </p>
         </div>
@@ -282,7 +282,7 @@ function getAttributeTypeLabel(type: string): string {
 
       <!-- Description -->
       <UCard v-if="category.description && !isEditing">
-        <p class="text-gray-600">{{ category.description }}</p>
+        <p class="text-ga-gray-700">{{ category.description }}</p>
       </UCard>
 
       <!-- Subcategories -->
@@ -296,9 +296,9 @@ function getAttributeTypeLabel(type: string): string {
             v-for="child in category.children"
             :key="child.id"
             :to="`/categories/${child.id}`"
-            class="flex items-center gap-3 py-3 px-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded"
+            class="flex items-center gap-3 py-3 px-2 hover:bg-ga-gray-200 rounded"
           >
-            <UIcon name="i-heroicons-folder" class="w-5 h-5 text-gray-400" />
+            <UIcon name="i-heroicons-folder" class="w-5 h-5 text-ga-gray-500" />
             <span class="font-medium">{{ child.name }}</span>
           </NuxtLink>
         </div>
@@ -319,7 +319,7 @@ function getAttributeTypeLabel(type: string): string {
           </div>
         </template>
 
-        <div v-if="category.products.length === 0" class="text-center py-8 text-gray-500">
+        <div v-if="category.products.length === 0" class="text-center py-8 text-ga-gray-600">
           No products in this category
         </div>
 
@@ -330,12 +330,12 @@ function getAttributeTypeLabel(type: string): string {
             class="flex items-center justify-between py-3 px-2"
           >
             <div class="flex items-center gap-3">
-              <UIcon name="i-heroicons-cube" class="w-5 h-5 text-gray-400" />
+              <UIcon name="i-heroicons-cube" class="w-5 h-5 text-ga-gray-500" />
               <div>
-                <NuxtLink :to="`/products/${product.id}`" class="font-medium hover:text-primary-500">
+                <NuxtLink :to="`/products/${product.id}`" class="font-medium hover:text-ga-navy-500">
                   {{ product.name }}
                 </NuxtLink>
-                <p class="text-sm text-gray-500">{{ product.sku }}</p>
+                <p class="text-sm text-ga-gray-600">{{ product.sku }}</p>
               </div>
               <UBadge v-if="!product.isActive" color="neutral" size="xs">Inactive</UBadge>
               <UBadge v-if="product.type === 'BUNDLE'" color="info" size="xs">Bundle</UBadge>
@@ -366,7 +366,7 @@ function getAttributeTypeLabel(type: string): string {
           </div>
         </template>
 
-        <div v-if="categoryAttributes.length === 0" class="text-center py-8 text-gray-500">
+        <div v-if="categoryAttributes.length === 0" class="text-center py-8 text-ga-gray-600">
           No attributes assigned to this category
         </div>
 
@@ -377,12 +377,12 @@ function getAttributeTypeLabel(type: string): string {
             class="flex items-center justify-between py-3 px-2"
           >
             <div class="flex items-center gap-3">
-              <UIcon name="i-heroicons-tag" class="w-5 h-5 text-gray-400" />
+              <UIcon name="i-heroicons-tag" class="w-5 h-5 text-ga-gray-500" />
               <div>
-                <NuxtLink :to="`/attributes/${catAttr.attribute.id}`" class="font-medium hover:text-primary-500">
+                <NuxtLink :to="`/attributes/${catAttr.attribute.id}`" class="font-medium hover:text-ga-navy-500">
                   {{ catAttr.attribute.name }}
                 </NuxtLink>
-                <p class="text-sm text-gray-500">{{ catAttr.attribute.code }}</p>
+                <p class="text-sm text-ga-gray-600">{{ catAttr.attribute.code }}</p>
               </div>
               <UBadge color="info" size="xs">{{ getAttributeTypeLabel(catAttr.attribute.type) }}</UBadge>
               <UBadge v-if="catAttr.attribute.isRequired" color="warning" size="xs">Required</UBadge>

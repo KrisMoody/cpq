@@ -201,36 +201,36 @@ onUnmounted(() => {
 <template>
   <div class="w-full space-y-4">
     <!-- Mobile notice -->
-    <div class="md:hidden p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+    <div class="md:hidden p-4 bg-blue-50 rounded-lg border border-blue-200">
       <div class="flex items-start gap-3">
         <UIcon name="i-heroicons-device-phone-mobile" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
         <div>
-          <p class="text-sm font-medium text-blue-800 dark:text-blue-200">Best viewed on larger screens</p>
-          <p class="text-xs text-blue-600 dark:text-blue-300 mt-1">This interactive diagram works best on tablet or desktop. You can still scroll and pinch-to-zoom on mobile.</p>
+          <p class="text-sm font-medium text-blue-800">Best viewed on larger screens</p>
+          <p class="text-xs text-blue-600 mt-1">This interactive diagram works best on tablet or desktop. You can still scroll and pinch-to-zoom on mobile.</p>
         </div>
       </div>
     </div>
 
     <!-- Loading state -->
-    <div v-if="isLoading" class="flex items-center justify-center h-[400px] sm:h-[600px] bg-gray-50 dark:bg-gray-800 rounded-lg">
+    <div v-if="isLoading" class="flex items-center justify-center h-[400px] sm:h-[600px] bg-ga-gray-100 rounded-lg">
       <div class="text-center">
-        <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 text-gray-400 animate-spin" />
-        <p class="mt-2 text-sm text-gray-500">Loading database schema...</p>
+        <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 text-ga-gray-500 animate-spin" />
+        <p class="mt-2 text-sm text-ga-gray-600">Loading database schema...</p>
       </div>
     </div>
 
     <!-- Error state -->
-    <div v-else-if="error" class="flex items-center justify-center h-[400px] sm:h-[600px] bg-red-50 dark:bg-red-900/20 rounded-lg">
+    <div v-else-if="error" class="flex items-center justify-center h-[400px] sm:h-[600px] bg-red-50 rounded-lg">
       <div class="text-center">
         <UIcon name="i-heroicons-exclamation-triangle" class="w-8 h-8 text-red-400" />
-        <p class="mt-2 text-sm text-red-600 dark:text-red-400">Failed to load database schema.</p>
-        <p class="mt-1 text-xs text-gray-500">{{ error }}</p>
+        <p class="mt-2 text-sm text-red-600">Failed to load database schema.</p>
+        <p class="mt-1 text-xs text-ga-gray-600">{{ error }}</p>
       </div>
     </div>
 
     <!-- Vue Flow diagram -->
     <ClientOnly v-else>
-      <div class="h-[400px] sm:h-[600px] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-900">
+      <div class="h-[400px] sm:h-[600px] border border-ga-gray-300 rounded-lg overflow-hidden bg-white">
         <VueFlow
           v-model:nodes="nodes"
           v-model:edges="edges"
@@ -253,16 +253,16 @@ onUnmounted(() => {
       </div>
 
       <template #fallback>
-        <div class="flex items-center justify-center h-[400px] sm:h-[600px] bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div class="flex items-center justify-center h-[400px] sm:h-[600px] bg-ga-gray-100 rounded-lg">
           <div class="text-center">
-            <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 text-gray-400 animate-spin" />
-            <p class="mt-2 text-sm text-gray-500">Loading interactive diagram...</p>
+            <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 text-ga-gray-500 animate-spin" />
+            <p class="mt-2 text-sm text-ga-gray-600">Loading interactive diagram...</p>
           </div>
         </div>
       </template>
     </ClientOnly>
 
-    <div class="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-gray-500">
+    <div class="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-ga-gray-600">
       <p>Interactive database schema. Drag nodes, zoom with scroll, pan by dragging background.</p>
       <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
         <div class="flex items-center gap-1">
@@ -275,7 +275,7 @@ onUnmounted(() => {
             Collapse all
           </UButton>
         </div>
-        <p class="text-gray-400 hidden sm:block">Press <kbd class="px-1 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px]">Cmd+0</kbd> to reset view</p>
+        <p class="text-ga-gray-500 hidden sm:block">Press <kbd class="px-1 py-0.5 bg-ga-gray-200 rounded text-[10px]">Cmd+0</kbd> to reset view</p>
       </div>
     </div>
   </div>

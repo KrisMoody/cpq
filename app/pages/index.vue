@@ -128,7 +128,7 @@ function getStatusColor(status: string) {
   <div class="space-y-8">
     <div>
       <h1 class="text-3xl font-bold">CPQ Dashboard</h1>
-      <p class="text-gray-500 mt-1">
+      <p class="text-ga-gray-600 mt-1">
         Configure, Price, Quote - Learning Application
       </p>
     </div>
@@ -138,13 +138,13 @@ function getStatusColor(status: string) {
       <UCard v-for="stat in stats" :key="stat.label">
         <div class="flex items-center gap-3">
           <div
-            class="w-10 h-10 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0"
+            class="w-10 h-10 rounded-lg bg-ga-navy-100 flex items-center justify-center flex-shrink-0"
           >
-            <UIcon :name="stat.icon" class="w-5 h-5 text-primary-600" />
+            <UIcon :name="stat.icon" class="w-5 h-5 text-ga-navy-600" />
           </div>
           <div class="min-w-0">
             <p class="text-xl font-bold">{{ stat.value }}</p>
-            <p class="text-xs text-gray-500 truncate">{{ stat.label }}</p>
+            <p class="text-xs text-ga-gray-600 truncate">{{ stat.label }}</p>
           </div>
         </div>
         <template v-if="stat.to" #footer>
@@ -172,11 +172,11 @@ function getStatusColor(status: string) {
           <UIcon name="i-heroicons-arrow-path" class="w-6 h-6 animate-spin" />
         </div>
 
-        <div v-else-if="recentQuotes.length === 0" class="text-center py-8 text-gray-500">
+        <div v-else-if="recentQuotes.length === 0" class="text-center py-8 text-ga-gray-600">
           No quotes yet. Create your first quote to get started.
         </div>
 
-        <div v-else class="divide-y dark:divide-gray-800">
+        <div v-else class="divide-y">
           <div
             v-for="quote in recentQuotes"
             :key="quote.id"
@@ -184,7 +184,7 @@ function getStatusColor(status: string) {
           >
             <div class="min-w-0 flex-1">
               <p class="font-medium truncate">{{ quote.name }}</p>
-              <p class="text-sm text-gray-500">
+              <p class="text-sm text-ga-gray-600">
                 {{ quote.customer?.name || 'No customer' }} · {{ quote._count?.lineItems ?? 0 }} items
               </p>
             </div>
@@ -218,11 +218,11 @@ function getStatusColor(status: string) {
           <UIcon name="i-heroicons-arrow-path" class="w-6 h-6 animate-spin" />
         </div>
 
-        <div v-else-if="recentCustomers.length === 0" class="text-center py-8 text-gray-500">
+        <div v-else-if="recentCustomers.length === 0" class="text-center py-8 text-ga-gray-600">
           No customers yet. Add your first customer to get started.
         </div>
 
-        <div v-else class="divide-y dark:divide-gray-800">
+        <div v-else class="divide-y">
           <div
             v-for="customer in recentCustomers"
             :key="customer.id"
@@ -230,7 +230,7 @@ function getStatusColor(status: string) {
           >
             <div class="min-w-0 flex-1">
               <p class="font-medium truncate">{{ customer.name }}</p>
-              <p class="text-sm text-gray-500">
+              <p class="text-sm text-ga-gray-600">
                 {{ customer.company || 'No company' }} · {{ customer.quoteCount ?? 0 }} quotes
               </p>
             </div>
@@ -264,9 +264,9 @@ function getStatusColor(status: string) {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <UCard v-for="action in quickActions" :key="action.title">
           <div class="text-center">
-            <UIcon :name="action.icon" class="w-8 h-8 text-primary-500 mx-auto mb-2" />
+            <UIcon :name="action.icon" class="w-8 h-8 text-ga-navy-500 mx-auto mb-2" />
             <h3 class="font-semibold">{{ action.title }}</h3>
-            <p class="text-sm text-gray-500 mt-1">{{ action.description }}</p>
+            <p class="text-sm text-ga-gray-600 mt-1">{{ action.description }}</p>
             <UButton :to="action.to" class="mt-4" variant="soft">
               {{ action.buttonText }}
             </UButton>

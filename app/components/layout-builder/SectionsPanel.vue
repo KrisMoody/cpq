@@ -78,9 +78,9 @@ function handleDragEnd() {
       <div
         v-for="(section, index) in sections"
         :key="section.id"
-        class="border border-gray-200 dark:border-gray-700 rounded-lg transition-all"
+        class="border border-ga-gray-300 rounded-lg transition-all"
         :class="{
-          'border-primary-500 border-2': dragOverIndex === index,
+          'border-ga-navy-500 border-2': dragOverIndex === index,
           'opacity-50': draggedIndex === index,
         }"
         draggable="true"
@@ -107,7 +107,7 @@ function handleDragEnd() {
     </div>
 
     <template v-if="sections.length === 0" #footer>
-      <p class="text-center text-gray-500 py-4">
+      <p class="text-center text-ga-gray-600 py-4">
         No sections yet. Add a section to get started.
       </p>
     </template>

@@ -259,14 +259,14 @@ function handleCancel() {
           <div class="flex items-start justify-between">
             <div>
               <h3 class="text-lg font-semibold">Configure Bundle</h3>
-              <p class="text-sm text-gray-500 mt-1">{{ product.name }}</p>
-              <p class="text-xs text-gray-400">{{ product.sku }}</p>
+              <p class="text-sm text-ga-gray-600 mt-1">{{ product.name }}</p>
+              <p class="text-xs text-ga-gray-500">{{ product.sku }}</p>
             </div>
             <div class="flex items-start gap-4">
               <div class="text-right">
-                <p class="text-sm text-gray-500">Base Price</p>
+                <p class="text-sm text-ga-gray-600">Base Price</p>
                 <p class="text-lg font-semibold">{{ formatPrice(bundlePrice) }}</p>
-                <p v-if="quantity > 1" class="text-xs text-gray-400">x {{ quantity }}</p>
+                <p v-if="quantity > 1" class="text-xs text-ga-gray-500">x {{ quantity }}</p>
               </div>
               <UButton
                 variant="ghost"
@@ -290,7 +290,7 @@ function handleCancel() {
               <ul class="mt-2 list-disc list-inside text-sm">
                 <li v-for="opt in unavailableOptions.filter(o => o.isRequired)" :key="`${opt.featureName}-${opt.productName}`">
                   {{ opt.featureName }}: {{ opt.productName }}
-                  <span class="text-gray-500">({{ opt.reason === 'inactive' ? 'inactive' : 'not in price book' }})</span>
+                  <span class="text-ga-gray-600">({{ opt.reason === 'inactive' ? 'inactive' : 'not in price book' }})</span>
                 </li>
               </ul>
             </template>
@@ -312,7 +312,7 @@ function handleCancel() {
             <div class="flex items-center justify-between">
               <div>
                 <h4 class="font-medium">{{ feature.name }}</h4>
-                <p class="text-xs text-gray-500">
+                <p class="text-xs text-ga-gray-600">
                   <span v-if="feature.minOptions === feature.maxOptions">
                     Select {{ feature.minOptions }}
                   </span>
@@ -346,10 +346,10 @@ function handleCancel() {
                 :key="option.id"
                 :class="[
                   'p-3 rounded-lg border transition-colors',
-                  !isOptionAvailable(option) ? 'opacity-50 cursor-not-allowed bg-gray-50 dark:bg-gray-800/50' : 'cursor-pointer',
+                  !isOptionAvailable(option) ? 'opacity-50 cursor-not-allowed bg-ga-gray-100' : 'cursor-pointer',
                   isOptionSelected(option.id)
-                    ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600',
+                    ? 'border-ga-navy-500 bg-ga-navy-50'
+                    : 'border-ga-gray-300 hover:border-ga-gray-400',
                 ]"
                 @click="toggleOption(feature, option)"
               >
@@ -362,8 +362,8 @@ function handleCancel() {
                           'w-5 h-5 flex items-center justify-center border-2',
                           feature.maxOptions === 1 ? 'rounded-full' : 'rounded',
                           isOptionSelected(option.id)
-                            ? 'bg-primary-500 border-primary-500 text-white'
-                            : 'border-gray-300 dark:border-gray-600'
+                            ? 'bg-ga-navy-500 border-ga-navy-500 text-white'
+                            : 'border-ga-gray-400'
                         ]"
                       >
                         <UIcon
@@ -398,11 +398,11 @@ function handleCancel() {
                           </UBadge>
                         </UTooltip>
                       </div>
-                      <p class="text-xs text-gray-500 truncate">{{ option.product?.sku }}</p>
+                      <p class="text-xs text-ga-gray-600 truncate">{{ option.product?.sku }}</p>
                       <!-- Show available price books info -->
                       <p
                         v-if="!option.product?.hasPrice && option.product?.availableInPriceBooks?.length"
-                        class="text-xs text-warning-600 dark:text-warning-400 mt-0.5 truncate"
+                        class="text-xs text-ga-yellow-600 mt-0.5 truncate"
                       >
                         Available in: {{ option.product.availableInPriceBooks.map(pb => pb.name).join(', ') }}
                       </p>
@@ -439,7 +439,7 @@ function handleCancel() {
                       <template v-if="option.product?.hasPrice">
                         <span
                           v-if="Number(option.product.listPrice) === 0"
-                          class="text-sm text-success-600 font-medium"
+                          class="text-sm text-ga-green-600 font-medium"
                         >
                           Included
                         </span>
@@ -447,7 +447,7 @@ function handleCancel() {
                           +{{ formatPrice(option.product.listPrice ?? 0) }}
                         </span>
                       </template>
-                      <span v-else class="text-sm text-gray-400">-</span>
+                      <span v-else class="text-sm text-ga-gray-500">-</span>
                     </div>
                   </div>
                 </div>
@@ -456,25 +456,25 @@ function handleCancel() {
           </div>
 
           <!-- Empty state -->
-          <div v-if="product.features.length === 0" class="text-center py-8 text-gray-500">
+          <div v-if="product.features.length === 0" class="text-center py-8 text-ga-gray-600">
             This bundle has no configurable options.
           </div>
         </div>
 
         <!-- Summary -->
-        <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div class="mt-6 pt-4 border-t border-ga-gray-300">
           <div class="space-y-1">
             <div class="flex justify-between text-sm">
-              <span class="text-gray-500">Bundle base:</span>
+              <span class="text-ga-gray-600">Bundle base:</span>
               <span>{{ formatPrice(bundlePrice * quantity) }}</span>
             </div>
             <div class="flex justify-between text-sm">
-              <span class="text-gray-500">Options:</span>
+              <span class="text-ga-gray-600">Options:</span>
               <span>+{{ formatPrice(optionsTotal) }}</span>
             </div>
-            <div class="flex justify-between font-semibold text-lg pt-2 border-t border-gray-100 dark:border-gray-800">
+            <div class="flex justify-between font-semibold text-lg pt-2 border-t border-ga-gray-200">
               <span>Total:</span>
-              <span class="text-primary-600">{{ formatPrice(grandTotal) }}</span>
+              <span class="text-ga-navy-500">{{ formatPrice(grandTotal) }}</span>
             </div>
           </div>
         </div>

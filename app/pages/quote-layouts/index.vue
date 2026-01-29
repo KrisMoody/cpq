@@ -40,7 +40,7 @@ const customLayouts = computed(() => layouts.value.filter((l) => !l.isTemplate))
           <UButton to="/quotes" variant="ghost" icon="i-heroicons-arrow-left" size="sm" />
           <h1 class="text-2xl font-bold">Quote Layouts</h1>
         </div>
-        <p class="text-gray-500 mt-1">Manage reusable quote presentation templates</p>
+        <p class="text-ga-gray-600 mt-1">Manage reusable quote presentation templates</p>
       </div>
 
       <UButton to="/quote-layouts/new" icon="i-heroicons-plus">
@@ -81,11 +81,11 @@ const customLayouts = computed(() => layouts.value.filter((l) => !l.isTemplate))
               </div>
             </template>
 
-            <p v-if="layout.description" class="text-sm text-gray-500 mb-3">
+            <p v-if="layout.description" class="text-sm text-ga-gray-600 mb-3">
               {{ layout.description }}
             </p>
 
-            <div class="text-xs text-gray-400 space-y-1">
+            <div class="text-xs text-ga-gray-500 space-y-1">
               <p>{{ layout.sections.length }} section{{ layout.sections.length !== 1 ? 's' : '' }}</p>
               <p>Theme: {{ layout.theme.headerStyle }}</p>
             </div>
@@ -133,17 +133,17 @@ const customLayouts = computed(() => layouts.value.filter((l) => !l.isTemplate))
             <template #header>
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <UIcon name="i-heroicons-document" class="w-5 h-5 text-gray-500" />
+                  <UIcon name="i-heroicons-document" class="w-5 h-5 text-ga-gray-600" />
                   <h3 class="font-semibold">{{ layout.name }}</h3>
                 </div>
               </div>
             </template>
 
-            <p v-if="layout.description" class="text-sm text-gray-500 mb-3">
+            <p v-if="layout.description" class="text-sm text-ga-gray-600 mb-3">
               {{ layout.description }}
             </p>
 
-            <div class="text-xs text-gray-400 space-y-1">
+            <div class="text-xs text-ga-gray-500 space-y-1">
               <p>{{ layout.sections.length }} section{{ layout.sections.length !== 1 ? 's' : '' }}</p>
               <p>Theme: {{ layout.theme.headerStyle }}</p>
             </div>
@@ -181,8 +181,8 @@ const customLayouts = computed(() => layouts.value.filter((l) => !l.isTemplate))
 
       <!-- Empty State -->
       <div v-if="layouts.length === 0" class="text-center py-12">
-        <UIcon name="i-heroicons-squares-2x2" class="w-12 h-12 text-gray-300 mx-auto mb-4" />
-        <p class="text-gray-500 mb-4">No layouts found</p>
+        <UIcon name="i-heroicons-squares-2x2" class="w-12 h-12 text-ga-gray-400 mx-auto mb-4" />
+        <p class="text-ga-gray-600 mb-4">No layouts found</p>
         <UButton to="/quote-layouts/new" variant="soft">
           Create your first layout
         </UButton>

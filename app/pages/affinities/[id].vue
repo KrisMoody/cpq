@@ -133,7 +133,7 @@ async function handleDelete() {
       <UButton to="/affinities" variant="ghost" icon="i-heroicons-arrow-left" />
       <div class="flex-1">
         <h1 class="text-2xl font-bold">Edit Product Affinity</h1>
-        <p class="text-gray-500">Update this recommendation rule</p>
+        <p class="text-ga-gray-600">Update this recommendation rule</p>
       </div>
       <UButton
         v-if="affinity"
@@ -147,7 +147,7 @@ async function handleDelete() {
     </div>
 
     <div v-if="loading" class="flex justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-ga-navy-500" />
     </div>
 
     <UAlert v-else-if="!affinity" color="error" icon="i-heroicons-exclamation-triangle">

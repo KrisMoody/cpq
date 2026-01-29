@@ -54,15 +54,15 @@ function formatDiscountValue(discount: { type: string; value: string | number })
     </template>
 
     <div v-if="appliedDiscounts.length === 0" class="text-center py-4">
-      <UIcon name="i-heroicons-tag" class="w-8 h-8 text-gray-300 mx-auto mb-2" />
-      <p class="text-sm text-gray-500">No discounts applied</p>
+      <UIcon name="i-heroicons-tag" class="w-8 h-8 text-ga-gray-400 mx-auto mb-2" />
+      <p class="text-sm text-ga-gray-600">No discounts applied</p>
     </div>
 
     <div v-else class="space-y-3">
       <div
         v-for="discount in appliedDiscounts"
         :key="discount.id"
-        class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"
+        class="flex items-center justify-between p-2 bg-ga-gray-100 rounded-lg"
       >
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2">
@@ -77,13 +77,13 @@ function formatDiscountValue(discount: { type: string; value: string | number })
               {{ formatDiscountValue(discount) }}
             </UBadge>
           </div>
-          <p v-if="discount.reason" class="text-xs text-gray-500 truncate">
+          <p v-if="discount.reason" class="text-xs text-ga-gray-600 truncate">
             {{ discount.reason }}
           </p>
         </div>
 
         <div class="flex items-center gap-2 flex-shrink-0">
-          <span class="text-sm font-medium text-red-500">
+          <span class="text-sm font-medium text-ga-red-500">
             -{{ formatPrice(discount.calculatedAmount) }}
           </span>
           <UButton
@@ -100,8 +100,8 @@ function formatDiscountValue(discount: { type: string; value: string | number })
       <USeparator />
 
       <div class="flex justify-between text-sm font-medium">
-        <span class="text-gray-500">Total Discount</span>
-        <span class="text-red-500">-{{ formatPrice(totalDiscountAmount) }}</span>
+        <span class="text-ga-gray-600">Total Discount</span>
+        <span class="text-ga-red-500">-{{ formatPrice(totalDiscountAmount) }}</span>
       </div>
     </div>
   </UCard>

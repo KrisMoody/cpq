@@ -37,7 +37,7 @@ const statusOptions = computed(() => [
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold">Quotes</h1>
-        <p class="text-gray-500">Manage sales quotes</p>
+        <p class="text-ga-gray-600">Manage sales quotes</p>
       </div>
 
       <div class="flex items-center gap-2">
@@ -70,7 +70,7 @@ const statusOptions = computed(() => [
       </div>
 
       <div class="flex items-center gap-4">
-        <span class="text-sm text-gray-500">
+        <span class="text-sm text-ga-gray-600">
           {{ filteredQuotes.length }} quote{{ filteredQuotes.length !== 1 ? 's' : '' }}
         </span>
 
@@ -91,8 +91,8 @@ const statusOptions = computed(() => [
 
     <!-- Empty State -->
     <div v-else-if="filteredQuotes.length === 0" class="text-center py-12">
-      <UIcon name="i-heroicons-document-text" class="w-12 h-12 text-gray-300 mx-auto mb-4" />
-      <p class="text-gray-500 mb-4">No quotes found</p>
+      <UIcon name="i-heroicons-document-text" class="w-12 h-12 text-ga-gray-400 mx-auto mb-4" />
+      <p class="text-ga-gray-600 mb-4">No quotes found</p>
       <UButton to="/quotes/new" variant="soft">
         Create your first quote
       </UButton>

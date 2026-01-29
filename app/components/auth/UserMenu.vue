@@ -31,7 +31,7 @@ async function handleSignOut() {
   <UPopover v-model:open="menuOpen">
     <button
       type="button"
-      class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+      class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-ga-gray-200 transition-colors"
     >
       <div
         v-if="auth.user.value?.image"
@@ -45,21 +45,21 @@ async function handleSignOut() {
       </div>
       <div
         v-else
-        class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-sm font-medium text-primary-700 dark:text-primary-300"
+        class="w-8 h-8 rounded-full bg-ga-navy-50 flex items-center justify-center text-sm font-medium text-ga-navy-500"
       >
         {{ userInitials }}
       </div>
-      <UIcon name="i-heroicons-chevron-down" class="w-4 h-4 text-gray-500" />
+      <UIcon name="i-heroicons-chevron-down" class="w-4 h-4 text-ga-gray-600" />
     </button>
 
     <template #content>
       <div class="w-56 p-2">
         <!-- User info -->
-        <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700 mb-2">
-          <p class="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">
+        <div class="px-3 py-2 border-b border-ga-gray-400 mb-2">
+          <p class="font-medium text-sm text-ga-gray-950 truncate">
             {{ displayName }}
           </p>
-          <p v-if="auth.user.value?.name" class="text-xs text-gray-500 truncate">
+          <p v-if="auth.user.value?.name" class="text-xs text-ga-gray-600 truncate">
             {{ auth.user.value.email }}
           </p>
         </div>
@@ -67,7 +67,7 @@ async function handleSignOut() {
         <!-- Sign out -->
         <button
           type="button"
-          class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          class="w-full flex items-center gap-2 px-3 py-2 text-sm text-ga-gray-800 hover:bg-ga-gray-200 rounded-lg transition-colors"
           @click="handleSignOut"
         >
           <UIcon name="i-heroicons-arrow-right-on-rectangle" class="w-4 h-4" />

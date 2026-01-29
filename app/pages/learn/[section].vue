@@ -77,10 +77,10 @@ useHead({
     <!-- Section Header -->
     <div>
       <div class="flex items-center gap-2 mb-2">
-        <UIcon :name="meta.icon" class="w-6 h-6 text-primary-500" />
+        <UIcon :name="meta.icon" class="w-6 h-6 text-ga-navy-500" />
         <h1 class="text-2xl font-bold">{{ meta.title }}</h1>
       </div>
-      <p class="text-gray-500 dark:text-gray-400">{{ meta.description }}</p>
+      <p class="text-ga-gray-600">{{ meta.description }}</p>
     </div>
 
     <!-- Section Content -->

@@ -28,10 +28,10 @@ const typeColor = computed(() => {
     </template>
 
     <div class="space-y-2">
-      <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+      <p class="text-sm text-ga-gray-600 line-clamp-2">
         {{ product.description || 'No description' }}
       </p>
-      <div class="flex items-center gap-2 text-xs text-gray-400">
+      <div class="flex items-center gap-2 text-xs text-ga-gray-500">
         <UIcon name="i-heroicons-tag" />
         <span>SKU: {{ product.sku }}</span>
       </div>
@@ -43,7 +43,7 @@ const typeColor = computed(() => {
           <UBadge v-if="!product.isActive" color="warning" variant="subtle" size="xs">
             Inactive
           </UBadge>
-          <span v-else class="text-xs text-gray-400">Active</span>
+          <span v-else class="text-xs text-ga-gray-500">Active</span>
           <UBadge v-if="!product.isTaxable" color="info" variant="subtle" size="xs">
             Non-Taxable
           </UBadge>

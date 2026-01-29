@@ -31,7 +31,7 @@ async function handleDelete(id: string) {
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold">Rules</h1>
-        <p class="text-gray-500">Configure business rules for pricing and configuration</p>
+        <p class="text-ga-gray-600">Configure business rules for pricing and configuration</p>
       </div>
       <UButton to="/rules/new" icon="i-heroicons-plus">
         New Rule
@@ -57,7 +57,7 @@ async function handleDelete(id: string) {
         </UButton>
       </div>
 
-      <span class="text-sm text-gray-500">
+      <span class="text-sm text-ga-gray-600">
         {{ filteredRules.length }} rule{{ filteredRules.length !== 1 ? 's' : '' }}
       </span>
     </div>
@@ -75,8 +75,8 @@ async function handleDelete(id: string) {
 
     <!-- Empty State -->
     <div v-else-if="filteredRules.length === 0" class="text-center py-12">
-      <UIcon name="i-heroicons-cog-6-tooth" class="w-12 h-12 text-gray-300 mx-auto mb-4" />
-      <p class="text-gray-500 mb-4">No rules found</p>
+      <UIcon name="i-heroicons-cog-6-tooth" class="w-12 h-12 text-ga-gray-400 mx-auto mb-4" />
+      <p class="text-ga-gray-600 mb-4">No rules found</p>
       <UButton to="/rules/new" variant="soft">Create your first rule</UButton>
     </div>
 

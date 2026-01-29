@@ -105,7 +105,7 @@ async function copyFormula(formula: string) {
 
 <template>
   <div class="space-y-6">
-    <p class="text-sm text-gray-500 dark:text-gray-400">
+    <p class="text-sm text-ga-gray-600">
       Click any formula to copy it to your clipboard.
     </p>
 
@@ -114,12 +114,12 @@ async function copyFormula(formula: string) {
       :key="group.title"
       class="space-y-3"
     >
-      <h3 class="font-medium text-gray-700 dark:text-gray-300">{{ group.title }}</h3>
+      <h3 class="font-medium text-ga-gray-800">{{ group.title }}</h3>
       <div class="space-y-2">
         <button
           v-for="f in group.formulas"
           :key="f.name"
-          class="w-full text-left p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer group"
+          class="w-full text-left p-3 bg-ga-gray-100 rounded-lg hover:bg-ga-gray-200 transition-colors cursor-pointer group"
           @click="copyFormula(f.formula)"
         >
           <div class="flex items-start justify-between gap-4">
@@ -128,13 +128,13 @@ async function copyFormula(formula: string) {
                 <span class="text-sm font-medium">{{ f.name }}</span>
                 <UIcon
                   name="i-heroicons-clipboard-document"
-                  class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                  class="w-4 h-4 text-ga-gray-500 opacity-0 group-hover:opacity-100 transition-opacity"
                 />
               </div>
-              <code class="text-sm font-mono text-primary-600 dark:text-primary-400 block mb-1">
+              <code class="text-sm font-mono text-ga-navy-600 block mb-1">
                 {{ f.formula }}
               </code>
-              <p class="text-xs text-gray-500 dark:text-gray-400">{{ f.description }}</p>
+              <p class="text-xs text-ga-gray-600">{{ f.description }}</p>
             </div>
           </div>
         </button>

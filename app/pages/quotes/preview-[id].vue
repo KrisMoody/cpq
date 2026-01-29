@@ -52,14 +52,14 @@ function handlePrint() {
 
 <template>
   <!-- Full-screen overlay to cover sidebar -->
-  <div class="fixed inset-0 z-50 bg-gray-100 dark:bg-gray-950 overflow-auto">
+  <div class="fixed inset-0 z-50 bg-ga-gray-200 overflow-auto">
     <!-- Navigation Bar (hidden when printing) -->
-    <div class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 print:hidden">
+    <div class="bg-white border-b border-ga-gray-300 print:hidden">
       <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-end">
         <div class="flex items-center gap-3">
           <!-- Layout Selector -->
           <div class="flex items-center gap-2">
-            <span class="text-sm text-gray-500">Layout:</span>
+            <span class="text-sm text-ga-gray-600">Layout:</span>
             <USelectMenu
               v-model="selectedLayoutId"
               :items="layoutOptions"

@@ -172,12 +172,12 @@ const series = ref([
 <template>
   <div class="w-full space-y-4">
     <!-- Mobile notice -->
-    <div class="md:hidden p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+    <div class="md:hidden p-4 bg-blue-50 rounded-lg border border-blue-200">
       <div class="flex items-start gap-3">
         <UIcon name="i-heroicons-device-phone-mobile" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
         <div>
-          <p class="text-sm font-medium text-blue-800 dark:text-blue-200">Best viewed on larger screens</p>
-          <p class="text-xs text-blue-600 dark:text-blue-300 mt-1">This treemap visualization is easier to explore on tablet or desktop.</p>
+          <p class="text-sm font-medium text-blue-800">Best viewed on larger screens</p>
+          <p class="text-xs text-blue-600 mt-1">This treemap visualization is easier to explore on tablet or desktop.</p>
         </div>
       </div>
     </div>
@@ -191,8 +191,8 @@ const series = ref([
         :series="series"
       />
       <template #fallback>
-        <div class="h-[350px] sm:h-[550px] flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg">
-          <p class="text-gray-500">Loading chart...</p>
+        <div class="h-[350px] sm:h-[550px] flex items-center justify-center bg-ga-gray-200 rounded-lg">
+          <p class="text-ga-gray-600">Loading chart...</p>
         </div>
       </template>
     </ClientOnly>

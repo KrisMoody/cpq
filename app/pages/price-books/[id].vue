@@ -420,7 +420,7 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
   <div class="max-w-5xl mx-auto">
     <!-- Loading -->
     <div v-if="loading" class="flex justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-ga-navy-500" />
     </div>
 
     <!-- Error -->
@@ -516,19 +516,19 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
 
         <dl v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <dt class="text-sm text-gray-500">Currency</dt>
+            <dt class="text-sm text-ga-gray-600">Currency</dt>
             <dd>{{ priceBook.currency ? `${priceBook.currency.code} (${priceBook.currency.symbol})` : 'Default' }}</dd>
           </div>
           <div>
-            <dt class="text-sm text-gray-500">Products</dt>
+            <dt class="text-sm text-ga-gray-600">Products</dt>
             <dd>{{ priceBook._count.entries }}</dd>
           </div>
           <div>
-            <dt class="text-sm text-gray-500">Valid From</dt>
+            <dt class="text-sm text-ga-gray-600">Valid From</dt>
             <dd>{{ priceBook.validFrom ? new Date(priceBook.validFrom).toLocaleDateString() : '—' }}</dd>
           </div>
           <div>
-            <dt class="text-sm text-gray-500">Valid To</dt>
+            <dt class="text-sm text-ga-gray-600">Valid To</dt>
             <dd>{{ priceBook.validTo ? new Date(priceBook.validTo).toLocaleDateString() : '—' }}</dd>
           </div>
         </dl>
@@ -549,7 +549,7 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
               <NuxtLink :to="`/products/${bundle.id}`" class="text-primary-600 hover:underline">
                 {{ bundle.name }}
               </NuxtLink>
-              <span class="text-gray-500 text-xs ml-1">({{ bundle.sku }})</span>
+              <span class="text-ga-gray-600 text-xs ml-1">({{ bundle.sku }})</span>
               <span v-if="!bundle.hasBundlePrice" class="text-warning-600 text-xs ml-2">— No price in this price book</span>
               <span v-else-if="!bundle.isConfigured" class="text-warning-600 text-xs ml-2">— Bundle not fully configured</span>
             </li>
@@ -573,8 +573,8 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
           </div>
         </template>
 
-        <div v-if="entries.length === 0" class="text-center py-8 text-gray-500">
-          <UIcon name="i-heroicons-currency-dollar" class="w-12 h-12 text-gray-300 mx-auto mb-4" />
+        <div v-if="entries.length === 0" class="text-center py-8 text-ga-gray-600">
+          <UIcon name="i-heroicons-currency-dollar" class="w-12 h-12 text-ga-gray-400 mx-auto mb-4" />
           <p>No products in this price book</p>
           <UButton
             variant="soft"
@@ -587,18 +587,18 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
         </div>
 
         <div v-else class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-            <thead class="bg-gray-50 dark:bg-gray-900">
+          <table class="min-w-full divide-y divide-ga-gray-300">
+            <thead class="bg-ga-gray-100">
               <tr>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">List Price</th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Cost</th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Margin</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-ga-gray-600 uppercase">Product</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-ga-gray-600 uppercase">SKU</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-ga-gray-600 uppercase">List Price</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-ga-gray-600 uppercase">Cost</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-ga-gray-600 uppercase">Margin</th>
                 <th class="px-4 py-3"/>
               </tr>
             </thead>
-            <tbody class="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
+            <tbody class="bg-white divide-y divide-ga-gray-300">
               <template v-for="entry in entries" :key="entry.id">
                 <tr>
                   <td class="px-4 py-3">
@@ -611,7 +611,7 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
                       />
                       <NuxtLink
                         :to="`/products/${entry.product.id}`"
-                        class="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+                        class="text-ga-navy-600 hover:underline font-medium"
                       >
                         {{ entry.product.name }}
                       </NuxtLink>
@@ -620,7 +620,7 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
                       </UBadge>
                     </div>
                   </td>
-                  <td class="px-4 py-3 text-sm text-gray-500">{{ entry.product.sku }}</td>
+                  <td class="px-4 py-3 text-sm text-ga-gray-600">{{ entry.product.sku }}</td>
                   <td class="px-4 py-3 text-right">
                     <template v-if="editingEntryId === entry.id">
                       <UInput
@@ -688,11 +688,11 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
                   </td>
                 </tr>
                 <!-- Expanded Tiers Row -->
-                <tr v-if="expandedEntryId === entry.id" class="bg-gray-50 dark:bg-gray-900">
+                <tr v-if="expandedEntryId === entry.id" class="bg-ga-gray-100">
                   <td colspan="6" class="px-4 py-4">
                     <div class="ml-8">
                       <div class="flex items-center justify-between mb-3">
-                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Volume Pricing Tiers</h4>
+                        <h4 class="text-sm font-medium text-ga-gray-800">Volume Pricing Tiers</h4>
                         <div class="flex gap-2">
                           <template v-if="editingTiersEntryId === entry.id">
                             <UButton size="xs" variant="soft" icon="i-heroicons-plus" @click="addTier">
@@ -716,7 +716,7 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
                       <!-- Edit Mode -->
                       <div v-if="editingTiersEntryId === entry.id" class="space-y-3">
                         <!-- Entry-level tier type selector -->
-                        <div class="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center gap-3 pb-2 border-b border-ga-gray-300">
                           <UFormField label="Pricing Type" class="w-48">
                             <USelect
                               :model-value="editingTierType"
@@ -727,13 +727,13 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
                           </UFormField>
                         </div>
 
-                        <div v-if="editingTiers.length === 0" class="text-sm text-gray-500 py-2">
+                        <div v-if="editingTiers.length === 0" class="text-sm text-ga-gray-600 py-2">
                           No tiers configured. Click "Add Tier" to create volume pricing.
                         </div>
                         <div
                           v-for="(tier, index) in editingTiers"
                           :key="index"
-                          class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+                          class="flex items-center gap-3 p-3 bg-white rounded-lg border border-ga-gray-300"
                         >
                           <UFormField label="Min Qty" class="w-28">
                             <UInput v-model.number="tier.minQuantity" type="number" min="1" />
@@ -760,20 +760,20 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
 
                       <!-- View Mode -->
                       <div v-else>
-                        <div v-if="getEntryTiers(entry).length === 0" class="text-sm text-gray-500 py-2">
+                        <div v-if="getEntryTiers(entry).length === 0" class="text-sm text-ga-gray-600 py-2">
                           No volume pricing tiers configured.
                         </div>
                         <template v-else>
                           <!-- Entry-level tier type badge -->
-                          <div class="flex items-center gap-2 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700">
-                            <span class="text-xs text-gray-500">Pricing Type:</span>
+                          <div class="flex items-center gap-2 mb-2 pb-2 border-b border-ga-gray-300">
+                            <span class="text-xs text-ga-gray-600">Pricing Type:</span>
                             <UBadge size="xs" variant="subtle" :color="getTierTypeColor(getEntryTiers(entry)[0]?.tierType ?? 'UNIT_PRICE')">
                               {{ getTierTypeLabel(getEntryTiers(entry)[0]?.tierType ?? 'UNIT_PRICE') }}
                             </UBadge>
                           </div>
                           <table class="min-w-full text-sm">
                             <thead>
-                              <tr class="text-left text-xs text-gray-500 uppercase">
+                              <tr class="text-left text-xs text-ga-gray-600 uppercase">
                                 <th class="pr-4 py-1">Quantity Range</th>
                                 <th class="pr-4 py-1">{{ getEntryTiers(entry)[0]?.tierType === 'VOLUME_DISCOUNT_PERCENT' ? 'Discount' : 'Price' }}</th>
                               </tr>

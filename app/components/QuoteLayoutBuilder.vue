@@ -118,11 +118,11 @@ const previewScale = ref(0.75)
       </div>
 
       <!-- Preview Panel (Right) -->
-      <div class="flex-1 flex flex-col min-w-0 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
-        <div class="flex items-center justify-between px-4 py-2 bg-gray-200 dark:bg-gray-700 border-b border-gray-300 dark:border-gray-600">
-          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Preview</span>
+      <div class="flex-1 flex flex-col min-w-0 bg-ga-gray-200 rounded-lg overflow-hidden">
+        <div class="flex items-center justify-between px-4 py-2 bg-ga-gray-300 border-b border-ga-gray-400">
+          <span class="text-sm font-medium text-ga-gray-800">Preview</span>
           <div class="flex items-center gap-2">
-            <UIcon name="i-heroicons-minus" class="w-4 h-4 text-gray-500" />
+            <UIcon name="i-heroicons-minus" class="w-4 h-4 text-ga-gray-600" />
             <input
               v-model.number="previewScale"
               type="range"
@@ -131,8 +131,8 @@ const previewScale = ref(0.75)
               step="0.05"
               class="w-24 h-1 accent-primary-500"
             >
-            <UIcon name="i-heroicons-plus" class="w-4 h-4 text-gray-500" />
-            <span class="text-xs text-gray-500 w-10">{{ Math.round(previewScale * 100) }}%</span>
+            <UIcon name="i-heroicons-plus" class="w-4 h-4 text-ga-gray-600" />
+            <span class="text-xs text-ga-gray-600 w-10">{{ Math.round(previewScale * 100) }}%</span>
           </div>
         </div>
         <div class="flex-1 overflow-auto p-4">

@@ -53,21 +53,21 @@ const taxExemptExpiryFormatted = computed(() => {
 
     <div v-if="customer" class="space-y-3">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
-          <UIcon name="i-heroicons-user" class="w-5 h-5 text-primary-600" />
+        <div class="w-10 h-10 rounded-full bg-ga-navy-50 flex items-center justify-center">
+          <UIcon name="i-heroicons-user" class="w-5 h-5 text-ga-navy-500" />
         </div>
         <div>
           <p class="font-medium">{{ customer.name }}</p>
-          <p v-if="customer.company" class="text-sm text-gray-500">{{ customer.company }}</p>
+          <p v-if="customer.company" class="text-sm text-ga-gray-600">{{ customer.company }}</p>
         </div>
       </div>
 
-      <div v-if="customer.email" class="flex items-center gap-2 text-sm text-gray-500">
+      <div v-if="customer.email" class="flex items-center gap-2 text-sm text-ga-gray-600">
         <UIcon name="i-heroicons-envelope" class="w-4 h-4" />
         {{ customer.email }}
       </div>
 
-      <div v-if="priceBook" class="flex items-center gap-2 text-sm text-gray-500">
+      <div v-if="priceBook" class="flex items-center gap-2 text-sm text-ga-gray-600">
         <UIcon name="i-heroicons-book-open" class="w-4 h-4" />
         Price Book: {{ priceBook.name }}
       </div>
@@ -83,15 +83,15 @@ const taxExemptExpiryFormatted = computed(() => {
           Tax Exempt
           <span v-if="isTaxExemptionExpired" class="ml-1">(Expired)</span>
         </UBadge>
-        <span v-if="taxExemptExpiryFormatted && !isTaxExemptionExpired" class="text-xs text-gray-500">
+        <span v-if="taxExemptExpiryFormatted && !isTaxExemptionExpired" class="text-xs text-ga-gray-600">
           Expires: {{ taxExemptExpiryFormatted }}
         </span>
       </div>
     </div>
 
     <div v-else class="text-center py-4">
-      <UIcon name="i-heroicons-user-plus" class="w-8 h-8 text-gray-300 mx-auto mb-2" />
-      <p class="text-sm text-gray-500 mb-3">No customer selected</p>
+      <UIcon name="i-heroicons-user-plus" class="w-8 h-8 text-ga-gray-400 mx-auto mb-2" />
+      <p class="text-sm text-ga-gray-600 mb-3">No customer selected</p>
       <UButton
         v-if="editable"
         variant="soft"

@@ -78,14 +78,14 @@ const table = useVueTable({
     />
 
     <!-- Desktop Table -->
-    <div class="hidden md:block overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
-      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800 table-fixed">
-        <thead class="bg-gray-50 dark:bg-gray-900">
+    <div class="hidden md:block overflow-x-auto rounded-lg border border-ga-gray-300">
+      <table class="min-w-full divide-y divide-ga-gray-200 table-fixed">
+        <thead class="bg-ga-gray-100">
           <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
             <th
               v-for="header in headerGroup.headers"
               :key="header.id"
-              class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer select-none"
+              class="px-4 py-3 text-left text-xs font-medium text-ga-gray-600 uppercase tracking-wider cursor-pointer select-none"
               :class="[
                 header.column.id === 'name' && 'w-[25%]',
                 header.column.id === 'sku' && 'w-[12%]',
@@ -115,11 +115,11 @@ const table = useVueTable({
             </th>
           </tr>
         </thead>
-        <tbody class="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
+        <tbody class="bg-white divide-y divide-ga-gray-200">
           <tr
             v-for="row in table.getRowModel().rows"
             :key="row.id"
-            class="hover:bg-gray-50 dark:hover:bg-gray-900"
+            class="hover:bg-ga-gray-100"
           >
             <td
               v-for="cell in row.getVisibleCells()"
@@ -139,7 +139,7 @@ const table = useVueTable({
                 <NuxtLink
                   v-if="row.original.id"
                   :to="`/products/${row.original.id}`"
-                  class="text-primary-600 dark:text-primary-400 hover:underline font-medium truncate block"
+                  class="text-ga-navy-600 hover:underline font-medium truncate block"
                   :title="cell.getValue() as string"
                 >
                   {{ cell.getValue() }}
@@ -184,7 +184,7 @@ const table = useVueTable({
               </template>
               <template v-else-if="cell.column.id === 'description'">
                 <span
-                  class="text-gray-500 dark:text-gray-400 truncate block"
+                  class="text-ga-gray-600 truncate block"
                   :title="(cell.getValue() as string) || undefined"
                 >
                   {{ cell.getValue() }}
@@ -223,19 +223,19 @@ const table = useVueTable({
       <div
         v-for="row in table.getRowModel().rows"
         :key="row.id"
-        class="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-4"
+        class="rounded-lg border border-ga-gray-300 bg-white p-4"
       >
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0 flex-1">
             <NuxtLink
               v-if="row.original.id"
               :to="`/products/${row.original.id}`"
-              class="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+              class="text-ga-navy-600 hover:underline font-medium"
             >
               {{ row.original.name }}
             </NuxtLink>
             <span v-else class="font-medium">{{ row.original.name }}</span>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            <p class="text-sm text-ga-gray-600 mt-0.5">
               SKU: {{ row.original.sku }}
             </p>
           </div>
@@ -294,7 +294,7 @@ const table = useVueTable({
       </div>
     </div>
 
-    <p v-if="table.getRowModel().rows.length === 0" class="text-center text-gray-500 py-4">
+    <p v-if="table.getRowModel().rows.length === 0" class="text-center text-ga-gray-600 py-4">
       No products found
     </p>
   </div>

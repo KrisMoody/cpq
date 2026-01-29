@@ -128,7 +128,7 @@ function formatDate(dateStr: string) {
   <div class="max-w-4xl mx-auto">
     <!-- Loading -->
     <div v-if="loading" class="flex justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-ga-navy-500" />
     </div>
 
     <!-- Not Found -->
@@ -142,7 +142,7 @@ function formatDate(dateStr: string) {
       <div class="flex items-start justify-between">
         <div>
           <h1 class="text-2xl font-bold">{{ currency.code }}</h1>
-          <p class="text-gray-500">{{ currency.name }}</p>
+          <p class="text-ga-gray-600">{{ currency.name }}</p>
           <div class="flex items-center gap-2 mt-2">
             <UBadge v-if="currency.isBase" color="primary" variant="subtle">Base Currency</UBadge>
             <UBadge v-if="!currency.isActive" color="warning" variant="subtle">Inactive</UBadge>
@@ -204,19 +204,19 @@ function formatDate(dateStr: string) {
 
           <dl v-else class="space-y-4">
             <div class="flex justify-between">
-              <dt class="text-gray-500">Code</dt>
+              <dt class="text-ga-gray-600">Code</dt>
               <dd class="font-mono font-medium">{{ currency.code }}</dd>
             </div>
             <div class="flex justify-between">
-              <dt class="text-gray-500">Name</dt>
+              <dt class="text-ga-gray-600">Name</dt>
               <dd>{{ currency.name }}</dd>
             </div>
             <div class="flex justify-between">
-              <dt class="text-gray-500">Symbol</dt>
+              <dt class="text-ga-gray-600">Symbol</dt>
               <dd class="font-mono">{{ currency.symbol }}</dd>
             </div>
             <div class="flex justify-between">
-              <dt class="text-gray-500">Current Rate</dt>
+              <dt class="text-ga-gray-600">Current Rate</dt>
               <dd class="font-mono">
                 <template v-if="currency.isBase">1.0000 (Base)</template>
                 <template v-else>{{ currency.currentRate?.toFixed(4) ?? '—' }}</template>
@@ -233,15 +233,15 @@ function formatDate(dateStr: string) {
 
           <dl class="space-y-4">
             <div class="flex justify-between">
-              <dt class="text-gray-500">Price Books</dt>
+              <dt class="text-ga-gray-600">Price Books</dt>
               <dd class="font-medium">{{ currency._count?.priceBooks ?? 0 }}</dd>
             </div>
             <div class="flex justify-between">
-              <dt class="text-gray-500">Quotes</dt>
+              <dt class="text-ga-gray-600">Quotes</dt>
               <dd class="font-medium">{{ currency._count?.quotes ?? 0 }}</dd>
             </div>
             <div class="flex justify-between">
-              <dt class="text-gray-500">Customers</dt>
+              <dt class="text-ga-gray-600">Customers</dt>
               <dd class="font-medium">{{ currency._count?.customers ?? 0 }}</dd>
             </div>
           </dl>
@@ -263,25 +263,25 @@ function formatDate(dateStr: string) {
           </div>
         </template>
 
-        <div v-if="exchangeRates.length === 0" class="text-center py-8 text-gray-500">
+        <div v-if="exchangeRates.length === 0" class="text-center py-8 text-ga-gray-600">
           No exchange rate history.
         </div>
 
         <div v-else class="overflow-x-auto">
           <table class="w-full">
             <thead>
-              <tr class="border-b border-gray-200 dark:border-gray-700">
-                <th class="text-left py-3 px-4 font-medium text-gray-500">Effective Date</th>
-                <th class="text-right py-3 px-4 font-medium text-gray-500">Rate</th>
-                <th class="text-right py-3 px-4 font-medium text-gray-500">Added</th>
+              <tr class="border-b border-ga-gray-300">
+                <th class="text-left py-3 px-4 font-medium text-ga-gray-600">Effective Date</th>
+                <th class="text-right py-3 px-4 font-medium text-ga-gray-600">Rate</th>
+                <th class="text-right py-3 px-4 font-medium text-ga-gray-600">Added</th>
               </tr>
             </thead>
             <tbody>
               <tr
                 v-for="(rate, index) in exchangeRates"
                 :key="rate.id"
-                class="border-b border-gray-100 dark:border-gray-800"
-                :class="{ 'bg-primary-50 dark:bg-primary-900/10': index === 0 }"
+                class="border-b border-ga-gray-200"
+                :class="{ 'bg-ga-navy-50': index === 0 }"
               >
                 <td class="py-3 px-4">
                   {{ formatDate(rate.effectiveDate) }}
@@ -292,7 +292,7 @@ function formatDate(dateStr: string) {
                 <td class="py-3 px-4 text-right font-mono">
                   {{ parseFloat(rate.rate).toFixed(4) }}
                 </td>
-                <td class="py-3 px-4 text-right text-sm text-gray-500">
+                <td class="py-3 px-4 text-right text-sm text-ga-gray-600">
                   {{ formatDate(rate.createdAt) }}
                 </td>
               </tr>

@@ -35,7 +35,7 @@ const showDescription = ref(!!props.description)
 </script>
 
 <template>
-  <div class="flex items-center justify-between gap-4 px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+  <div class="flex items-center justify-between gap-4 px-6 py-4 border-b border-ga-gray-300 bg-white">
     <div class="flex-1 max-w-xl">
       <div class="flex items-center gap-3">
         <UButton to="/quote-layouts" variant="ghost" icon="i-heroicons-arrow-left" size="sm" />
@@ -45,7 +45,7 @@ const showDescription = ref(!!props.description)
             placeholder="Layout name"
             size="lg"
             class="font-semibold"
-            :ui="{ base: 'bg-transparent border-transparent hover:border-gray-300 focus:border-primary-500' }"
+            :ui="{ base: 'bg-transparent border-transparent hover:border-ga-gray-400 focus:border-ga-navy-500' }"
           />
         </div>
         <UButton
@@ -64,7 +64,7 @@ const showDescription = ref(!!props.description)
           v-model="localDescription"
           placeholder="Optional description"
           size="sm"
-          :ui="{ base: 'bg-transparent border-transparent hover:border-gray-300 focus:border-primary-500' }"
+          :ui="{ base: 'bg-transparent border-transparent hover:border-ga-gray-400 focus:border-ga-navy-500' }"
         />
       </div>
     </div>

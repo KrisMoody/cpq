@@ -101,17 +101,17 @@ const cards: RelationshipCard[] = [
     <div
       v-for="card in cards"
       :key="card.id"
-      class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+      class="border border-ga-gray-300 rounded-lg overflow-hidden"
     >
       <!-- Card Header -->
-      <div class="p-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div class="p-4 bg-ga-gray-100 border-b border-ga-gray-300">
         <div class="flex items-center gap-3">
-          <div class="p-2 rounded-lg bg-primary-100 dark:bg-primary-900">
-            <UIcon :name="card.icon" class="w-5 h-5 text-primary-600 dark:text-primary-400" />
+          <div class="p-2 rounded-lg bg-ga-navy-100">
+            <UIcon :name="card.icon" class="w-5 h-5 text-ga-navy-600" />
           </div>
           <div>
             <h3 class="font-medium">{{ card.title }}</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ card.question }}</p>
+            <p class="text-sm text-ga-gray-600">{{ card.question }}</p>
           </div>
         </div>
       </div>
@@ -119,7 +119,7 @@ const cards: RelationshipCard[] = [
       <!-- Card Content -->
       <div class="p-4 space-y-4">
         <!-- Mermaid Diagram -->
-        <div class="bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-800">
+        <div class="bg-white rounded-lg p-3 border border-ga-gray-200">
           <ClientOnly>
             <LearnMermaidDiagram :id="`rel-${card.id}`" :chart="card.mermaid" />
           </ClientOnly>
@@ -130,7 +130,7 @@ const cards: RelationshipCard[] = [
           <li
             v-for="(point, i) in card.explanation"
             :key="i"
-            class="flex items-start gap-2 text-gray-600 dark:text-gray-400"
+            class="flex items-start gap-2 text-ga-gray-700"
           >
             <UIcon name="i-heroicons-check-circle" class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
             <span>{{ point }}</span>

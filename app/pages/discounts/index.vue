@@ -22,7 +22,7 @@ async function handleDelete(id: string) {
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold">Discounts</h1>
-        <p class="text-gray-500">Manage pricing discounts and promotions</p>
+        <p class="text-ga-gray-600">Manage pricing discounts and promotions</p>
       </div>
       <UButton to="/discounts/new" icon="i-heroicons-plus">
         New Discount
@@ -32,14 +32,14 @@ async function handleDelete(id: string) {
     <!-- Filters -->
     <div class="flex items-center gap-4">
       <UCheckbox v-model="showInactive" label="Show expired/inactive" />
-      <span class="text-sm text-gray-500">
+      <span class="text-sm text-ga-gray-600">
         {{ discounts.length }} discount{{ discounts.length !== 1 ? 's' : '' }}
       </span>
     </div>
 
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-ga-navy-500" />
     </div>
 
     <!-- Error State -->
@@ -50,8 +50,8 @@ async function handleDelete(id: string) {
 
     <!-- Empty State -->
     <div v-else-if="discounts.length === 0" class="text-center py-12">
-      <UIcon name="i-heroicons-receipt-percent" class="w-12 h-12 text-gray-300 mx-auto mb-4" />
-      <p class="text-gray-500 mb-4">No discounts found</p>
+      <UIcon name="i-heroicons-receipt-percent" class="w-12 h-12 text-ga-gray-400 mx-auto mb-4" />
+      <p class="text-ga-gray-600 mb-4">No discounts found</p>
       <UButton to="/discounts/new" variant="soft">Create your first discount</UButton>
     </div>
 

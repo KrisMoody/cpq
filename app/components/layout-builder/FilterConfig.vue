@@ -72,7 +72,7 @@ function toggleProductType(type: string) {
 
     <!-- Product Type Filter -->
     <div v-if="localFilterType === 'productType'" class="space-y-2">
-      <p class="text-xs font-medium text-gray-500">Show items of type:</p>
+      <p class="text-xs font-medium text-ga-gray-600">Show items of type:</p>
       <div class="flex flex-wrap gap-2">
         <UButton
           v-for="opt in productTypeOptions"
@@ -84,19 +84,19 @@ function toggleProductType(type: string) {
           {{ opt.label }}
         </UButton>
       </div>
-      <p v-if="selectedProductTypes.length === 0" class="text-xs text-amber-600">
+      <p v-if="selectedProductTypes.length === 0" class="text-xs text-ga-yellow-600">
         No types selected - section will be empty
       </p>
     </div>
 
     <!-- Category Filter (simplified - would need category fetching) -->
     <div v-if="localFilterType === 'category'" class="space-y-2">
-      <p class="text-xs text-gray-500 italic">
+      <p class="text-xs text-ga-gray-600 italic">
         Category filtering will be available in a future update.
       </p>
     </div>
 
-    <p v-if="localFilterType === 'all'" class="text-xs text-gray-500">
+    <p v-if="localFilterType === 'all'" class="text-xs text-ga-gray-600">
       All line items will be displayed in this section.
     </p>
   </div>

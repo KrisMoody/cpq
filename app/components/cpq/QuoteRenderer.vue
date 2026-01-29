@@ -222,7 +222,7 @@ const summaryConfig = computed(() => resolvedLayout.value.summaryConfig)
 
 <template>
   <div
-    class="quote-renderer bg-white dark:bg-gray-900 min-h-screen"
+    class="quote-renderer bg-white min-h-screen"
     :style="themeStyles"
   >
     <div class="max-w-4xl mx-auto p-8 print:p-0 print:max-w-none">
@@ -237,12 +237,12 @@ const summaryConfig = computed(() => resolvedLayout.value.summaryConfig)
             class="w-16 h-16 rounded-lg flex items-center justify-center border-2 border-dashed"
             :style="{ borderColor: resolvedLayout.theme.secondaryColor }"
           >
-            <UIcon name="i-heroicons-building-office-2" class="w-8 h-8 text-gray-400" />
+            <UIcon name="i-heroicons-building-office-2" class="w-8 h-8 text-ga-gray-500" />
           </div>
           <div>
-            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Your Company Name</h1>
-            <p class="text-sm text-gray-500">123 Business Street</p>
-            <p class="text-sm text-gray-500">City, State 12345</p>
+            <h1 class="text-xl font-bold text-ga-navy-600">Your Company Name</h1>
+            <p class="text-sm text-ga-gray-600">123 Business Street</p>
+            <p class="text-sm text-ga-gray-600">City, State 12345</p>
           </div>
         </div>
         <div class="text-right">
@@ -252,37 +252,37 @@ const summaryConfig = computed(() => resolvedLayout.value.summaryConfig)
           >
             QUOTE
           </h2>
-          <p class="text-sm text-gray-500 mt-1">Quote #{{ quoteNumber }}</p>
+          <p class="text-sm text-ga-gray-600 mt-1">Quote #{{ quoteNumber }}</p>
         </div>
       </header>
 
       <!-- Quote Metadata -->
       <section class="grid grid-cols-2 gap-8 mb-8">
         <div>
-          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Quote Details</h3>
+          <h3 class="text-sm font-semibold text-ga-gray-600 uppercase tracking-wide mb-3">Quote Details</h3>
           <dl class="space-y-2">
             <div class="flex justify-between">
-              <dt class="text-gray-500">Quote Name:</dt>
-              <dd class="font-medium text-gray-900 dark:text-white">{{ quote.name }}</dd>
+              <dt class="text-ga-gray-600">Quote Name:</dt>
+              <dd class="font-medium text-ga-navy-600">{{ quote.name }}</dd>
             </div>
             <div class="flex justify-between">
-              <dt class="text-gray-500">Created:</dt>
-              <dd class="font-medium text-gray-900 dark:text-white">{{ formattedCreatedAt }}</dd>
+              <dt class="text-ga-gray-600">Created:</dt>
+              <dd class="font-medium text-ga-navy-600">{{ formattedCreatedAt }}</dd>
             </div>
             <div class="flex justify-between">
-              <dt class="text-gray-500">Valid From:</dt>
-              <dd class="font-medium text-gray-900 dark:text-white">{{ formattedValidFrom }}</dd>
+              <dt class="text-ga-gray-600">Valid From:</dt>
+              <dd class="font-medium text-ga-navy-600">{{ formattedValidFrom }}</dd>
             </div>
             <div class="flex justify-between">
-              <dt class="text-gray-500">Valid Until:</dt>
-              <dd class="font-medium text-gray-900 dark:text-white">{{ formattedValidTo }}</dd>
+              <dt class="text-ga-gray-600">Valid Until:</dt>
+              <dd class="font-medium text-ga-navy-600">{{ formattedValidTo }}</dd>
             </div>
             <div class="flex justify-between">
-              <dt class="text-gray-500">Price Book:</dt>
-              <dd class="font-medium text-gray-900 dark:text-white">{{ quote.priceBook.name }}</dd>
+              <dt class="text-ga-gray-600">Price Book:</dt>
+              <dd class="font-medium text-ga-navy-600">{{ quote.priceBook.name }}</dd>
             </div>
             <div class="flex justify-between">
-              <dt class="text-gray-500">Status:</dt>
+              <dt class="text-ga-gray-600">Status:</dt>
               <dd>
                 <UBadge
                   :color="quote.status === 'APPROVED' ? 'success' : quote.status === 'DRAFT' ? 'warning' : 'info'"
@@ -297,12 +297,12 @@ const summaryConfig = computed(() => resolvedLayout.value.summaryConfig)
         </div>
 
         <div>
-          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Customer</h3>
+          <h3 class="text-sm font-semibold text-ga-gray-600 uppercase tracking-wide mb-3">Customer</h3>
           <div v-if="quote.customer" class="space-y-1">
-            <p class="font-semibold text-gray-900 dark:text-white text-lg">{{ quote.customer.name }}</p>
-            <p v-if="quote.customer.company" class="text-gray-600 dark:text-gray-400">{{ quote.customer.company }}</p>
+            <p class="font-semibold text-ga-navy-600 text-lg">{{ quote.customer.name }}</p>
+            <p v-if="quote.customer.company" class="text-ga-gray-700">{{ quote.customer.company }}</p>
           </div>
-          <div v-else class="text-gray-500 italic">
+          <div v-else class="text-ga-gray-600 italic">
             No customer assigned
           </div>
         </div>
@@ -322,25 +322,25 @@ const summaryConfig = computed(() => resolvedLayout.value.summaryConfig)
         </h3>
         <p
           v-if="section.description"
-          class="text-sm text-gray-500 mb-3"
+          class="text-sm text-ga-gray-600 mb-3"
         >
           {{ section.description }}
         </p>
 
         <div
           class="rounded-lg overflow-hidden"
-          :class="{ 'border border-gray-200 dark:border-gray-700': resolvedLayout.theme.tableBorders }"
+          :class="{ 'border border-ga-gray-300': resolvedLayout.theme.tableBorders }"
         >
           <table class="w-full">
             <thead
-              class="bg-gray-50 dark:bg-gray-800"
+              class="bg-ga-gray-100"
               :style="resolvedLayout.theme.headerStyle === 'branded' ? { backgroundColor: resolvedLayout.theme.primaryColor + '15' } : {}"
             >
               <tr>
                 <th
                   v-for="column in section.columns"
                   :key="column.field"
-                  class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  class="px-4 py-3 text-xs font-semibold text-ga-gray-600 uppercase tracking-wider"
                   :class="{
                     'text-left': column.align === 'left' || !column.align,
                     'text-center': column.align === 'center',
@@ -352,14 +352,14 @@ const summaryConfig = computed(() => resolvedLayout.value.summaryConfig)
                 </th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody class="divide-y divide-ga-gray-200">
               <tr
                 v-for="(item, index) in filterLineItemsForSection(section)"
                 :key="item.id"
                 class="print:break-inside-avoid"
                 :class="[
-                  item.isChild ? 'bg-gray-50 dark:bg-gray-800/50' : 'bg-white dark:bg-gray-900',
-                  resolvedLayout.theme.alternateRowColors && index % 2 === 1 && !item.isChild ? 'bg-gray-50 dark:bg-gray-800/30' : ''
+                  item.isChild ? 'bg-ga-gray-100' : 'bg-white',
+                  resolvedLayout.theme.alternateRowColors && index % 2 === 1 && !item.isChild ? 'bg-ga-gray-50' : ''
                 ]"
               >
                 <td
@@ -377,21 +377,21 @@ const summaryConfig = computed(() => resolvedLayout.value.summaryConfig)
                       <UIcon
                         v-if="item.isChild"
                         name="i-heroicons-arrow-turn-down-right"
-                        class="w-4 h-4 text-gray-400 flex-shrink-0"
+                        class="w-4 h-4 text-ga-gray-500 flex-shrink-0"
                       />
                       <div>
-                        <p class="font-medium text-gray-900 dark:text-white">{{ item.product.name }}</p>
-                        <p class="text-xs text-gray-500">{{ item.product.sku }}</p>
+                        <p class="font-medium text-ga-navy-600">{{ item.product.name }}</p>
+                        <p class="text-xs text-ga-gray-600">{{ item.product.sku }}</p>
                       </div>
                     </div>
                   </div>
                   <span
                     v-else
                     :class="{
-                      'font-medium text-gray-900 dark:text-white': column.field === 'netPrice',
-                      'text-red-500': column.field === 'discount' && parseFloat(String(item.discount)) > 0,
-                      'text-gray-400': column.field === 'discount' && parseFloat(String(item.discount)) === 0,
-                      'text-gray-900 dark:text-white': !['netPrice', 'discount'].includes(column.field),
+                      'font-medium text-ga-navy-600': column.field === 'netPrice',
+                      'text-ga-red-500': column.field === 'discount' && parseFloat(String(item.discount)) > 0,
+                      'text-ga-gray-500': column.field === 'discount' && parseFloat(String(item.discount)) === 0,
+                      'text-ga-navy-600': !['netPrice', 'discount'].includes(column.field),
                     }"
                   >
                     {{ getColumnValue(item, column) }}
@@ -401,21 +401,21 @@ const summaryConfig = computed(() => resolvedLayout.value.summaryConfig)
               <tr v-if="filterLineItemsForSection(section).length === 0">
                 <td
                   :colspan="section.columns.length"
-                  class="px-4 py-8 text-center text-gray-500"
+                  class="px-4 py-8 text-center text-ga-gray-600"
                 >
                   No items in this section
                 </td>
               </tr>
             </tbody>
             <tfoot v-if="section.showSubtotal && filterLineItemsForSection(section).length > 0">
-              <tr class="bg-gray-50 dark:bg-gray-800 border-t-2 border-gray-200 dark:border-gray-700">
+              <tr class="bg-ga-gray-100 border-t-2 border-ga-gray-300">
                 <td
                   :colspan="section.columns.length - 1"
-                  class="px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300"
+                  class="px-4 py-3 text-right font-semibold text-ga-gray-700"
                 >
                   Section Subtotal
                 </td>
-                <td class="px-4 py-3 text-right font-bold text-gray-900 dark:text-white">
+                <td class="px-4 py-3 text-right font-bold text-ga-navy-600">
                   {{ formatQuotePrice(calculateSectionSubtotal(filterLineItemsForSection(section))) }}
                 </td>
               </tr>
@@ -428,32 +428,32 @@ const summaryConfig = computed(() => resolvedLayout.value.summaryConfig)
       <section class="mb-8">
         <div class="flex justify-end">
           <div class="w-80">
-            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-3">
-              <div v-if="summaryConfig.showSubtotal" class="flex justify-between text-gray-600 dark:text-gray-400">
+            <div class="bg-ga-gray-100 rounded-lg p-4 space-y-3">
+              <div v-if="summaryConfig.showSubtotal" class="flex justify-between text-ga-gray-700">
                 <span>Subtotal</span>
-                <span class="font-medium text-gray-900 dark:text-white">{{ formatQuotePrice(subtotalNum) }}</span>
+                <span class="font-medium text-ga-navy-600">{{ formatQuotePrice(subtotalNum) }}</span>
               </div>
 
               <!-- Discounts -->
               <template v-if="summaryConfig.showDiscounts && quote.appliedDiscounts?.length">
-                <div class="space-y-2 border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <p class="text-xs font-semibold text-gray-500 uppercase">Discounts Applied</p>
+                <div class="space-y-2 border-t border-ga-gray-300 pt-3">
+                  <p class="text-xs font-semibold text-ga-gray-600 uppercase">Discounts Applied</p>
                   <div
                     v-for="discount in quote.appliedDiscounts"
                     :key="discount.id"
                     class="flex justify-between text-sm"
                   >
-                    <span class="text-gray-600 dark:text-gray-400 truncate max-w-[60%]">
+                    <span class="text-ga-gray-700 truncate max-w-[60%]">
                       {{ discount.discount?.name || 'Manual Discount' }}
-                      <span class="text-xs text-gray-400">
+                      <span class="text-xs text-ga-gray-500">
                         ({{ discount.type === 'PERCENTAGE' ? `${discount.value}%` : 'Fixed' }})
                       </span>
                     </span>
-                    <span class="text-red-500">-{{ formatQuotePrice(discount.calculatedAmount) }}</span>
+                    <span class="text-ga-red-500">-{{ formatQuotePrice(discount.calculatedAmount) }}</span>
                   </div>
                 </div>
 
-                <div v-if="discountTotalNum > 0" class="flex justify-between text-red-500 border-t border-gray-200 dark:border-gray-700 pt-3">
+                <div v-if="discountTotalNum > 0" class="flex justify-between text-ga-red-500 border-t border-ga-gray-300 pt-3">
                   <span>Total Discount</span>
                   <span class="font-medium">-{{ formatQuotePrice(discountTotalNum) }}</span>
                 </div>
@@ -461,38 +461,38 @@ const summaryConfig = computed(() => resolvedLayout.value.summaryConfig)
 
               <!-- Taxes -->
               <template v-if="summaryConfig.showTaxes">
-                <div v-if="isTaxExempt" class="flex justify-between text-green-600 border-t border-gray-200 dark:border-gray-700 pt-3">
+                <div v-if="isTaxExempt" class="flex justify-between text-ga-green-600 border-t border-ga-gray-300 pt-3">
                   <span>Tax Exempt</span>
                   <span class="font-medium">{{ formatQuotePrice(0) }}</span>
                 </div>
 
-                <div v-else-if="taxBreakdown.length > 0" class="space-y-2 border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <p class="text-xs font-semibold text-gray-500 uppercase">Tax</p>
+                <div v-else-if="taxBreakdown.length > 0" class="space-y-2 border-t border-ga-gray-300 pt-3">
+                  <p class="text-xs font-semibold text-ga-gray-600 uppercase">Tax</p>
                   <div
                     v-for="(tax, index) in taxBreakdown"
                     :key="index"
                     class="flex justify-between text-sm"
                   >
-                    <span class="text-gray-600 dark:text-gray-400">
+                    <span class="text-ga-gray-700">
                       {{ tax.name }}
-                      <span class="text-xs text-gray-400">({{ formatTaxRate(tax.rate) }})</span>
+                      <span class="text-xs text-ga-gray-500">({{ formatTaxRate(tax.rate) }})</span>
                     </span>
-                    <span class="text-gray-900 dark:text-white">{{ formatQuotePrice(tax.amount) }}</span>
+                    <span class="text-ga-navy-600">{{ formatQuotePrice(tax.amount) }}</span>
                   </div>
                 </div>
 
-                <div v-else-if="taxAmountNum > 0" class="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <span class="text-gray-600 dark:text-gray-400">Tax</span>
-                  <span class="font-medium text-gray-900 dark:text-white">{{ formatQuotePrice(taxAmountNum) }}</span>
+                <div v-else-if="taxAmountNum > 0" class="flex justify-between border-t border-ga-gray-300 pt-3">
+                  <span class="text-ga-gray-700">Tax</span>
+                  <span class="font-medium text-ga-navy-600">{{ formatQuotePrice(taxAmountNum) }}</span>
                 </div>
               </template>
 
               <!-- Total -->
               <div
                 v-if="summaryConfig.showTotal"
-                class="flex justify-between text-lg border-t-2 border-gray-300 dark:border-gray-600 pt-3"
+                class="flex justify-between text-lg border-t-2 border-ga-gray-400 pt-3"
               >
-                <span class="font-semibold text-gray-900 dark:text-white">Total</span>
+                <span class="font-semibold text-ga-navy-600">Total</span>
                 <span
                   class="font-bold"
                   :style="{ color: resolvedLayout.theme.primaryColor }"
@@ -502,27 +502,27 @@ const summaryConfig = computed(() => resolvedLayout.value.summaryConfig)
               </div>
 
               <!-- Recurring Revenue -->
-              <div v-if="hasRecurringItems" class="space-y-2 border-t-2 border-blue-300 dark:border-blue-700 pt-3 mt-3">
-                <p class="text-xs font-semibold text-blue-600 uppercase">Recurring Revenue</p>
+              <div v-if="hasRecurringItems" class="space-y-2 border-t-2 border-ga-blue-300 pt-3 mt-3">
+                <p class="text-xs font-semibold text-ga-blue-500 uppercase">Recurring Revenue</p>
 
                 <div v-if="oneTimeTotalNum > 0" class="flex justify-between text-sm">
-                  <span class="text-gray-600 dark:text-gray-400">One-Time Charges</span>
-                  <span class="font-medium text-gray-900 dark:text-white">{{ formatQuotePrice(oneTimeTotalNum) }}</span>
+                  <span class="text-ga-gray-700">One-Time Charges</span>
+                  <span class="font-medium text-ga-navy-600">{{ formatQuotePrice(oneTimeTotalNum) }}</span>
                 </div>
 
                 <div class="flex justify-between text-sm">
-                  <span class="text-gray-600 dark:text-gray-400">MRR (Monthly)</span>
-                  <span class="font-medium text-blue-600">{{ formatQuotePrice(mrrNum) }}/mo</span>
+                  <span class="text-ga-gray-700">MRR (Monthly)</span>
+                  <span class="font-medium text-ga-blue-500">{{ formatQuotePrice(mrrNum) }}/mo</span>
                 </div>
 
                 <div class="flex justify-between text-sm">
-                  <span class="text-gray-600 dark:text-gray-400">ARR (Annual)</span>
-                  <span class="font-medium text-blue-600">{{ formatQuotePrice(arrNum) }}/yr</span>
+                  <span class="text-ga-gray-700">ARR (Annual)</span>
+                  <span class="font-medium text-ga-blue-500">{{ formatQuotePrice(arrNum) }}/yr</span>
                 </div>
 
                 <div class="flex justify-between text-sm">
-                  <span class="text-gray-600 dark:text-gray-400">Total Contract Value</span>
-                  <span class="font-bold text-green-600">{{ formatQuotePrice(tcvNum) }}</span>
+                  <span class="text-ga-gray-700">Total Contract Value</span>
+                  <span class="font-bold text-ga-green-600">{{ formatQuotePrice(tcvNum) }}</span>
                 </div>
               </div>
             </div>
@@ -531,9 +531,9 @@ const summaryConfig = computed(() => resolvedLayout.value.summaryConfig)
       </section>
 
       <!-- Terms and Conditions -->
-      <section class="border-t border-gray-200 dark:border-gray-700 pt-6 print:break-inside-avoid">
-        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Terms & Conditions</h3>
-        <div class="text-sm text-gray-600 dark:text-gray-400 space-y-2">
+      <section class="border-t border-ga-gray-300 pt-6 print:break-inside-avoid">
+        <h3 class="text-sm font-semibold text-ga-gray-600 uppercase tracking-wide mb-3">Terms & Conditions</h3>
+        <div class="text-sm text-ga-gray-700 space-y-2">
           <p>1. This quote is valid until the expiration date indicated above.</p>
           <p>2. Prices are subject to change after the validity period.</p>
           <p>3. Payment terms: Net 30 days from invoice date.</p>
@@ -543,7 +543,7 @@ const summaryConfig = computed(() => resolvedLayout.value.summaryConfig)
       </section>
 
       <!-- Footer -->
-      <footer class="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700 text-center text-xs text-gray-400 print:mt-auto">
+      <footer class="mt-8 pt-4 border-t border-ga-gray-300 text-center text-xs text-ga-gray-500 print:mt-auto">
         <p>Generated on {{ new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}</p>
         <p class="mt-1">Thank you for your business!</p>
       </footer>
@@ -592,26 +592,6 @@ const summaryConfig = computed(() => resolvedLayout.value.summaryConfig)
 
   section {
     page-break-inside: avoid;
-  }
-
-  .dark\:bg-gray-900 {
-    background: white !important;
-  }
-
-  .dark\:bg-gray-800 {
-    background: #f9fafb !important;
-  }
-
-  .dark\:text-white {
-    color: #111827 !important;
-  }
-
-  .dark\:text-gray-400 {
-    color: #6b7280 !important;
-  }
-
-  .dark\:border-gray-700 {
-    border-color: #e5e7eb !important;
   }
 }
 </style>

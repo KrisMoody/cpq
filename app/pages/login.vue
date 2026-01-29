@@ -28,14 +28,14 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
+  <div class="min-h-screen flex items-center justify-center bg-ga-gray-100 px-4">
     <div class="w-full max-w-md">
       <div class="text-center mb-8">
         <div class="flex items-center justify-center gap-3 mb-4">
-          <UIcon name="i-heroicons-squares-2x2" class="w-10 h-10 text-primary-500" />
+          <UIcon name="i-heroicons-squares-2x2" class="w-10 h-10 text-ga-navy-500" />
           <span class="font-bold text-2xl">CPQ Learning</span>
         </div>
-        <h1 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Sign in to your account</h1>
+        <h1 class="text-xl font-semibold">Sign in to your account</h1>
       </div>
 
       <UCard>
@@ -81,9 +81,9 @@ async function handleSubmit() {
         </form>
 
         <template #footer>
-          <p class="text-center text-sm text-gray-500">
+          <p class="text-center text-sm text-ga-gray-600">
             Don't have an account?
-            <NuxtLink to="/register" class="text-primary-500 hover:text-primary-600 font-medium">
+            <NuxtLink to="/register" class="text-ga-navy-500 hover:text-ga-navy-600 font-medium">
               Sign up
             </NuxtLink>
           </p>
