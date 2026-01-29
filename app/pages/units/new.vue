@@ -98,7 +98,7 @@ async function handleSubmit() {
         </div>
 
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Unit Conversion (Optional)</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Unit Conversion (Optional)</h3>
 
           <UFormField label="Base Unit" hint="If this unit converts to another unit">
             <USelect

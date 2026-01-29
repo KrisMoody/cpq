@@ -172,7 +172,7 @@ async function handleDeactivate() {
         </div>
 
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Unit Conversion</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Unit Conversion</h3>
 
           <UFormField label="Base Unit">
             <USelect
@@ -205,7 +205,7 @@ async function handleDeactivate() {
 
         <!-- Usage Info -->
         <div v-if="unit.productCount !== undefined && unit.productCount > 0" class="space-y-2">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Usage</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Usage</h3>
           <UAlert color="info" variant="subtle" icon="i-heroicons-cube">
             <template #description>
               This unit is used by {{ unit.productCount }} product{{ unit.productCount !== 1 ? 's' : '' }}.
@@ -215,7 +215,7 @@ async function handleDeactivate() {
 
         <!-- Derived Units -->
         <div v-if="unit.derived && unit.derived.length > 0" class="space-y-2">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Derived Units</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Derived Units</h3>
           <div class="flex flex-wrap gap-2">
             <UBadge
               v-for="derived in unit.derived"

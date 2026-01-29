@@ -165,7 +165,7 @@ const bannerConfig = computed(() => {
           </template>
 
           <div class="space-y-4">
-            <p class="text-gray-500">
+            <p class="text-ga-gray-600">
               Please provide a reason for rejecting this quote. This will be visible to the quote creator.
             </p>
 

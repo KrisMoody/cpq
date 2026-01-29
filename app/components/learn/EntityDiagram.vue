@@ -121,12 +121,12 @@ function getLabelPosition(rel: Relationship) {
   <div class="w-full overflow-x-auto">
     <svg viewBox="0 0 900 420" class="w-full min-w-[700px]" preserveAspectRatio="xMidYMid meet">
       <!-- Group labels -->
-      <text x="150" y="50" class="fill-gray-400 text-xs" text-anchor="middle">Products</text>
-      <text x="350" y="50" class="fill-gray-400 text-xs" text-anchor="middle">Pricing</text>
-      <text x="550" y="50" class="fill-gray-400 text-xs" text-anchor="middle">Quotes</text>
-      <text x="750" y="50" class="fill-gray-400 text-xs" text-anchor="middle">Customer</text>
-      <text x="750" y="155" class="fill-gray-400 text-xs" text-anchor="middle">Rules</text>
-      <text x="750" y="255" class="fill-gray-400 text-xs" text-anchor="middle">Discounts</text>
+      <text x="150" y="50" class="fill-ga-gray-500 text-xs" text-anchor="middle">Products</text>
+      <text x="350" y="50" class="fill-ga-gray-500 text-xs" text-anchor="middle">Pricing</text>
+      <text x="550" y="50" class="fill-ga-gray-500 text-xs" text-anchor="middle">Quotes</text>
+      <text x="750" y="50" class="fill-ga-gray-500 text-xs" text-anchor="middle">Customer</text>
+      <text x="750" y="155" class="fill-ga-gray-500 text-xs" text-anchor="middle">Rules</text>
+      <text x="750" y="255" class="fill-ga-gray-500 text-xs" text-anchor="middle">Discounts</text>
 
       <!-- Relationship lines -->
       <g v-for="rel in relationships" :key="`${rel.from}-${rel.to}`">
@@ -135,12 +135,12 @@ function getLabelPosition(rel: Relationship) {
           fill="none"
           stroke="currentColor"
           stroke-width="1.5"
-          class="text-gray-400"
+          class="text-ga-gray-500"
         />
         <text
           :x="getLabelPosition(rel).x"
           :y="getLabelPosition(rel).y"
-          class="fill-gray-500 text-[10px]"
+          class="fill-ga-gray-600 text-[10px]"
           text-anchor="middle"
         >
           {{ rel.label }}

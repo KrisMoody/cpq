@@ -46,7 +46,7 @@ function handleClear() {
     <!-- Input Form -->
     <div v-if="!generatedQuote" class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label class="block text-sm font-medium text-ga-gray-800 mb-2">
           Describe what you need
         </label>
         <UTextarea
@@ -85,7 +85,7 @@ function handleClear() {
 
       <!-- Quote Name -->
       <div>
-        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+        <label class="block text-xs font-medium text-ga-gray-600 mb-1">
           Suggested Name
         </label>
         <p class="font-medium">{{ generatedQuote.suggestedName }}</p>
@@ -93,27 +93,27 @@ function handleClear() {
 
       <!-- Summary -->
       <div>
-        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+        <label class="block text-xs font-medium text-ga-gray-600 mb-1">
           Summary
         </label>
-        <p class="text-sm text-gray-600 dark:text-gray-400">{{ generatedQuote.summary }}</p>
+        <p class="text-sm text-ga-gray-700">{{ generatedQuote.summary }}</p>
       </div>
 
       <!-- Line Items -->
       <div>
-        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+        <label class="block text-xs font-medium text-ga-gray-600 mb-2">
           Suggested Products ({{ generatedQuote.lineItems.length }})
         </label>
         <div class="space-y-2">
           <div
             v-for="(item, index) in generatedQuote.lineItems"
             :key="index"
-            class="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+            class="p-3 bg-ga-gray-100 rounded-lg"
           >
             <div class="flex items-center justify-between">
               <div>
                 <p class="font-medium text-sm">{{ item.productName }}</p>
-                <p v-if="item.reason" class="text-xs text-gray-500 mt-1">{{ item.reason }}</p>
+                <p v-if="item.reason" class="text-xs text-ga-gray-600 mt-1">{{ item.reason }}</p>
               </div>
               <UBadge color="neutral" variant="subtle">
                 Qty: {{ item.quantity }}
@@ -124,9 +124,9 @@ function handleClear() {
       </div>
 
       <!-- Estimated Total -->
-      <div v-if="generatedQuote.estimatedTotal" class="pt-3 border-t border-gray-200 dark:border-gray-700">
+      <div v-if="generatedQuote.estimatedTotal" class="pt-3 border-t border-ga-gray-400">
         <div class="flex items-center justify-between">
-          <span class="text-sm text-gray-600 dark:text-gray-400">Estimated Total</span>
+          <span class="text-sm text-ga-gray-700">Estimated Total</span>
           <span class="font-semibold">{{ formatPrice(generatedQuote.estimatedTotal) }}</span>
         </div>
       </div>

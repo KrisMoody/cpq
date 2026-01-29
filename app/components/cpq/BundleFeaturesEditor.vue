@@ -329,11 +329,11 @@ function handleOptionDragEnd() {
     <!-- Empty state -->
     <div
       v-if="modelValue.length === 0"
-      class="text-center py-8 border-2 border-dashed rounded-lg dark:border-gray-700"
+      class="text-center py-8 border-2 border-dashed rounded-lg border-ga-gray-400"
     >
-      <UIcon name="i-heroicons-squares-2x2" class="w-10 h-10 mx-auto mb-2 text-gray-300" />
-      <p class="text-gray-500">No features defined yet.</p>
-      <p class="text-sm text-gray-400 mb-4">Add features to make this bundle configurable.</p>
+      <UIcon name="i-heroicons-squares-2x2" class="w-10 h-10 mx-auto mb-2 text-ga-gray-400" />
+      <p class="text-ga-gray-600">No features defined yet.</p>
+      <p class="text-sm text-ga-gray-500 mb-4">Add features to make this bundle configurable.</p>
       <UButton icon="i-heroicons-plus" @click="openAddFeature">
         Add Feature
       </UButton>
@@ -345,10 +345,10 @@ function handleOptionDragEnd() {
         v-for="(feature, featureIndex) in modelValue"
         :key="feature.id"
         draggable="true"
-        class="border rounded-lg p-4 dark:border-gray-700 transition-all"
+        class="border rounded-lg p-4 border-ga-gray-300 transition-all"
         :class="{
           'opacity-50': draggedFeatureIndex === featureIndex,
-          'border-primary-500 border-2': dragOverFeatureIndex === featureIndex,
+          'border-ga-navy-500 border-2': dragOverFeatureIndex === featureIndex,
         }"
         @dragstart="handleFeatureDragStart($event, featureIndex)"
         @dragover="handleFeatureDragOver($event, featureIndex)"
@@ -359,10 +359,10 @@ function handleOptionDragEnd() {
         <!-- Feature header -->
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2 cursor-move">
-            <UIcon name="i-heroicons-bars-3" class="w-4 h-4 text-gray-400" />
+            <UIcon name="i-heroicons-bars-3" class="w-4 h-4 text-ga-gray-500" />
             <div>
               <h3 class="font-medium">{{ feature.name }}</h3>
-              <p class="text-sm text-gray-500">
+              <p class="text-sm text-ga-gray-600">
                 Select {{ feature.minOptions }}-{{ feature.maxOptions }} option(s)
               </p>
             </div>
@@ -390,10 +390,10 @@ function handleOptionDragEnd() {
             v-for="(option, optionIndex) in feature.options"
             :key="option.id"
             draggable="true"
-            class="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-800 rounded cursor-move transition-all"
+            class="flex items-center justify-between py-2 px-3 bg-ga-gray-100 rounded cursor-move transition-all"
             :class="{
               'opacity-50': draggedOptionIndex === optionIndex && editingOptionFeatureIndex === featureIndex,
-              'ring-2 ring-primary-500': dragOverOptionIndex === optionIndex && editingOptionFeatureIndex === featureIndex,
+              'ring-2 ring-ga-navy-500': dragOverOptionIndex === optionIndex && editingOptionFeatureIndex === featureIndex,
             }"
             @dragstart.stop="handleOptionDragStart($event, featureIndex, optionIndex)"
             @dragover.stop="handleOptionDragOver($event, optionIndex)"
@@ -402,10 +402,10 @@ function handleOptionDragEnd() {
             @dragend.stop="handleOptionDragEnd"
           >
             <div class="flex items-center gap-3">
-              <UIcon name="i-heroicons-bars-2" class="w-3 h-3 text-gray-400" />
+              <UIcon name="i-heroicons-bars-2" class="w-3 h-3 text-ga-gray-500" />
               <div>
                 <span class="font-medium text-sm">{{ getProductName(option.optionProductId) }}</span>
-                <span class="text-xs text-gray-500 ml-2">{{ getProductSku(option.optionProductId) }}</span>
+                <span class="text-xs text-ga-gray-600 ml-2">{{ getProductSku(option.optionProductId) }}</span>
               </div>
               <UBadge v-if="option.isDefault" size="xs" color="primary" variant="subtle">
                 Default
@@ -415,7 +415,7 @@ function handleOptionDragEnd() {
               </UBadge>
             </div>
             <div class="flex items-center gap-2">
-              <span class="text-sm text-gray-500">Qty: {{ option.minQty }}-{{ option.maxQty }}</span>
+              <span class="text-sm text-ga-gray-600">Qty: {{ option.minQty }}-{{ option.maxQty }}</span>
               <UButton
                 size="xs"
                 variant="ghost"

@@ -63,7 +63,7 @@ function handleCancel() {
     <!-- Not Found -->
     <div v-else-if="!layout" class="flex flex-col items-center justify-center h-full gap-4">
       <UIcon name="i-heroicons-exclamation-triangle" class="w-12 h-12 text-error-500" />
-      <p class="text-gray-500">Layout not found</p>
+      <p class="text-ga-gray-600">Layout not found</p>
       <UButton to="/quote-layouts" variant="soft">
         Back to Layouts
       </UButton>

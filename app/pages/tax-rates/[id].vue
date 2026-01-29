@@ -126,7 +126,7 @@ const categoryOptions = computed(() =>
         <div class="flex items-center justify-between">
           <div>
             <h1 class="text-xl font-bold">{{ taxRate.name }}</h1>
-            <p class="text-gray-500 text-sm">{{ formatRate(taxRate.rate) }}</p>
+            <p class="text-ga-gray-600 text-sm">{{ formatRate(taxRate.rate) }}</p>
           </div>
           <div class="flex items-center gap-2">
             <UBadge v-if="!taxRate.isActive" color="warning" variant="subtle">Inactive</UBadge>
@@ -200,27 +200,27 @@ const categoryOptions = computed(() =>
 
       <dl v-else class="space-y-4">
         <div class="flex justify-between">
-          <dt class="text-gray-500">Rate</dt>
+          <dt class="text-ga-gray-600">Rate</dt>
           <dd class="font-mono font-medium">{{ formatRate(taxRate.rate) }}</dd>
         </div>
         <div class="flex justify-between">
-          <dt class="text-gray-500">Country</dt>
+          <dt class="text-ga-gray-600">Country</dt>
           <dd>{{ taxRate.country }}</dd>
         </div>
         <div v-if="taxRate.state" class="flex justify-between">
-          <dt class="text-gray-500">State/Region</dt>
+          <dt class="text-ga-gray-600">State/Region</dt>
           <dd>{{ taxRate.state }}</dd>
         </div>
         <div class="flex justify-between">
-          <dt class="text-gray-500">Product Category</dt>
+          <dt class="text-ga-gray-600">Product Category</dt>
           <dd>{{ taxRate.category?.name || 'All Products' }}</dd>
         </div>
         <div v-if="taxRate.validFrom" class="flex justify-between">
-          <dt class="text-gray-500">Valid From</dt>
+          <dt class="text-ga-gray-600">Valid From</dt>
           <dd>{{ new Date(taxRate.validFrom).toLocaleDateString() }}</dd>
         </div>
         <div v-if="taxRate.validTo" class="flex justify-between">
-          <dt class="text-gray-500">Valid To</dt>
+          <dt class="text-ga-gray-600">Valid To</dt>
           <dd>{{ new Date(taxRate.validTo).toLocaleDateString() }}</dd>
         </div>
       </dl>

@@ -54,7 +54,7 @@ const categoryOptions = computed(() => {
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold">Products</h1>
-        <p class="text-gray-500">Manage your product catalog</p>
+        <p class="text-ga-gray-600">Manage your product catalog</p>
       </div>
       <UButton to="/products/new" icon="i-heroicons-plus">
         New Product
@@ -90,7 +90,7 @@ const categoryOptions = computed(() => {
 
       <UCheckbox v-model="showInactive" label="Show inactive" />
 
-      <span class="text-sm text-gray-500">
+      <span class="text-sm text-ga-gray-600">
         {{ filteredProducts.length }} product{{ filteredProducts.length !== 1 ? 's' : '' }}
       </span>
 
@@ -125,8 +125,8 @@ const categoryOptions = computed(() => {
 
     <!-- Empty State -->
     <div v-else-if="filteredProducts.length === 0" class="text-center py-12">
-      <UIcon name="i-heroicons-cube" class="w-12 h-12 text-gray-300 mx-auto mb-4" />
-      <p class="text-gray-500 mb-4">No products found</p>
+      <UIcon name="i-heroicons-cube" class="w-12 h-12 text-ga-gray-400 mx-auto mb-4" />
+      <p class="text-ga-gray-600 mb-4">No products found</p>
       <UButton to="/products/new" variant="soft">Create your first product</UButton>
     </div>
 

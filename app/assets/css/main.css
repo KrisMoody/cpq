@@ -1,2 +1,199 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+/* GetAccept Design System Tokens - Based on fried-tofu */
+@theme static {
+  /*
+   * GA Gray Scale - for text and neutral elements
+   * Maps fried-tofu lightness values to Tailwind 50-950 scale
+   */
+  --color-ga-gray-50: #fbfcfd;   /* gray-99 */
+  --color-ga-gray-100: #f8fafc;  /* gray-98 */
+  --color-ga-gray-200: #f1f4f9;  /* gray-96 */
+  --color-ga-gray-300: #ebeff5;  /* gray-94 */
+  --color-ga-gray-400: #dae2ec;  /* gray-89 */
+  --color-ga-gray-500: #bccadc;  /* gray-80 */
+  --color-ga-gray-600: #8195b0;  /* gray-60 */
+  --color-ga-gray-700: #617998;  /* gray-49 */
+  --color-ga-gray-800: #4b607c;  /* gray-39 = --text-gray */
+  --color-ga-gray-900: #374a62;  /* gray-30 */
+  --color-ga-gray-950: #2c3b4e;  /* base-blue = --text-dark */
+
+  /*
+   * GA Navy Scale - for primary buttons
+   * Centered on base-blue (#2c3b4e) at 500
+   */
+  --color-ga-navy-50: #f1f4f9;   /* gray-96 - soft bg */
+  --color-ga-navy-100: #ebeff5;  /* gray-94 */
+  --color-ga-navy-200: #dae2ec;  /* gray-89 */
+  --color-ga-navy-300: #bccadc;  /* gray-80 - disabled */
+  --color-ga-navy-400: #617998;  /* gray-49 */
+  --color-ga-navy-500: #2c3b4e;  /* base-blue - main button color */
+  --color-ga-navy-600: #232f3e;  /* darker for standard hover */
+  --color-ga-navy-700: #1a2530;
+  --color-ga-navy-800: #121a22;
+  --color-ga-navy-900: #0a1014;
+  --color-ga-navy-950: #050809;
+
+  /*
+   * GA Blue Scale - for links/info
+   * Uses exact fried-tofu blue values
+   */
+  --color-ga-blue-50: #e7f1fe;   /* blue-95 */
+  --color-ga-blue-100: #ddebfd;  /* blue-93 */
+  --color-ga-blue-200: #bbd7fb;  /* blue-86 */
+  --color-ga-blue-300: #6ea9f7;  /* blue-70 */
+  --color-ga-blue-400: #3e8df4;  /* blue-60 */
+  --color-ga-blue-500: #0c65da;  /* blue-45 = --link-blue, --info-dark */
+  --color-ga-blue-600: #0a57be;
+  --color-ga-blue-700: #0849a2;
+  --color-ga-blue-800: #063b86;
+  --color-ga-blue-900: #042d6a;
+  --color-ga-blue-950: #021f4e;
+
+  /*
+   * GA Green Scale - for success states
+   * fried-tofu: green-25 (dark), green-95 (light)
+   */
+  --color-ga-green-50: #e7fef8;  /* green-95 = --success-light */
+  --color-ga-green-100: #ccfdf0;
+  --color-ga-green-200: #99fbe1;
+  --color-ga-green-300: #66f9d2;
+  --color-ga-green-400: #33c9a3;
+  --color-ga-green-500: #06795c;  /* green-25 = --success-dark */
+  --color-ga-green-600: #056a50;
+  --color-ga-green-700: #045b44;
+  --color-ga-green-800: #034c38;
+  --color-ga-green-900: #023d2c;
+  --color-ga-green-950: #012e20;
+
+  /*
+   * GA Red Scale - for error states
+   * fried-tofu: red-42 (dark), red-95 (light)
+   */
+  --color-ga-red-50: #feebe7;   /* red-95 = --error-light */
+  --color-ga-red-100: #fdd5cc;
+  --color-ga-red-200: #fbb099;
+  --color-ga-red-300: #f98b66;
+  --color-ga-red-400: #e5522a;
+  --color-ga-red-500: #cb2e0b;  /* red-42 = --error-dark */
+  --color-ga-red-600: #b2280a;
+  --color-ga-red-700: #992208;
+  --color-ga-red-800: #801c07;
+  --color-ga-red-900: #671605;
+  --color-ga-red-950: #4e1004;
+
+  /*
+   * GA Yellow Scale - for warning states
+   * fried-tofu: yellow-66 (dark), yellow-95 (light)
+   */
+  --color-ga-yellow-50: #fff9e6;  /* yellow-95 = --warning-light */
+  --color-ga-yellow-100: #fff3cc;
+  --color-ga-yellow-200: #ffe799;
+  --color-ga-yellow-300: #ffdb66;
+  --color-ga-yellow-400: #ffcf33;
+  --color-ga-yellow-500: #ffd651;  /* yellow-66 = --warning-dark */
+  --color-ga-yellow-600: #e6c149;
+  --color-ga-yellow-700: #ccab41;
+  --color-ga-yellow-800: #b39539;
+  --color-ga-yellow-900: #997f31;
+  --color-ga-yellow-950: #665321;
+
+  /* Typography - Inter (body), DM Sans (branding) */
+  --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* Border Radius - exact fried-tofu values */
+  --radius-sm: 4px;   /* radius-small */
+  --radius-md: 8px;   /* radius-medium - buttons, inputs, cards */
+  --radius-lg: 8px;   /* keep medium for most UI */
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px; /* radius-large - modals */
+
+  /* Shadows - exact fried-tofu values (base-blue tint at 20%) */
+  --shadow-xs: 0 1px 2px rgb(44 59 78 / 10%);
+  --shadow-sm: 0 1px 4px rgb(44 59 78 / 20%);    /* shadow-1 */
+  --shadow-md: 0 3px 12px rgb(44 59 78 / 20%);   /* shadow-3 */
+  --shadow-lg: 0 5px 20px rgb(44 59 78 / 20%);   /* shadow-5 */
+  --shadow-xl: 0 8px 30px rgb(44 59 78 / 25%);
+  --shadow-2xl: 0 12px 40px rgb(44 59 78 / 30%);
+}
+
+/* Global styles */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  color: #2c3b4e;  /* base-blue / text-dark */
+  background-color: #fbfcfd;  /* gray-99 */
+}
+
+/*
+ * Button overrides to match fried-tofu exactly
+ * fried-tofu uses LIGHTER hover states (visual "lift" effect)
+ */
+
+/* Primary solid button - match GA Primary */
+[data-ui="button"][data-variant="solid"][data-color="primary"] {
+  background-color: #2c3b4e !important;  /* base-blue */
+  color: #ebeff5 !important;  /* gray-94 */
+}
+[data-ui="button"][data-variant="solid"][data-color="primary"]:hover {
+  background-color: #374a62 !important;  /* gray-30 - lighter hover */
+}
+[data-ui="button"][data-variant="solid"][data-color="primary"]:active {
+  background-color: #4b607c !important;  /* gray-39 - even lighter active */
+}
+[data-ui="button"][data-variant="solid"][data-color="primary"]:disabled {
+  background-color: #bccadc !important;  /* gray-80 */
+  color: #fff !important;
+}
+
+/* Secondary/outline button - match GA Secondary */
+[data-ui="button"][data-variant="outline"][data-color="primary"] {
+  background-color: #fff !important;
+  border-color: #2c3b4e !important;  /* base-blue */
+  color: #2c3b4e !important;
+}
+[data-ui="button"][data-variant="outline"][data-color="primary"]:hover {
+  background-color: #f1f4f9 !important;  /* gray-96 */
+}
+[data-ui="button"][data-variant="outline"][data-color="primary"]:disabled {
+  border-color: #bccadc !important;  /* gray-80 */
+  color: #bccadc !important;
+}
+
+/* Tertiary/soft button - match GA Tertiary */
+[data-ui="button"][data-variant="soft"][data-color="primary"] {
+  background-color: #f1f4f9 !important;  /* gray-96 */
+  color: #2c3b4e !important;
+}
+[data-ui="button"][data-variant="soft"][data-color="primary"]:hover {
+  background-color: #e4eaf1 !important;  /* gray-92 */
+}
+[data-ui="button"][data-variant="soft"][data-color="primary"]:disabled {
+  background-color: #f1f4f9 !important;
+  color: #bccadc !important;
+}
+
+/* Ghost button - match GA Ghost */
+[data-ui="button"][data-variant="ghost"][data-color="primary"] {
+  background-color: transparent !important;
+  color: #2c3b4e !important;
+}
+[data-ui="button"][data-variant="ghost"][data-color="primary"]:hover {
+  background-color: #f1f4f9 !important;  /* gray-96 */
+}
+
+/* Danger button - match GA Danger */
+[data-ui="button"][data-variant="outline"][data-color="error"] {
+  background-color: #fff !important;
+  border-color: #cb2e0b !important;  /* red-42 / error-dark */
+  color: #cb2e0b !important;
+}
+[data-ui="button"][data-variant="outline"][data-color="error"]:hover {
+  background-color: #feebe7 !important;  /* red-95 / error-light */
+}

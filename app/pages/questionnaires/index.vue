@@ -20,7 +20,7 @@ async function handleDelete(id: string, name: string) {
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold">Questionnaires</h1>
-        <p class="text-gray-500">Create guided selling questionnaires to help find the right products</p>
+        <p class="text-ga-gray-600">Create guided selling questionnaires to help find the right products</p>
       </div>
       <UButton to="/questionnaires/new" icon="i-heroicons-plus">
         New Questionnaire
@@ -36,9 +36,9 @@ async function handleDelete(id: string, name: string) {
     </div>
 
     <div v-else-if="questionnaires.length === 0" class="text-center py-12">
-      <UIcon name="i-heroicons-document-text" class="w-12 h-12 text-gray-300 mx-auto mb-4" />
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white">No questionnaires yet</h3>
-      <p class="text-gray-500 mt-1">Create your first questionnaire to help guide product selection</p>
+      <UIcon name="i-heroicons-document-text" class="w-12 h-12 text-ga-gray-400 mx-auto mb-4" />
+      <h3 class="text-lg font-medium">No questionnaires yet</h3>
+      <p class="text-ga-gray-600 mt-1">Create your first questionnaire to help guide product selection</p>
       <UButton to="/questionnaires/new" class="mt-4" icon="i-heroicons-plus">
         Create Questionnaire
       </UButton>
@@ -58,7 +58,7 @@ async function handleDelete(id: string, name: string) {
             >
               {{ q.name }}
             </NuxtLink>
-            <p v-if="q.description" class="text-sm text-gray-500 mt-1">{{ q.description }}</p>
+            <p v-if="q.description" class="text-sm text-ga-gray-600 mt-1">{{ q.description }}</p>
             <div class="flex items-center gap-2 mt-2">
               <UBadge variant="subtle" color="neutral">
                 {{ q.questionCount }} question{{ q.questionCount !== 1 ? 's' : '' }}

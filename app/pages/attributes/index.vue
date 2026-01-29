@@ -141,7 +141,7 @@ async function handleDeleteGroup(group: AttributeGroup) {
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold">Product Attributes</h1>
-        <p class="text-gray-500">Define reusable attributes for products</p>
+        <p class="text-ga-gray-600">Define reusable attributes for products</p>
       </div>
       <div class="flex gap-2">
         <UButton variant="soft" icon="i-heroicons-folder-plus" @click="openAddGroup">
@@ -155,7 +155,7 @@ async function handleDeleteGroup(group: AttributeGroup) {
 
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-ga-navy-500" />
     </div>
 
     <!-- Error State -->
@@ -166,8 +166,8 @@ async function handleDeleteGroup(group: AttributeGroup) {
 
     <!-- Empty State -->
     <div v-else-if="attributes.length === 0" class="text-center py-12">
-      <UIcon name="i-heroicons-tag" class="w-12 h-12 text-gray-300 mx-auto mb-4" />
-      <p class="text-gray-500 mb-4">No attributes defined yet</p>
+      <UIcon name="i-heroicons-tag" class="w-12 h-12 text-ga-gray-400 mx-auto mb-4" />
+      <p class="text-ga-gray-600 mb-4">No attributes defined yet</p>
       <UButton to="/attributes/new" variant="soft">Create your first attribute</UButton>
     </div>
 
@@ -178,7 +178,7 @@ async function handleDeleteGroup(group: AttributeGroup) {
         <template #header>
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <UIcon name="i-heroicons-folder" class="w-5 h-5 text-gray-400" />
+              <UIcon name="i-heroicons-folder" class="w-5 h-5 text-ga-gray-500" />
               <h2 class="font-semibold">{{ group.name }}</h2>
               <UBadge size="xs" variant="subtle">
                 {{ groupedAttributes.get(group.id)?.length || 0 }} attributes
@@ -202,11 +202,11 @@ async function handleDeleteGroup(group: AttributeGroup) {
           </div>
         </template>
 
-        <div v-if="!groupedAttributes.get(group.id)?.length" class="text-gray-500 text-sm py-4 text-center">
+        <div v-if="!groupedAttributes.get(group.id)?.length" class="text-ga-gray-600 text-sm py-4 text-center">
           No attributes in this group
         </div>
 
-        <div v-else class="divide-y dark:divide-gray-800">
+        <div v-else class="divide-y">
           <div
             v-for="attr in groupedAttributes.get(group.id)"
             :key="attr.id"
@@ -216,11 +216,11 @@ async function handleDeleteGroup(group: AttributeGroup) {
               <div>
                 <NuxtLink
                   :to="`/attributes/${attr.id}`"
-                  class="font-medium hover:text-primary-500"
+                  class="font-medium hover:text-ga-navy-500"
                 >
                   {{ attr.name }}
                 </NuxtLink>
-                <p class="text-sm text-gray-500">{{ attr.code }}</p>
+                <p class="text-sm text-ga-gray-600">{{ attr.code }}</p>
               </div>
             </div>
             <div class="flex items-center gap-3">
@@ -246,7 +246,7 @@ async function handleDeleteGroup(group: AttributeGroup) {
       <UCard v-if="groupedAttributes.get(null)?.length">
         <template #header>
           <div class="flex items-center gap-2">
-            <UIcon name="i-heroicons-squares-2x2" class="w-5 h-5 text-gray-400" />
+            <UIcon name="i-heroicons-squares-2x2" class="w-5 h-5 text-ga-gray-500" />
             <h2 class="font-semibold">Ungrouped</h2>
             <UBadge size="xs" variant="subtle">
               {{ groupedAttributes.get(null)?.length || 0 }} attributes
@@ -254,7 +254,7 @@ async function handleDeleteGroup(group: AttributeGroup) {
           </div>
         </template>
 
-        <div class="divide-y dark:divide-gray-800">
+        <div class="divide-y">
           <div
             v-for="attr in groupedAttributes.get(null)"
             :key="attr.id"
@@ -264,11 +264,11 @@ async function handleDeleteGroup(group: AttributeGroup) {
               <div>
                 <NuxtLink
                   :to="`/attributes/${attr.id}`"
-                  class="font-medium hover:text-primary-500"
+                  class="font-medium hover:text-ga-navy-500"
                 >
                   {{ attr.name }}
                 </NuxtLink>
-                <p class="text-sm text-gray-500">{{ attr.code }}</p>
+                <p class="text-sm text-ga-gray-600">{{ attr.code }}</p>
               </div>
             </div>
             <div class="flex items-center gap-3">

@@ -547,7 +547,7 @@ async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
       <div class="flex items-start justify-between">
         <div>
           <h1 class="text-2xl font-bold">{{ quote.name }}</h1>
-          <p class="text-gray-500 text-sm mt-1">
+          <p class="text-ga-gray-600 text-sm mt-1">
             Created {{ new Date(quote.createdAt).toLocaleDateString() }}
           </p>
         </div>
@@ -627,7 +627,7 @@ async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
               </div>
             </template>
 
-            <div v-if="quote.lineItems.length === 0" class="text-center py-8 text-gray-500">
+            <div v-if="quote.lineItems.length === 0" class="text-center py-8 text-ga-gray-600">
               No line items yet. Add products to this quote.
             </div>
 
@@ -772,7 +772,7 @@ async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
                   <UIcon :name="selectedProduct.isTaxable ? 'i-heroicons-receipt-percent' : 'i-heroicons-receipt-percent'" class="w-3 h-3 mr-1" />
                   {{ selectedProduct.isTaxable ? 'Taxable' : 'Non-Taxable' }}
                 </UBadge>
-                <span v-if="!selectedProduct.isTaxable" class="text-xs text-gray-500">
+                <span v-if="!selectedProduct.isTaxable" class="text-xs text-ga-gray-600">
                   This product will not incur sales tax
                 </span>
               </div>
@@ -780,7 +780,7 @@ async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
               <!-- Bundle warnings -->
               <template v-if="selectedProduct.type === 'BUNDLE'">
                 <!-- Pre-validation loading -->
-                <div v-if="loadingBundleValidation" class="flex items-center gap-2 text-sm text-gray-500">
+                <div v-if="loadingBundleValidation" class="flex items-center gap-2 text-sm text-ga-gray-600">
                   <UIcon name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
                   Checking bundle options...
                 </div>

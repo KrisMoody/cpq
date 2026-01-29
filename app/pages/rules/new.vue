@@ -184,7 +184,7 @@ async function handleSubmit() {
 
         <!-- Condition -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Condition (When)</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Condition (When)</h3>
 
           <div class="grid grid-cols-3 gap-4">
             <UFormField label="Field">
@@ -200,7 +200,7 @@ async function handleSubmit() {
             </UFormField>
           </div>
 
-          <p class="text-sm text-gray-500">
+          <p class="text-sm text-ga-gray-600">
             When <strong>{{ form.conditionField }}</strong>
             <strong>{{ conditionOps.find(o => o.value === form.conditionOp)?.label.toLowerCase() }}</strong>
             <strong>{{ form.conditionValue }}</strong>
@@ -209,7 +209,7 @@ async function handleSubmit() {
 
         <!-- Action -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Action (Then)</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Action (Then)</h3>
 
           <UFormField label="Action Type">
             <USelect v-model="form.actionType" :items="actionTypeOptions" value-key="value" />

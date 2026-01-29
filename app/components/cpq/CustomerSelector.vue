@@ -51,28 +51,28 @@ function clearSelection() {
     />
 
     <!-- Customer List -->
-    <div class="border rounded-lg max-h-64 overflow-auto">
+    <div class="border border-ga-gray-300 rounded-lg max-h-64 overflow-auto">
       <div
         v-for="customer in filteredCustomers"
         :key="customer.id"
-        class="p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer border-b last:border-b-0"
-        :class="{ 'bg-primary-50 dark:bg-primary-900/20': customer.id === modelValue }"
+        class="p-3 hover:bg-ga-gray-200 cursor-pointer border-b border-ga-gray-300 last:border-b-0"
+        :class="{ 'bg-ga-navy-50': customer.id === modelValue }"
         @click="selectCustomer(customer)"
       >
         <div class="flex items-center justify-between">
           <div>
             <p class="font-medium">{{ customer.name }}</p>
-            <p v-if="customer.company" class="text-sm text-gray-500">{{ customer.company }}</p>
+            <p v-if="customer.company" class="text-sm text-ga-gray-600">{{ customer.company }}</p>
           </div>
           <UIcon
             v-if="customer.id === modelValue"
             name="i-heroicons-check"
-            class="w-5 h-5 text-primary-500"
+            class="w-5 h-5 text-ga-navy-500"
           />
         </div>
       </div>
 
-      <div v-if="filteredCustomers.length === 0" class="p-3 text-center text-gray-500">
+      <div v-if="filteredCustomers.length === 0" class="p-3 text-center text-ga-gray-600">
         No customers found
       </div>
     </div>

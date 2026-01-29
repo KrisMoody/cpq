@@ -70,7 +70,7 @@ function getTargetLabel(affinity: (typeof affinities.value)[0]) {
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold">Product Affinities</h1>
-        <p class="text-gray-500">Configure product recommendations and cross-sell rules</p>
+        <p class="text-ga-gray-600">Configure product recommendations and cross-sell rules</p>
       </div>
       <UButton to="/affinities/new" icon="i-heroicons-plus">
         New Affinity
@@ -96,14 +96,14 @@ function getTargetLabel(affinity: (typeof affinities.value)[0]) {
         </UButton>
       </div>
 
-      <span class="text-sm text-gray-500">
+      <span class="text-sm text-ga-gray-600">
         {{ filteredAffinities.length }} rule{{ filteredAffinities.length !== 1 ? 's' : '' }}
       </span>
     </div>
 
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-ga-navy-500" />
     </div>
 
     <!-- Error State -->
@@ -114,8 +114,8 @@ function getTargetLabel(affinity: (typeof affinities.value)[0]) {
 
     <!-- Empty State -->
     <div v-else-if="filteredAffinities.length === 0" class="text-center py-12">
-      <UIcon name="i-heroicons-light-bulb" class="w-12 h-12 text-gray-300 mx-auto mb-4" />
-      <p class="text-gray-500 mb-4">No affinity rules found</p>
+      <UIcon name="i-heroicons-light-bulb" class="w-12 h-12 text-ga-gray-400 mx-auto mb-4" />
+      <p class="text-ga-gray-600 mb-4">No affinity rules found</p>
       <UButton to="/affinities/new" variant="soft">Create your first affinity</UButton>
     </div>
 
@@ -131,14 +131,14 @@ function getTargetLabel(affinity: (typeof affinities.value)[0]) {
             <div class="flex items-center gap-3 flex-wrap">
               <div class="min-w-0">
                 <div class="font-medium truncate">{{ getSourceLabel(affinity) }}</div>
-                <div v-if="affinity.sourceBillingFrequency" class="text-xs text-gray-500">
+                <div v-if="affinity.sourceBillingFrequency" class="text-xs text-ga-gray-600">
                   {{ affinity.sourceBillingFrequency }}
                 </div>
               </div>
-              <UIcon name="i-heroicons-arrow-right" class="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <UIcon name="i-heroicons-arrow-right" class="w-4 h-4 text-ga-gray-500 flex-shrink-0" />
               <div class="min-w-0">
                 <div class="font-medium truncate">{{ getTargetLabel(affinity) }}</div>
-                <div v-if="affinity.targetBillingFrequency" class="text-xs text-gray-500">
+                <div v-if="affinity.targetBillingFrequency" class="text-xs text-ga-gray-600">
                   {{ affinity.targetBillingFrequency }}
                 </div>
               </div>
@@ -147,7 +147,7 @@ function getTargetLabel(affinity: (typeof affinities.value)[0]) {
               <UBadge :color="getAffinityTypeColor(affinity.type)" variant="subtle">
                 {{ getAffinityTypeLabel(affinity.type) }}
               </UBadge>
-              <span class="text-xs text-gray-500">Priority: {{ affinity.priority }}</span>
+              <span class="text-xs text-ga-gray-600">Priority: {{ affinity.priority }}</span>
               <UBadge :color="affinity.isActive ? 'success' : 'neutral'" variant="subtle">
                 {{ affinity.isActive ? 'Active' : 'Inactive' }}
               </UBadge>

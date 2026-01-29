@@ -70,14 +70,14 @@ function getColumnLabel(field: ColumnField): string {
   <div class="space-y-3">
     <!-- Selected Columns -->
     <div>
-      <p class="text-xs font-medium text-gray-500 mb-2">Selected Columns (drag to reorder)</p>
+      <p class="text-xs font-medium text-ga-gray-600 mb-2">Selected Columns (drag to reorder)</p>
       <div class="flex flex-wrap gap-1">
         <div
           v-for="(column, index) in columns"
           :key="column.field"
-          class="flex items-center gap-1 px-2 py-1 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 rounded text-xs cursor-grab"
+          class="flex items-center gap-1 px-2 py-1 bg-ga-navy-50 text-ga-navy-600 rounded text-xs cursor-grab"
           :class="{
-            'ring-2 ring-primary-500': dragOverIndex === index,
+            'ring-2 ring-ga-navy-500': dragOverIndex === index,
             'opacity-50': draggedIndex === index,
           }"
           draggable="true"
@@ -86,7 +86,7 @@ function getColumnLabel(field: ColumnField): string {
           @drop="handleDrop($event, index)"
           @dragend="handleDragEnd"
         >
-          <UIcon name="i-heroicons-bars-2" class="w-3 h-3 text-primary-400" />
+          <UIcon name="i-heroicons-bars-2" class="w-3 h-3 text-ga-navy-400" />
           <span>{{ column.label || getColumnLabel(column.field) }}</span>
           <UButton
             variant="ghost"
@@ -98,14 +98,14 @@ function getColumnLabel(field: ColumnField): string {
           />
         </div>
       </div>
-      <p v-if="columns.length === 0" class="text-xs text-gray-400 italic">
+      <p v-if="columns.length === 0" class="text-xs text-ga-gray-500 italic">
         No columns selected
       </p>
     </div>
 
     <!-- Available Columns to Add -->
     <div v-if="unusedColumns.length > 0">
-      <p class="text-xs font-medium text-gray-500 mb-2">Add Column</p>
+      <p class="text-xs font-medium text-ga-gray-600 mb-2">Add Column</p>
       <div class="flex flex-wrap gap-1">
         <UButton
           v-for="col in unusedColumns"

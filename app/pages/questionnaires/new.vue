@@ -41,7 +41,7 @@ async function handleSubmit() {
       <UButton to="/questionnaires" variant="ghost" icon="i-heroicons-arrow-left" />
       <div>
         <h1 class="text-2xl font-bold">New Questionnaire</h1>
-        <p class="text-gray-500">Create a guided selling questionnaire</p>
+        <p class="text-ga-gray-600">Create a guided selling questionnaire</p>
       </div>
     </div>
 

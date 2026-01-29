@@ -74,19 +74,19 @@ function getDomainLabel(domain: QuizDomain) {
       <div class="text-6xl font-bold" :class="scoreColor">
         {{ percentage }}%
       </div>
-      <div class="text-lg text-gray-600 dark:text-gray-400 mt-2">
+      <div class="text-lg text-ga-gray-700 mt-2">
         {{ correctAnswers }} / {{ totalQuestions }} correct
       </div>
-      <div class="text-sm text-gray-500 dark:text-gray-500 mt-1">
+      <div class="text-sm text-ga-gray-600 mt-1">
         Time: {{ formattedDuration }}
       </div>
-      <p class="mt-4 text-gray-700 dark:text-gray-300">
+      <p class="mt-4 text-ga-gray-800">
         {{ scoreMessage }}
       </p>
     </div>
 
     <!-- Domain breakdown -->
-    <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+    <div class="border-t border-ga-gray-300 pt-4">
       <h4 class="font-medium mb-3">Score by Domain</h4>
       <div class="space-y-2">
         <div
@@ -94,7 +94,7 @@ function getDomainLabel(domain: QuizDomain) {
           :key="score.domain"
           class="flex items-center justify-between text-sm"
         >
-          <span class="text-gray-600 dark:text-gray-400">
+          <span class="text-ga-gray-700">
             {{ getDomainLabel(score.domain) }}
           </span>
           <span :class="getDomainScoreColor(score)" class="font-medium">
@@ -108,10 +108,10 @@ function getDomainLabel(domain: QuizDomain) {
         v-if="sortedDomainScores.some(s => s.total > 0 && s.correct / s.total < 0.6)"
         class="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg"
       >
-        <p class="text-sm text-yellow-700 dark:text-yellow-400 font-medium">
+        <p class="text-sm text-yellow-700 font-medium">
           Areas to review:
         </p>
-        <ul class="text-sm text-gray-600 dark:text-gray-400 mt-1 list-disc list-inside">
+        <ul class="text-sm text-ga-gray-700 mt-1 list-disc list-inside">
           <li
             v-for="score in sortedDomainScores.filter(s => s.total > 0 && s.correct / s.total < 0.6)"
             :key="score.domain"
@@ -123,7 +123,7 @@ function getDomainLabel(domain: QuizDomain) {
     </div>
 
     <!-- Actions -->
-    <div class="flex gap-3 justify-center pt-4 border-t border-gray-200 dark:border-gray-700">
+    <div class="flex gap-3 justify-center pt-4 border-t border-ga-gray-300">
       <UButton variant="outline" @click="emit('close')">
         Close
       </UButton>

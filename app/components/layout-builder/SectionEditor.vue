@@ -26,17 +26,17 @@ const activeTab = ref<'columns' | 'filter'>('columns')
   <div>
     <!-- Section Header (always visible) -->
     <div
-      class="flex items-center gap-2 p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-lg"
+      class="flex items-center gap-2 p-3 cursor-pointer hover:bg-ga-gray-200 rounded-t-lg"
       @click="emit('toggle')"
     >
       <UIcon
         name="i-heroicons-bars-3"
-        class="w-4 h-4 text-gray-400 cursor-grab"
+        class="w-4 h-4 text-ga-gray-500 cursor-grab"
         @click.stop
       />
       <UIcon
         :name="isExpanded ? 'i-heroicons-chevron-down' : 'i-heroicons-chevron-right'"
-        class="w-4 h-4 text-gray-500 transition-transform"
+        class="w-4 h-4 text-ga-gray-600 transition-transform"
       />
       <span class="flex-1 font-medium">{{ section.name }}</span>
       <UBadge size="xs" variant="subtle" color="neutral">
@@ -58,7 +58,7 @@ const activeTab = ref<'columns' | 'filter'>('columns')
       :class="isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
     >
       <div :class="isExpanded ? 'overflow-visible' : 'overflow-hidden'">
-        <div class="px-3 pb-3 border-t border-gray-100 dark:border-gray-800">
+        <div class="px-3 pb-3 border-t border-ga-gray-200">
           <!-- Basic Info -->
           <div class="space-y-3 py-3">
             <UFormField label="Section Name">
@@ -87,7 +87,7 @@ const activeTab = ref<'columns' | 'filter'>('columns')
           </div>
 
           <!-- Tabs for Columns/Filter -->
-          <div class="border-t border-gray-100 dark:border-gray-800 pt-3">
+          <div class="border-t border-ga-gray-200 pt-3">
             <div class="flex gap-2 mb-3">
               <UButton
                 :variant="activeTab === 'columns' ? 'soft' : 'ghost'"

@@ -48,7 +48,7 @@ function getOptionClass(index: number) {
   if (!hasSubmitted.value) {
     return selectedAnswers.value.includes(index)
       ? 'border-primary-500 bg-primary-500/10'
-      : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+      : 'border-ga-gray-300 hover:border-ga-gray-400'
   }
 
   const isSelected = selectedAnswers.value.includes(index)
@@ -60,7 +60,7 @@ function getOptionClass(index: number) {
   if (isSelected && !isCorrectAnswer) {
     return 'border-red-500 bg-red-500/10'
   }
-  return 'border-gray-200 dark:border-gray-700 opacity-50'
+  return 'border-ga-gray-300 opacity-50'
 }
 
 // Reset when question changes
@@ -73,9 +73,9 @@ watch(() => props.question.id, () => {
 <template>
   <div class="space-y-4">
     <!-- Progress indicator -->
-    <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+    <div class="flex items-center justify-between text-sm text-ga-gray-600">
       <span>Question {{ questionNumber }} of {{ totalQuestions }}</span>
-      <span v-if="question.type === 'multiple'" class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+      <span v-if="question.type === 'multiple'" class="text-xs bg-ga-gray-200 px-2 py-1 rounded">
         Select all that apply
       </span>
     </div>
@@ -98,7 +98,7 @@ watch(() => props.question.id, () => {
           <span
             v-if="question.type === 'single'"
             class="w-4 h-4 rounded-full border-2 flex items-center justify-center"
-            :class="selectedAnswers.includes(index) ? 'border-primary-500' : 'border-gray-300 dark:border-gray-600'"
+            :class="selectedAnswers.includes(index) ? 'border-primary-500' : 'border-ga-gray-400'"
           >
             <span
               v-if="selectedAnswers.includes(index)"
@@ -108,7 +108,7 @@ watch(() => props.question.id, () => {
           <span
             v-else
             class="w-4 h-4 rounded border-2 flex items-center justify-center"
-            :class="selectedAnswers.includes(index) ? 'border-primary-500 bg-primary-500' : 'border-gray-300 dark:border-gray-600'"
+            :class="selectedAnswers.includes(index) ? 'border-primary-500 bg-primary-500' : 'border-ga-gray-400'"
           >
             <UIcon
               v-if="selectedAnswers.includes(index)"
@@ -160,10 +160,10 @@ watch(() => props.question.id, () => {
           class="w-5 h-5 flex-shrink-0 mt-0.5"
         />
         <div>
-          <p class="font-medium" :class="isCorrect ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'">
+          <p class="font-medium" :class="isCorrect ? 'text-green-700' : 'text-red-700'">
             {{ isCorrect ? 'Correct!' : 'Incorrect' }}
           </p>
-          <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+          <p class="text-sm text-ga-gray-700 mt-1">
             {{ question.explanation }}
           </p>
         </div>

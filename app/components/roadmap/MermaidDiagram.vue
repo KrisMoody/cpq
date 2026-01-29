@@ -13,13 +13,11 @@ const containerRef = ref<HTMLElement | null>(null);
 const svgContent = ref("");
 const error = ref<string | null>(null);
 
-const colorMode = useColorMode();
-
 // Initialize mermaid with theme
 async function initMermaid() {
   mermaid.initialize({
     startOnLoad: false,
-    theme: colorMode.value === "dark" ? "dark" : "neutral",
+    theme: "neutral",
     securityLevel: "loose",
     flowchart: {
       useMaxWidth: true,
@@ -53,9 +51,6 @@ async function renderDiagram() {
 // Watch for diagram changes (only after mounted)
 watch(() => props.diagram, renderDiagram);
 
-// Re-render on color mode change
-watch(() => colorMode.value, renderDiagram);
-
 // Initial render on mount (client-side)
 onMounted(renderDiagram);
 </script>
@@ -69,7 +64,7 @@ onMounted(renderDiagram);
     />
     <div
       v-else-if="error"
-      class="p-4 text-red-500 text-sm bg-red-50 dark:bg-red-900/20 rounded"
+      class="p-4 text-ga-red-500 text-sm bg-red-50 rounded"
     >
       <p class="font-medium">Diagram Error</p>
       <p class="text-xs mt-1">{{ error }}</p>
@@ -77,7 +72,7 @@ onMounted(renderDiagram);
     <div v-else class="p-4 flex justify-center">
       <UIcon
         name="i-heroicons-arrow-path"
-        class="w-6 h-6 animate-spin text-gray-400"
+        class="w-6 h-6 animate-spin text-ga-gray-500"
       />
     </div>
   </div>

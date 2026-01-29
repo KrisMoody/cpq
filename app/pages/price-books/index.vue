@@ -18,7 +18,7 @@ const filteredPriceBooks = computed(() => {
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold">Price Books</h1>
-        <p class="text-gray-500">Manage pricing for your products</p>
+        <p class="text-ga-gray-600">Manage pricing for your products</p>
       </div>
       <UButton to="/price-books/new" icon="i-heroicons-plus">
         New Price Book
@@ -28,7 +28,7 @@ const filteredPriceBooks = computed(() => {
     <!-- Filters -->
     <div class="flex items-center gap-4">
       <UCheckbox v-model="showInactive" label="Show inactive" />
-      <span class="text-sm text-gray-500">
+      <span class="text-sm text-ga-gray-600">
         {{ filteredPriceBooks.length }} price book{{ filteredPriceBooks.length !== 1 ? 's' : '' }}
       </span>
     </div>
@@ -46,8 +46,8 @@ const filteredPriceBooks = computed(() => {
 
     <!-- Empty State -->
     <div v-else-if="filteredPriceBooks.length === 0" class="text-center py-12">
-      <UIcon name="i-heroicons-currency-dollar" class="w-12 h-12 text-gray-300 mx-auto mb-4" />
-      <p class="text-gray-500 mb-4">No price books found</p>
+      <UIcon name="i-heroicons-currency-dollar" class="w-12 h-12 text-ga-gray-400 mx-auto mb-4" />
+      <p class="text-ga-gray-600 mb-4">No price books found</p>
       <UButton to="/price-books/new" variant="soft">Create your first price book</UButton>
     </div>
 

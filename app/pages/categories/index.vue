@@ -45,7 +45,7 @@ async function handleDelete(category: Category) {
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold">Categories</h1>
-        <p class="text-gray-500">Organize products into categories</p>
+        <p class="text-ga-gray-600">Organize products into categories</p>
       </div>
       <UButton to="/categories/new" icon="i-heroicons-plus">
         New Category
@@ -59,7 +59,7 @@ async function handleDelete(category: Category) {
 
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-ga-navy-500" />
     </div>
 
     <!-- Error State -->
@@ -70,8 +70,8 @@ async function handleDelete(category: Category) {
 
     <!-- Empty State -->
     <div v-else-if="categories.length === 0" class="text-center py-12">
-      <UIcon name="i-heroicons-folder" class="w-12 h-12 text-gray-300 mx-auto mb-4" />
-      <p class="text-gray-500 mb-4">No categories found</p>
+      <UIcon name="i-heroicons-folder" class="w-12 h-12 text-ga-gray-400 mx-auto mb-4" />
+      <p class="text-ga-gray-600 mb-4">No categories found</p>
       <UButton to="/categories/new" variant="soft">Create your first category</UButton>
     </div>
 

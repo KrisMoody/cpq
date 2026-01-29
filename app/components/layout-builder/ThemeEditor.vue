@@ -63,7 +63,7 @@ const fontFamilyOptions = [
         <h3 class="font-semibold">Theme</h3>
         <UIcon
           :name="isExpanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
-          class="w-4 h-4 text-gray-500"
+          class="w-4 h-4 text-ga-gray-600"
         />
       </div>
     </template>
@@ -76,12 +76,12 @@ const fontFamilyOptions = [
         <div class="space-y-4">
           <!-- Theme Presets -->
           <div>
-            <p class="text-xs font-medium text-gray-500 mb-2">Quick Presets</p>
+            <p class="text-xs font-medium text-ga-gray-600 mb-2">Quick Presets</p>
             <div class="grid grid-cols-4 gap-2">
               <button
                 v-for="preset in presets"
                 :key="preset.id"
-                class="flex flex-col items-center gap-1 p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-500 transition-colors"
+                class="flex flex-col items-center gap-1 p-2 rounded-lg border border-ga-gray-300 hover:border-ga-navy-500 transition-colors"
                 @click="emit('applyPreset', preset.id)"
               >
                 <div class="flex gap-1">
@@ -94,7 +94,7 @@ const fontFamilyOptions = [
                     :style="{ backgroundColor: preset.secondaryColor }"
                   />
                 </div>
-                <span class="text-xs text-gray-600 dark:text-gray-400">{{ preset.name }}</span>
+                <span class="text-xs text-ga-gray-700">{{ preset.name }}</span>
               </button>
             </div>
           </div>

@@ -44,7 +44,7 @@ function getStatusColor(status: 'not_started' | 'in_progress' | 'completed') {
     case 'in_progress':
       return 'text-blue-500'
     default:
-      return 'text-gray-400'
+      return 'text-ga-gray-500'
   }
 }
 </script>
@@ -52,18 +52,18 @@ function getStatusColor(status: 'not_started' | 'in_progress' | 'completed') {
 <template>
   <div class="space-y-4">
     <!-- Overall Progress -->
-    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+    <div class="flex items-center justify-between p-4 bg-ga-gray-100 rounded-lg">
       <div class="flex items-center gap-3">
         <UIcon name="i-heroicons-academic-cap" class="w-6 h-6 text-primary" />
         <div>
           <p class="font-medium">Course Progress</p>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
+          <p class="text-sm text-ga-gray-600">
             {{ modules.filter(m => getModuleProgress(m.id).status === 'completed').length }} of {{ modules.length }} modules completed
           </p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <div class="w-32 h-2 bg-ga-gray-300 rounded-full overflow-hidden">
           <div
             class="h-full bg-primary rounded-full transition-all duration-300"
             :style="{ width: `${overallProgress}%` }"
@@ -83,7 +83,7 @@ function getStatusColor(status: 'not_started' | 'in_progress' | 'completed') {
       >
         <div class="flex items-start justify-between mb-2">
           <div class="flex items-center gap-2">
-            <span class="text-sm font-mono text-gray-500">{{ module.number }}</span>
+            <span class="text-sm font-mono text-ga-gray-600">{{ module.number }}</span>
             <UBadge :color="getLevelColor(module.level)" variant="subtle" size="xs">
               {{ module.level }}
             </UBadge>
@@ -94,7 +94,7 @@ function getStatusColor(status: 'not_started' | 'in_progress' | 'completed') {
           />
         </div>
         <h3 class="font-semibold mb-1">{{ module.title }}</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400">{{ module.focus }}</p>
+        <p class="text-sm text-ga-gray-600">{{ module.focus }}</p>
       </UCard>
     </div>
   </div>

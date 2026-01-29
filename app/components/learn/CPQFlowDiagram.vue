@@ -120,19 +120,19 @@ const rejectedStep: BranchStep = {
 
 const variantClasses = {
   success: {
-    bg: 'bg-green-100 dark:bg-green-900/30',
-    icon: 'text-green-600 dark:text-green-400',
-    border: 'border-green-200 dark:border-green-800',
+    bg: 'bg-green-100',
+    icon: 'text-green-600',
+    border: 'border-green-200',
   },
   warning: {
-    bg: 'bg-amber-100 dark:bg-amber-900/30',
-    icon: 'text-amber-600 dark:text-amber-400',
-    border: 'border-amber-200 dark:border-amber-800',
+    bg: 'bg-amber-100',
+    icon: 'text-amber-600',
+    border: 'border-amber-200',
   },
   error: {
-    bg: 'bg-red-100 dark:bg-red-900/30',
-    icon: 'text-red-600 dark:text-red-400',
-    border: 'border-red-200 dark:border-red-800',
+    bg: 'bg-red-100',
+    icon: 'text-red-600',
+    border: 'border-red-200',
   },
 }
 </script>
@@ -140,7 +140,7 @@ const variantClasses = {
 <template>
   <div class="py-4 md:py-8">
     <h3 class="text-lg font-semibold text-center mb-2">CPQ Workflow</h3>
-    <p class="text-sm text-gray-500 text-center mb-6 md:mb-8">
+    <p class="text-sm text-ga-gray-600 text-center mb-6 md:mb-8">
       Complete flow from quote creation to finalization
     </p>
 
@@ -150,12 +150,12 @@ const variantClasses = {
       <template v-for="(step, index) in mainSteps" :key="step.title">
         <div class="flex flex-col items-center text-center flex-1">
           <div
-            class="w-14 h-14 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mb-2"
+            class="w-14 h-14 rounded-full bg-ga-navy-100 flex items-center justify-center mb-2"
           >
-            <UIcon :name="step.icon" class="w-7 h-7 text-primary-600" />
+            <UIcon :name="step.icon" class="w-7 h-7 text-ga-navy-600" />
           </div>
           <h4 class="font-medium text-sm">{{ step.title }}</h4>
-          <p class="text-xs text-gray-500 mt-0.5">{{ step.description }}</p>
+          <p class="text-xs text-ga-gray-600 mt-0.5">{{ step.description }}</p>
           <!-- Helper badges -->
           <div v-if="step.helpers?.length" class="flex gap-1 mt-2">
             <UTooltip
@@ -164,7 +164,7 @@ const variantClasses = {
               :text="helper.tooltip"
             >
               <div
-                class="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-[10px] cursor-help hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                class="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-ga-gray-200 text-ga-gray-600 text-[10px] cursor-help hover:bg-ga-gray-300 transition-colors"
               >
                 <UIcon :name="helper.icon" class="w-3 h-3" />
                 <span>{{ helper.label }}</span>
@@ -175,7 +175,7 @@ const variantClasses = {
         <div v-if="index < mainSteps.length - 1" class="flex-shrink-0 px-1">
           <UIcon
             name="i-heroicons-arrow-right"
-            class="w-5 h-5 text-gray-300 dark:text-gray-600"
+            class="w-5 h-5 text-ga-gray-400"
           />
         </div>
       </template>
@@ -184,7 +184,7 @@ const variantClasses = {
     <!-- Mobile Layout - Vertical Timeline -->
     <div class="md:hidden relative mb-6">
       <!-- Vertical line -->
-      <div class="absolute left-6 top-6 bottom-6 w-0.5 bg-gray-200 dark:bg-gray-700" />
+      <div class="absolute left-6 top-6 bottom-6 w-0.5 bg-ga-gray-300" />
 
       <div class="space-y-4">
         <div
@@ -194,14 +194,14 @@ const variantClasses = {
         >
           <!-- Step circle -->
           <div
-            class="relative z-10 w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0"
+            class="relative z-10 w-10 h-10 rounded-full bg-ga-navy-100 flex items-center justify-center flex-shrink-0"
           >
-            <UIcon :name="step.icon" class="w-5 h-5 text-primary-600" />
+            <UIcon :name="step.icon" class="w-5 h-5 text-ga-navy-600" />
           </div>
           <!-- Step content -->
           <div class="flex-1 pb-2">
             <h4 class="font-medium text-sm">{{ step.title }}</h4>
-            <p class="text-xs text-gray-500 mt-0.5">{{ step.description }}</p>
+            <p class="text-xs text-ga-gray-600 mt-0.5">{{ step.description }}</p>
             <!-- Helper badges -->
             <div v-if="step.helpers?.length" class="flex flex-wrap gap-1 mt-2">
               <UTooltip
@@ -210,7 +210,7 @@ const variantClasses = {
                 :text="helper.tooltip"
               >
                 <div
-                  class="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-[10px] cursor-help"
+                  class="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-ga-gray-200 text-ga-gray-600 text-[10px] cursor-help"
                 >
                   <UIcon :name="helper.icon" class="w-3 h-3" />
                   <span>{{ helper.label }}</span>
@@ -222,7 +222,7 @@ const variantClasses = {
           <UIcon
             v-if="index < mainSteps.length - 1"
             name="i-heroicons-arrow-down"
-            class="absolute left-[18px] -bottom-1 w-4 h-4 text-gray-300 dark:text-gray-600"
+            class="absolute left-[18px] -bottom-1 w-4 h-4 text-ga-gray-400"
           />
         </div>
       </div>
@@ -233,17 +233,17 @@ const variantClasses = {
       <div class="flex justify-center mb-4">
         <UIcon
           name="i-heroicons-arrows-pointing-out"
-          class="w-5 h-5 text-gray-400"
+          class="w-5 h-5 text-ga-gray-500"
         />
       </div>
 
       <!-- Desktop: 2-column grid, Mobile: Stacked -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
         <!-- Auto-Approve Path -->
-        <div class="border border-green-200 dark:border-green-800 rounded-lg p-3 md:p-4 bg-green-50/50 dark:bg-green-950/20">
+        <div class="border border-green-200 rounded-lg p-3 md:p-4 bg-green-50/50">
           <div class="flex items-center gap-2 mb-3 md:mb-4">
             <UIcon name="i-heroicons-bolt" class="w-4 h-4 text-green-600" />
-            <span class="text-xs font-medium text-green-700 dark:text-green-400">
+            <span class="text-xs font-medium text-green-700">
               Auto-Approve (no rules triggered)
             </span>
           </div>
@@ -262,7 +262,7 @@ const variantClasses = {
                   />
                 </div>
                 <h4 class="font-medium text-xs">{{ step.title }}</h4>
-                <p class="text-xs text-gray-500 hidden sm:block">{{ step.description }}</p>
+                <p class="text-xs text-ga-gray-600 hidden sm:block">{{ step.description }}</p>
               </div>
               <div v-if="index < completionSteps.length - 1" class="px-1 md:px-2">
                 <UIcon
@@ -275,10 +275,10 @@ const variantClasses = {
         </div>
 
         <!-- Approval Required Path -->
-        <div class="border border-amber-200 dark:border-amber-800 rounded-lg p-3 md:p-4 bg-amber-50/50 dark:bg-amber-950/20">
+        <div class="border border-amber-200 rounded-lg p-3 md:p-4 bg-amber-50/50">
           <div class="flex items-center gap-2 mb-3 md:mb-4">
             <UIcon name="i-heroicons-shield-check" class="w-4 h-4 text-amber-600" />
-            <span class="text-xs font-medium text-amber-700 dark:text-amber-400">
+            <span class="text-xs font-medium text-amber-700">
               Approval Required (rules triggered)
             </span>
           </div>
@@ -298,7 +298,7 @@ const variantClasses = {
                   />
                 </div>
                 <h4 class="font-medium text-xs">{{ step.title }}</h4>
-                <p class="text-xs text-gray-500">{{ step.description }}</p>
+                <p class="text-xs text-ga-gray-600">{{ step.description }}</p>
               </div>
               <div v-if="index < approvalBranch.length - 1" class="px-2">
                 <UIcon
@@ -326,7 +326,7 @@ const variantClasses = {
                 />
               </div>
               <h4 class="font-medium text-xs">Finalized</h4>
-              <p class="text-xs text-gray-500">Complete</p>
+              <p class="text-xs text-ga-gray-600">Complete</p>
             </div>
           </div>
           <!-- Mobile: Compact horizontal with smaller icons -->
@@ -367,7 +367,7 @@ const variantClasses = {
             </div>
           </div>
           <!-- Rejected indicator -->
-          <div class="mt-3 md:mt-4 pt-2 md:pt-3 border-t border-amber-200 dark:border-amber-700">
+          <div class="mt-3 md:mt-4 pt-2 md:pt-3 border-t border-amber-200">
             <div class="flex items-center justify-center gap-2">
               <UIcon name="i-heroicons-arrow-turn-down-right" class="w-4 h-4 text-red-400" />
               <div
@@ -381,7 +381,7 @@ const variantClasses = {
                   :class="['w-4 h-4', variantClasses.error.icon]"
                 />
               </div>
-              <span class="text-xs text-red-600 dark:text-red-400">
+              <span class="text-xs text-red-600">
                 {{ rejectedStep.title }} (if denied)
               </span>
             </div>

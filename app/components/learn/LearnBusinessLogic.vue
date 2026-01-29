@@ -150,32 +150,32 @@ function toggleCard(id: string) {
 
 <template>
   <div class="space-y-4">
-    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+    <p class="text-sm text-ga-gray-600 mb-4">
       Click on each card to expand and see the detailed logic, formulas, and examples.
     </p>
 
     <div
       v-for="card in cards"
       :key="card.id"
-      class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+      class="border border-ga-gray-300 rounded-lg overflow-hidden"
     >
       <!-- Card Header -->
       <button
-        class="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+        class="w-full flex items-center justify-between p-4 hover:bg-ga-gray-200 transition-colors cursor-pointer"
         @click="toggleCard(card.id)"
       >
         <div class="flex items-center gap-3">
-          <div class="p-2 rounded-lg bg-primary-100 dark:bg-primary-900">
-            <UIcon :name="card.icon" class="w-5 h-5 text-primary-600 dark:text-primary-400" />
+          <div class="p-2 rounded-lg bg-ga-navy-100">
+            <UIcon :name="card.icon" class="w-5 h-5 text-ga-navy-600" />
           </div>
           <div class="text-left">
             <h3 class="font-medium">{{ card.title }}</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ card.summary }}</p>
+            <p class="text-sm text-ga-gray-600">{{ card.summary }}</p>
           </div>
         </div>
         <UIcon
           :name="expandedCards.includes(card.id) ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
-          class="w-5 h-5 text-gray-400"
+          class="w-5 h-5 text-ga-gray-500"
         />
       </button>
 
@@ -185,31 +185,31 @@ function toggleCard(id: string) {
         :class="expandedCards.includes(card.id) ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
       >
         <div class="overflow-hidden">
-          <div class="p-4 pt-0 space-y-4 border-t border-gray-200 dark:border-gray-700">
+          <div class="p-4 pt-0 space-y-4 border-t border-ga-gray-300">
             <!-- Formula -->
-            <div v-if="card.formula" class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-              <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Formula</h4>
-              <pre class="text-sm font-mono whitespace-pre-wrap text-gray-700 dark:text-gray-300">{{ card.formula }}</pre>
+            <div v-if="card.formula" class="bg-ga-gray-100 rounded-lg p-4">
+              <h4 class="text-sm font-medium text-ga-gray-600 mb-2">Formula</h4>
+              <pre class="text-sm font-mono whitespace-pre-wrap text-ga-gray-800">{{ card.formula }}</pre>
             </div>
 
             <!-- Mermaid Diagram -->
-            <div v-if="card.mermaid" class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-              <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Flow</h4>
+            <div v-if="card.mermaid" class="bg-ga-gray-100 rounded-lg p-4">
+              <h4 class="text-sm font-medium text-ga-gray-600 mb-2">Flow</h4>
               <ClientOnly>
                 <LearnMermaidDiagram :id="`mermaid-${card.id}`" :chart="card.mermaid" />
               </ClientOnly>
             </div>
 
             <!-- Example -->
-            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-              <h4 class="text-sm font-medium text-blue-700 dark:text-blue-300 mb-2">
+            <div class="bg-blue-50 rounded-lg p-4">
+              <h4 class="text-sm font-medium text-blue-700 mb-2">
                 Example: {{ card.example.title }}
               </h4>
               <ol class="text-sm space-y-1">
                 <li
                   v-for="(step, i) in card.example.steps"
                   :key="i"
-                  class="flex items-start gap-2 text-blue-600 dark:text-blue-400"
+                  class="flex items-start gap-2 text-blue-600"
                 >
                   <span class="font-mono text-xs mt-0.5">{{ i + 1 }}.</span>
                   <span>{{ step }}</span>

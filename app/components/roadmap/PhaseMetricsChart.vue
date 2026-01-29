@@ -8,8 +8,6 @@ const props = defineProps<{
   entityCounts: number[];
 }>();
 
-const colorMode = useColorMode();
-
 const chartOptions = computed<ApexOptions>(() => ({
   chart: {
     type: "donut",
@@ -20,7 +18,7 @@ const chartOptions = computed<ApexOptions>(() => ({
   legend: {
     position: "bottom",
     labels: {
-      colors: colorMode.value === "dark" ? "#9ca3af" : "#4b5563",
+      colors: "#4b5563",
     },
   },
   dataLabels: {
@@ -38,18 +36,18 @@ const chartOptions = computed<ApexOptions>(() => ({
           name: {
             show: true,
             fontSize: "14px",
-            color: colorMode.value === "dark" ? "#e5e7eb" : "#374151",
+            color: "#374151",
           },
           value: {
             show: true,
             fontSize: "20px",
             fontWeight: "bold",
-            color: colorMode.value === "dark" ? "#e5e7eb" : "#374151",
+            color: "#374151",
           },
           total: {
             show: true,
             label: "Total Entities",
-            color: colorMode.value === "dark" ? "#9ca3af" : "#6b7280",
+            color: "#6b7280",
             formatter: () => {
               return props.entityCounts.reduce((a, b) => a + b, 0).toString();
             },
@@ -60,11 +58,11 @@ const chartOptions = computed<ApexOptions>(() => ({
   },
   stroke: {
     width: 2,
-    colors: [colorMode.value === "dark" ? "#1f2937" : "#ffffff"],
+    colors: ["#ffffff"],
   },
   tooltip: {
     enabled: true,
-    theme: colorMode.value === "dark" ? "dark" : "light",
+    theme: "light",
     y: {
       formatter: (val: number) => `${val} entities`,
     },
@@ -99,7 +97,7 @@ const series = computed(() => props.entityCounts);
       <div class="h-[350px] flex items-center justify-center">
         <UIcon
           name="i-heroicons-arrow-path"
-          class="w-6 h-6 animate-spin text-gray-400"
+          class="w-6 h-6 animate-spin text-ga-gray-500"
         />
       </div>
     </template>

@@ -69,7 +69,7 @@ const bestScore = computed(() => {
       </UButton>
     </div>
 
-    <div v-if="attempts.length === 0" class="text-center py-4 text-gray-500 dark:text-gray-400">
+    <div v-if="attempts.length === 0" class="text-center py-4 text-ga-gray-600">
       <UIcon name="i-heroicons-clipboard-document-list" class="w-8 h-8 mx-auto mb-2 opacity-50" />
       <p class="text-sm">No quiz attempts yet</p>
       <p class="text-xs">Start a quiz to track your progress!</p>
@@ -77,18 +77,18 @@ const bestScore = computed(() => {
 
     <template v-else>
       <!-- Stats summary -->
-      <div class="grid grid-cols-3 gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-center text-sm">
+      <div class="grid grid-cols-3 gap-2 p-3 bg-ga-gray-100 rounded-lg text-center text-sm">
         <div>
           <div class="text-lg font-semibold">{{ attempts.length }}</div>
-          <div class="text-xs text-gray-500 dark:text-gray-400">Attempts</div>
+          <div class="text-xs text-ga-gray-600">Attempts</div>
         </div>
         <div>
           <div class="text-lg font-semibold">{{ averageScore }}%</div>
-          <div class="text-xs text-gray-500 dark:text-gray-400">Average</div>
+          <div class="text-xs text-ga-gray-600">Average</div>
         </div>
         <div>
           <div class="text-lg font-semibold text-green-500">{{ bestScore }}%</div>
-          <div class="text-xs text-gray-500 dark:text-gray-400">Best</div>
+          <div class="text-xs text-ga-gray-600">Best</div>
         </div>
       </div>
 
@@ -97,19 +97,19 @@ const bestScore = computed(() => {
         <div
           v-for="(attempt, index) in sortedAttempts"
           :key="attempt.id"
-          class="flex items-center justify-between p-2 rounded border border-gray-200 dark:border-gray-700 text-sm"
+          class="flex items-center justify-between p-2 rounded border border-ga-gray-300 text-sm"
           :class="index === 0 ? 'bg-primary-500/5 border-primary-500/30' : ''"
         >
           <div class="flex items-center gap-2">
-            <span class="text-gray-500 dark:text-gray-400 text-xs">
+            <span class="text-ga-gray-600 text-xs">
               {{ formatDate(attempt.date) }}
             </span>
-            <span v-if="index === 0" class="text-xs bg-primary-500/20 text-primary-600 dark:text-primary-400 px-1.5 py-0.5 rounded">
+            <span v-if="index === 0" class="text-xs bg-ga-navy-500/20 text-ga-navy-600 px-1.5 py-0.5 rounded">
               Latest
             </span>
           </div>
           <div class="flex items-center gap-3">
-            <span class="text-xs text-gray-400">{{ formatDuration(attempt.duration) }}</span>
+            <span class="text-xs text-ga-gray-500">{{ formatDuration(attempt.duration) }}</span>
             <span :class="getScoreColor(attempt.correctAnswers, attempt.totalQuestions)" class="font-medium">
               {{ attempt.correctAnswers }}/{{ attempt.totalQuestions }}
             </span>

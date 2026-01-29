@@ -663,7 +663,7 @@ function scrollToTerm(term: string) {
     </div>
 
     <!-- Compare mode hint -->
-    <div v-if="compareMode && selectedTerms.length < 2" class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm text-blue-700 dark:text-blue-300">
+    <div v-if="compareMode && selectedTerms.length < 2" class="p-3 bg-blue-50 rounded-lg text-sm text-blue-700">
       Select 2-3 terms to compare them side-by-side. Click on the cards below to select.
       <span v-if="selectedTerms.length === 1" class="font-medium">({{ selectedTerms.length }}/3 selected)</span>
     </div>
@@ -675,7 +675,7 @@ function scrollToTerm(term: string) {
       @close="exitCompareMode"
     />
 
-    <div v-if="filteredTerms.length === 0" class="text-center py-8 text-gray-500">
+    <div v-if="filteredTerms.length === 0" class="text-center py-8 text-ga-gray-600">
       No terms found matching "{{ searchQuery }}"
     </div>
 
@@ -686,7 +686,7 @@ function scrollToTerm(term: string) {
         :key="group"
       >
         <template v-if="groupedTerms[group].length > 0">
-          <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+          <h3 class="text-lg font-medium text-ga-gray-800 mb-3 pb-2 border-b border-ga-gray-300">
             {{ groupLabels[group] }}
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -30,7 +30,7 @@ function toggleExpand(e: Event) {
       phase.bgColor,
       isSelected
         ? `${phase.borderColor} ring-2 ring-offset-2`
-        : 'border-transparent hover:border-gray-300 dark:hover:border-gray-600',
+        : 'border-transparent hover:border-ga-gray-400',
     ]"
     @click="handleClick"
   >
@@ -41,7 +41,7 @@ function toggleExpand(e: Event) {
           <PhaseBadge :phase="phase" :show-tooltip="false" />
         </div>
         <button
-          class="p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+          class="p-1 rounded hover:bg-black/10 transition-colors"
           @click="toggleExpand"
         >
           <UIcon
@@ -54,10 +54,10 @@ function toggleExpand(e: Event) {
       </div>
 
       <h3 :class="['font-semibold', phase.color]">{{ phase.name }}</h3>
-      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+      <p class="text-xs text-ga-gray-600 mt-1">
         {{ phase.description }}
       </p>
-      <div class="mt-2 text-xs text-gray-400">{{ entityCount }} entities</div>
+      <div class="mt-2 text-xs text-ga-gray-500">{{ entityCount }} entities</div>
     </div>
 
     <!-- Expanded View -->
@@ -70,25 +70,25 @@ function toggleExpand(e: Event) {
       leave-to-class="opacity-0 max-h-0"
     >
       <div v-if="isExpanded" class="px-4 pb-4 overflow-hidden">
-        <div class="border-t border-gray-200 dark:border-gray-700 pt-3 mt-1">
+        <div class="border-t border-ga-gray-300 pt-3 mt-1">
           <!-- Details -->
           <p
             v-if="phase.details"
-            class="text-sm text-gray-600 dark:text-gray-300 mb-3"
+            class="text-sm text-ga-gray-700 mb-3"
           >
             {{ phase.details }}
           </p>
 
           <!-- Goals -->
           <div v-if="phase.goals?.length" class="mb-3">
-            <h4 class="text-xs font-semibold text-gray-500 uppercase mb-1">
+            <h4 class="text-xs font-semibold text-ga-gray-600 uppercase mb-1">
               Goals
             </h4>
-            <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-0.5">
+            <ul class="text-xs text-ga-gray-700 space-y-0.5">
               <li v-for="goal in phase.goals" :key="goal" class="flex gap-1">
                 <UIcon
                   name="i-heroicons-check-circle"
-                  class="w-3 h-3 mt-0.5 text-green-500 shrink-0"
+                  class="w-3 h-3 mt-0.5 text-ga-green-600 shrink-0"
                 />
                 {{ goal }}
               </li>
@@ -97,10 +97,10 @@ function toggleExpand(e: Event) {
 
           <!-- Key Deliverables -->
           <div v-if="phase.keyDeliverables?.length" class="mb-3">
-            <h4 class="text-xs font-semibold text-gray-500 uppercase mb-1">
+            <h4 class="text-xs font-semibold text-ga-gray-600 uppercase mb-1">
               Key Deliverables
             </h4>
-            <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-0.5">
+            <ul class="text-xs text-ga-gray-700 space-y-0.5">
               <li
                 v-for="deliverable in phase.keyDeliverables"
                 :key="deliverable"
@@ -108,7 +108,7 @@ function toggleExpand(e: Event) {
               >
                 <UIcon
                   name="i-heroicons-cube"
-                  class="w-3 h-3 mt-0.5 text-blue-500 shrink-0"
+                  class="w-3 h-3 mt-0.5 text-ga-blue-500 shrink-0"
                 />
                 {{ deliverable }}
               </li>
@@ -118,20 +118,20 @@ function toggleExpand(e: Event) {
           <!-- Upcoming Changes (Phase 3) -->
           <div
             v-if="phase.upcomingChanges"
-            class="p-2 rounded bg-purple-100 dark:bg-purple-900/40 border border-purple-200 dark:border-purple-700"
+            class="p-2 rounded bg-purple-100 border border-purple-200"
           >
             <div class="flex items-start gap-2">
               <UIcon
                 name="i-heroicons-information-circle"
-                class="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5"
+                class="w-4 h-4 text-purple-600 shrink-0 mt-0.5"
               />
               <div>
                 <h4
-                  class="text-xs font-semibold text-purple-700 dark:text-purple-300 mb-1"
+                  class="text-xs font-semibold text-purple-700 mb-1"
                 >
                   Upcoming Changes
                 </h4>
-                <p class="text-xs text-purple-600 dark:text-purple-400">
+                <p class="text-xs text-purple-600">
                   {{ phase.upcomingChanges }}
                 </p>
               </div>

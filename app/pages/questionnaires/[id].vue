@@ -252,7 +252,7 @@ function removeEditOption(index: number) {
       <UButton to="/questionnaires" variant="ghost" icon="i-heroicons-arrow-left" />
       <div class="flex-1">
         <h1 class="text-2xl font-bold">Edit Questionnaire</h1>
-        <p class="text-gray-500">Configure questions and product mappings</p>
+        <p class="text-ga-gray-600">Configure questions and product mappings</p>
       </div>
       <UButton
         v-if="questionnaire"
@@ -319,7 +319,7 @@ function removeEditOption(index: number) {
           </div>
         </template>
 
-        <div v-if="sortedQuestions.length === 0" class="text-center py-8 text-gray-500">
+        <div v-if="sortedQuestions.length === 0" class="text-center py-8 text-ga-gray-600">
           No questions yet. Add your first question to get started.
         </div>
 
@@ -327,13 +327,13 @@ function removeEditOption(index: number) {
           <div
             v-for="(question, qIndex) in sortedQuestions"
             :key="question.id"
-            class="border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+            class="border border-ga-gray-300 rounded-lg p-4"
           >
             <!-- Question Header -->
             <div class="flex items-start justify-between gap-4 mb-3">
               <div class="flex-1">
                 <div class="flex items-center gap-2 mb-1">
-                  <span class="text-sm font-medium text-gray-500">Q{{ qIndex + 1 }}</span>
+                  <span class="text-sm font-medium text-ga-gray-600">Q{{ qIndex + 1 }}</span>
                   <UBadge variant="subtle" color="neutral" size="xs">
                     {{ question.type.replace('_', ' ') }}
                   </UBadge>
@@ -428,9 +428,9 @@ function removeEditOption(index: number) {
             </div>
 
             <!-- Product Mappings -->
-            <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+            <div class="mt-4 pt-4 border-t border-ga-gray-200">
               <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-medium text-gray-500">Product Mappings</span>
+                <span class="text-sm font-medium text-ga-gray-600">Product Mappings</span>
                 <UButton
                   variant="ghost"
                   size="xs"
@@ -441,7 +441,7 @@ function removeEditOption(index: number) {
                 </UButton>
               </div>
 
-              <div v-if="question.productMappings.length === 0" class="text-sm text-gray-400">
+              <div v-if="question.productMappings.length === 0" class="text-sm text-ga-gray-500">
                 No product mappings
               </div>
 
@@ -449,13 +449,13 @@ function removeEditOption(index: number) {
                 <div
                   v-for="mapping in question.productMappings"
                   :key="mapping.id"
-                  class="flex items-center justify-between text-sm bg-gray-50 dark:bg-gray-800 rounded px-2 py-1"
+                  class="flex items-center justify-between text-sm bg-ga-gray-100 rounded px-2 py-1"
                 >
                   <div>
                     <span class="font-medium">{{ mapping.product.name }}</span>
-                    <span class="text-gray-500 mx-2">when</span>
+                    <span class="text-ga-gray-600 mx-2">when</span>
                     <UBadge variant="subtle" size="xs">{{ mapping.answerValue }}</UBadge>
-                    <span class="text-gray-500 mx-2">score:</span>
+                    <span class="text-ga-gray-600 mx-2">score:</span>
                     <span class="font-medium">{{ mapping.score }}</span>
                   </div>
                   <UButton
@@ -471,7 +471,7 @@ function removeEditOption(index: number) {
               <!-- Add Mapping Form -->
               <div
                 v-if="showAddMapping === question.id"
-                class="mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg space-y-3"
+                class="mt-3 p-3 bg-ga-gray-100 rounded-lg space-y-3"
               >
                 <UFormField label="When answer is">
                   <USelectMenu

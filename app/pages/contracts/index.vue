@@ -33,7 +33,7 @@ function formatDate(date: string) {
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold">Contracts</h1>
-        <p class="text-gray-500">Manage customer pricing contracts</p>
+        <p class="text-ga-gray-600">Manage customer pricing contracts</p>
       </div>
       <UButton to="/contracts/new" icon="i-heroicons-plus" class="w-full sm:w-auto">
         New Contract
@@ -58,14 +58,14 @@ function formatDate(date: string) {
           {{ option.label }}
         </UButton>
       </div>
-      <span class="text-sm text-gray-500">
+      <span class="text-sm text-ga-gray-600">
         {{ contracts.length }} contract{{ contracts.length !== 1 ? 's' : '' }}
       </span>
     </div>
 
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-ga-navy-500" />
     </div>
 
     <!-- Error State -->
@@ -76,36 +76,36 @@ function formatDate(date: string) {
 
     <!-- Empty State -->
     <div v-else-if="contracts.length === 0" class="text-center py-12">
-      <UIcon name="i-heroicons-document-text" class="w-12 h-12 text-gray-300 mx-auto mb-4" />
-      <p class="text-gray-500 mb-4">No contracts found</p>
+      <UIcon name="i-heroicons-document-text" class="w-12 h-12 text-ga-gray-400 mx-auto mb-4" />
+      <p class="text-ga-gray-600 mb-4">No contracts found</p>
       <UButton to="/contracts/new" variant="soft">Create your first contract</UButton>
     </div>
 
     <!-- Contracts Table - Desktop -->
     <template v-else>
-      <div class="hidden md:block overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-          <thead class="bg-gray-50 dark:bg-gray-900">
+      <div class="hidden md:block overflow-x-auto rounded-lg border border-ga-gray-300">
+        <table class="min-w-full divide-y divide-ga-gray-300">
+          <thead class="bg-ga-gray-100">
             <tr>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contract Name</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Validity Period</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Discount</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-ga-gray-600 uppercase tracking-wider">Contract Name</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-ga-gray-600 uppercase tracking-wider">Customer</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-ga-gray-600 uppercase tracking-wider">Validity Period</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-ga-gray-600 uppercase tracking-wider">Discount</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-ga-gray-600 uppercase tracking-wider">Status</th>
               <th class="px-4 py-3"/>
             </tr>
           </thead>
-          <tbody class="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
+          <tbody class="bg-white divide-y divide-ga-gray-300">
             <tr
               v-for="contract in contracts"
               :key="contract.id"
-              class="hover:bg-gray-50 dark:hover:bg-gray-900"
+              class="hover:bg-ga-gray-200"
             >
               <td class="px-4 py-3">
                 <NuxtLink :to="`/contracts/${contract.id}`" class="font-medium text-primary-600 hover:underline">
                   {{ contract.name }}
                 </NuxtLink>
-                <p v-if="contract.priceEntryCount" class="text-xs text-gray-500">
+                <p v-if="contract.priceEntryCount" class="text-xs text-ga-gray-600">
                   {{ contract.priceEntryCount }} custom price{{ contract.priceEntryCount !== 1 ? 's' : '' }}
                 </p>
               </td>
@@ -113,7 +113,7 @@ function formatDate(date: string) {
                 <NuxtLink :to="`/customers/${contract.customer.id}`" class="hover:underline">
                   {{ contract.customer.name }}
                 </NuxtLink>
-                <p v-if="contract.customer.company" class="text-xs text-gray-500">{{ contract.customer.company }}</p>
+                <p v-if="contract.customer.company" class="text-xs text-ga-gray-600">{{ contract.customer.company }}</p>
               </td>
               <td class="px-4 py-3 text-sm">
                 {{ formatDate(contract.startDate) }} - {{ formatDate(contract.endDate) }}
@@ -122,7 +122,7 @@ function formatDate(date: string) {
                 <span v-if="contract.discountPercent">
                   {{ contract.discountPercent }}%
                 </span>
-                <span v-else class="text-gray-400">-</span>
+                <span v-else class="text-ga-gray-500">-</span>
               </td>
               <td class="px-4 py-3">
                 <UBadge :color="getStatusColor(contract.status)" variant="subtle">
@@ -156,17 +156,17 @@ function formatDate(date: string) {
         <div
           v-for="contract in contracts"
           :key="contract.id"
-          class="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-4"
+          class="rounded-lg border border-ga-gray-300 bg-white p-4"
         >
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0 flex-1">
               <NuxtLink
                 :to="`/contracts/${contract.id}`"
-                class="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+                class="text-ga-navy-600 hover:underline font-medium"
               >
                 {{ contract.name }}
               </NuxtLink>
-              <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+              <p class="text-sm text-ga-gray-600 mt-0.5">
                 <NuxtLink :to="`/customers/${contract.customer.id}`" class="hover:underline">
                   {{ contract.customer.name }}
                 </NuxtLink>
@@ -189,12 +189,12 @@ function formatDate(date: string) {
               />
             </div>
           </div>
-          <div class="mt-3 text-sm text-gray-600 dark:text-gray-400">
+          <div class="mt-3 text-sm text-ga-gray-700">
             <p>{{ formatDate(contract.startDate) }} - {{ formatDate(contract.endDate) }}</p>
             <p v-if="contract.discountPercent" class="mt-1">
               Discount: <span class="font-medium">{{ contract.discountPercent }}%</span>
             </p>
-            <p v-if="contract.priceEntryCount" class="text-xs text-gray-500 mt-1">
+            <p v-if="contract.priceEntryCount" class="text-xs text-ga-gray-600 mt-1">
               {{ contract.priceEntryCount }} custom price{{ contract.priceEntryCount !== 1 ? 's' : '' }}
             </p>
           </div>

@@ -41,7 +41,7 @@ function getFieldIconColor(field: ParsedField) {
   if (field.isPrimaryKey) return 'text-yellow-500'
   if (field.isForeignKey) return 'text-blue-500'
   if (field.isUnique) return 'text-purple-500'
-  return 'text-gray-400'
+  return 'text-ga-gray-500'
 }
 
 function formatType(type: string) {
@@ -63,8 +63,8 @@ function formatType(type: string) {
   <div
     class="schema-table-node rounded-lg shadow-lg border overflow-hidden min-w-[180px] max-w-[240px]"
     :class="[
-      'bg-white dark:bg-gray-800',
-      'border-gray-200 dark:border-gray-700',
+      'bg-white',
+      'border-ga-gray-300',
     ]"
   >
     <!-- Header -->
@@ -81,7 +81,7 @@ function formatType(type: string) {
     </div>
 
     <!-- Field list (collapsed) -->
-    <div v-if="!isExpanded" class="px-3 py-2 text-xs text-gray-500 dark:text-gray-400">
+    <div v-if="!isExpanded" class="px-3 py-2 text-xs text-ga-gray-600">
       {{ data.fields.length }} fields, {{ data.relations.length }} relations
     </div>
 
@@ -93,33 +93,33 @@ function formatType(type: string) {
       <div
         v-for="field in data.fields"
         :key="field.name"
-        class="flex items-center gap-1.5 text-xs py-0.5 px-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+        class="flex items-center gap-1.5 text-xs py-0.5 px-1 rounded hover:bg-ga-gray-200"
       >
         <UIcon
           :name="getFieldIcon(field)"
           class="w-3 h-3 flex-shrink-0"
           :class="getFieldIconColor(field)"
         />
-        <span class="text-gray-700 dark:text-gray-300 truncate">
+        <span class="text-ga-gray-800 truncate">
           {{ field.name }}
         </span>
-        <span v-if="!field.isRequired" class="text-gray-400 ml-auto">?</span>
-        <span class="text-gray-400 dark:text-gray-500 ml-auto text-[10px]">
+        <span v-if="!field.isRequired" class="text-ga-gray-500 ml-auto">?</span>
+        <span class="text-ga-gray-500 ml-auto text-[10px]">
           {{ formatType(field.type) }}
         </span>
       </div>
 
       <!-- Relations section -->
-      <div v-if="data.relations.length" class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
-        <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-1 px-1">Relations</div>
+      <div v-if="data.relations.length" class="mt-2 pt-2 border-t border-ga-gray-300">
+        <div class="text-[10px] text-ga-gray-500 uppercase tracking-wide mb-1 px-1">Relations</div>
         <div
           v-for="rel in data.relations"
           :key="rel.fieldName"
           class="flex items-center gap-1.5 text-xs py-0.5 px-1"
         >
           <UIcon name="i-heroicons-arrow-right" class="w-3 h-3 text-blue-400 flex-shrink-0" />
-          <span class="text-gray-600 dark:text-gray-400 truncate">{{ rel.relatedModel }}</span>
-          <span class="text-gray-400 text-[10px] ml-auto">{{ rel.relationType }}</span>
+          <span class="text-ga-gray-700 truncate">{{ rel.relatedModel }}</span>
+          <span class="text-ga-gray-500 text-[10px] ml-auto">{{ rel.relationType }}</span>
         </div>
       </div>
     </div>
@@ -128,12 +128,12 @@ function formatType(type: string) {
     <Handle
       type="target"
       :position="Position.Left"
-      class="!w-2 !h-2 !bg-gray-400 !border-2 !border-white dark:!border-gray-800"
+      class="!w-2 !h-2 !bg-ga-gray-500 !border-2 !border-white"
     />
     <Handle
       type="source"
       :position="Position.Right"
-      class="!w-2 !h-2 !bg-gray-400 !border-2 !border-white dark:!border-gray-800"
+      class="!w-2 !h-2 !bg-ga-gray-500 !border-2 !border-white"
     />
   </div>
 </template>

@@ -64,7 +64,7 @@ defineExpose({ refresh })
     <template #header>
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <UIcon name="i-heroicons-light-bulb" class="w-5 h-5 text-yellow-500" />
+          <UIcon name="i-heroicons-light-bulb" class="w-5 h-5 text-ga-yellow-500" />
           <h3 class="font-semibold">Recommendations</h3>
         </div>
         <div class="flex items-center gap-1">
@@ -88,14 +88,14 @@ defineExpose({ refresh })
     </template>
 
     <div v-if="loading && recommendations.length === 0" class="text-center py-4">
-      <UIcon name="i-heroicons-arrow-path" class="w-6 h-6 text-gray-400 animate-spin mx-auto" />
-      <p class="text-sm text-gray-500 mt-2">Finding recommendations...</p>
+      <UIcon name="i-heroicons-arrow-path" class="w-6 h-6 text-ga-gray-500 animate-spin mx-auto" />
+      <p class="text-sm text-ga-gray-600 mt-2">Finding recommendations...</p>
     </div>
 
     <div v-else-if="visibleRecommendations.length === 0" class="text-center py-4">
-      <UIcon name="i-heroicons-check-circle" class="w-8 h-8 text-gray-300 mx-auto mb-2" />
-      <p class="text-sm text-gray-500">No recommendations available</p>
-      <p class="text-xs text-gray-400 mt-1">Add products to see suggestions</p>
+      <UIcon name="i-heroicons-check-circle" class="w-8 h-8 text-ga-gray-400 mx-auto mb-2" />
+      <p class="text-sm text-ga-gray-600">No recommendations available</p>
+      <p class="text-xs text-ga-gray-500 mt-1">Add products to see suggestions</p>
     </div>
 
     <div v-else class="space-y-2">

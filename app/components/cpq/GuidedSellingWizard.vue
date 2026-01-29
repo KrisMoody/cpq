@@ -169,23 +169,23 @@ function restart() {
 
     <!-- Select Questionnaire -->
     <div v-if="step === 'select'" class="space-y-4">
-      <p class="text-sm text-gray-500">Select a questionnaire to help find the right products:</p>
+      <p class="text-sm text-ga-gray-600">Select a questionnaire to help find the right products:</p>
 
       <div v-if="questionnaires.length === 0" class="text-center py-8">
-        <UIcon name="i-heroicons-document-text" class="w-12 h-12 text-gray-300 mx-auto mb-2" />
-        <p class="text-gray-500">No questionnaires available</p>
+        <UIcon name="i-heroicons-document-text" class="w-12 h-12 text-ga-gray-400 mx-auto mb-2" />
+        <p class="text-ga-gray-600">No questionnaires available</p>
       </div>
 
       <div v-else class="space-y-2">
         <button
           v-for="q in questionnaires"
           :key="q.id"
-          class="w-full p-3 text-left rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-500 transition-colors"
+          class="w-full p-3 text-left rounded-lg border border-ga-gray-300 hover:border-ga-navy-500 transition-colors"
           @click="selectQuestionnaire(q.id)"
         >
           <div class="font-medium">{{ q.name }}</div>
-          <div v-if="q.description" class="text-sm text-gray-500">{{ q.description }}</div>
-          <div class="text-xs text-gray-400 mt-1">{{ q.questionCount }} questions</div>
+          <div v-if="q.description" class="text-sm text-ga-gray-600">{{ q.description }}</div>
+          <div class="text-xs text-ga-gray-500 mt-1">{{ q.questionCount }} questions</div>
         </button>
       </div>
     </div>
@@ -194,7 +194,7 @@ function restart() {
     <div v-else-if="step === 'questions' && currentQuestion" class="space-y-4">
       <div class="flex items-center gap-2">
         <UProgress :value="progress" size="sm" class="flex-1" />
-        <span class="text-xs text-gray-500">{{ progress }}%</span>
+        <span class="text-xs text-ga-gray-600">{{ progress }}%</span>
       </div>
 
       <div class="py-4">
@@ -204,7 +204,7 @@ function restart() {
           <button
             v-for="option in questionOptions"
             :key="option.value"
-            class="w-full p-3 text-left rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
+            class="w-full p-3 text-left rounded-lg border border-ga-gray-300 hover:border-ga-navy-500 hover:bg-ga-navy-50 transition-colors"
             @click="submitAnswer(option.value)"
           >
             {{ option.label }}
@@ -215,7 +215,7 @@ function restart() {
           <div
             v-for="option in questionOptions"
             :key="option.value"
-            class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700"
+            class="flex items-center gap-3 p-3 rounded-lg border border-ga-gray-300"
           >
             <UCheckbox
               :model-value="(answers.get(currentQuestion.id) as string[] || []).includes(option.value)"
@@ -241,21 +241,21 @@ function restart() {
     <!-- Results -->
     <div v-else-if="step === 'results'" class="space-y-4">
       <div class="text-center py-4">
-        <UIcon name="i-heroicons-check-circle" class="w-12 h-12 text-green-500 mx-auto mb-2" />
+        <UIcon name="i-heroicons-check-circle" class="w-12 h-12 text-ga-green-500 mx-auto mb-2" />
         <h4 class="text-lg font-medium">Recommended Products</h4>
-        <p class="text-sm text-gray-500">Based on your answers, we recommend:</p>
+        <p class="text-sm text-ga-gray-600">Based on your answers, we recommend:</p>
       </div>
 
       <div v-if="results.length === 0" class="text-center py-4">
-        <p class="text-gray-500">No matching products found</p>
+        <p class="text-ga-gray-600">No matching products found</p>
       </div>
 
       <div v-else class="space-y-2 max-h-64 overflow-y-auto">
         <div
           v-for="result in results"
           :key="result.productId"
-          class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700"
-          :class="{ 'border-primary-500 bg-primary-50 dark:bg-primary-900/20': selectedProducts.has(result.productId) }"
+          class="flex items-center gap-3 p-3 rounded-lg border border-ga-gray-300"
+          :class="{ 'border-ga-navy-500 bg-ga-navy-50': selectedProducts.has(result.productId) }"
         >
           <UCheckbox
             :model-value="selectedProducts.has(result.productId)"
@@ -263,7 +263,7 @@ function restart() {
           />
           <div class="flex-1 min-w-0">
             <div class="font-medium truncate">{{ result.productName }}</div>
-            <div class="text-xs text-gray-500">Match score: {{ result.score }}</div>
+            <div class="text-xs text-ga-gray-600">Match score: {{ result.score }}</div>
           </div>
         </div>
       </div>

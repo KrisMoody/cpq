@@ -19,14 +19,14 @@ const isExpanded = computed(() => props.expandedIds.has(props.category.id))
 <template>
   <div>
     <div
-      class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 group"
+      class="flex items-center gap-3 p-3 rounded-lg hover:bg-ga-gray-100 group"
       :class="{ 'opacity-50': !category.isActive }"
       :style="{ paddingLeft: `${depth * 24 + 12}px` }"
     >
       <!-- Expand/Collapse -->
       <button
         v-if="hasChildren"
-        class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+        class="p-1 rounded hover:bg-ga-gray-300"
         @click="emit('toggle', category.id)"
       >
         <UIcon
@@ -37,7 +37,7 @@ const isExpanded = computed(() => props.expandedIds.has(props.category.id))
       <div v-else class="w-6" />
 
       <!-- Icon -->
-      <UIcon name="i-heroicons-folder" class="w-5 h-5 text-gray-400" />
+      <UIcon name="i-heroicons-folder" class="w-5 h-5 text-ga-gray-500" />
 
       <!-- Name & Info -->
       <NuxtLink
@@ -45,11 +45,11 @@ const isExpanded = computed(() => props.expandedIds.has(props.category.id))
         class="flex-1 flex items-center gap-3"
       >
         <span class="font-medium">{{ category.name }}</span>
-        <span v-if="!category.isActive" class="text-xs text-gray-400">(inactive)</span>
+        <span v-if="!category.isActive" class="text-xs text-ga-gray-500">(inactive)</span>
       </NuxtLink>
 
       <!-- Counts -->
-      <div class="flex items-center gap-4 text-sm text-gray-500">
+      <div class="flex items-center gap-4 text-sm text-ga-gray-600">
         <span v-if="category.productCount" class="flex items-center gap-1">
           <UIcon name="i-heroicons-cube" class="w-4 h-4" />
           {{ category.productCount }}

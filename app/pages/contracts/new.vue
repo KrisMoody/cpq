@@ -128,7 +128,7 @@ async function handleSubmit() {
 
         <!-- Validity Period -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Validity Period</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Validity Period</h3>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Start Date" required>
@@ -143,7 +143,7 @@ async function handleSubmit() {
 
         <!-- Pricing -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Default Discount</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Default Discount</h3>
 
           <UFormField label="Discount Percentage" hint="Applied to all products unless overridden">
             <UInput
@@ -159,7 +159,7 @@ async function handleSubmit() {
 
         <!-- Status -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Status</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Status</h3>
 
           <UFormField label="Contract Status">
             <USelect v-model="form.status" :items="statusOptions" value-key="value" />

@@ -199,12 +199,12 @@ onMounted(() => {
 <template>
   <div class="space-y-4">
     <!-- Mobile notice -->
-    <div class="md:hidden p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+    <div class="md:hidden p-4 bg-blue-50 rounded-lg border border-blue-200">
       <div class="flex items-start gap-3">
         <UIcon name="i-heroicons-device-phone-mobile" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
         <div>
-          <p class="text-sm font-medium text-blue-800 dark:text-blue-200">Best viewed on larger screens</p>
-          <p class="text-xs text-blue-600 dark:text-blue-300 mt-1">This interactive diagram works best on tablet or desktop. You can still scroll and pinch-to-zoom on mobile.</p>
+          <p class="text-sm font-medium text-blue-800">Best viewed on larger screens</p>
+          <p class="text-xs text-blue-600 mt-1">This interactive diagram works best on tablet or desktop. You can still scroll and pinch-to-zoom on mobile.</p>
         </div>
       </div>
     </div>
@@ -236,7 +236,7 @@ onMounted(() => {
           class="px-2 py-1 text-xs rounded-full transition-colors"
           :class="visibleDomains.includes(key)
             ? 'text-white'
-            : 'bg-gray-100 dark:bg-gray-800 text-gray-500'"
+            : 'bg-ga-gray-200 text-ga-gray-600'"
           :style="visibleDomains.includes(key) ? { backgroundColor: domain.color } : {}"
           @click="toggleDomain(key)"
         >
@@ -246,7 +246,7 @@ onMounted(() => {
     </div>
 
     <!-- Diagram Container -->
-    <div class="relative h-[350px] sm:h-[500px] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-900">
+    <div class="relative h-[350px] sm:h-[500px] border border-ga-gray-300 rounded-lg overflow-hidden bg-ga-gray-100">
       <VueFlow
         :nodes="nodes"
         :edges="edges"
@@ -258,20 +258,20 @@ onMounted(() => {
       >
         <template #node-entity="{ data }">
           <div
-            class="entity-node rounded-lg border-2 shadow-md p-2 min-w-[140px] bg-white dark:bg-gray-800 cursor-pointer hover:shadow-lg transition-shadow"
+            class="entity-node rounded-lg border-2 shadow-md p-2 min-w-[140px] bg-white cursor-pointer hover:shadow-lg transition-shadow"
             :style="{ borderColor: data.color }"
           >
             <div class="font-semibold text-sm" :style="{ color: data.color }">
               {{ data.name }}
             </div>
-            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
+            <div class="text-xs text-ga-gray-600 mt-1 truncate">
               {{ data.attributes.slice(0, 2).join(', ') }}
               <span v-if="data.attributes.length > 2">...</span>
             </div>
           </div>
         </template>
 
-        <MiniMap class="!bg-white dark:!bg-gray-800" />
+        <MiniMap class="!bg-white" />
         <Controls />
       </VueFlow>
 
@@ -284,7 +284,7 @@ onMounted(() => {
       >
         <div
           v-if="selectedEntity && selectedEntityData"
-          class="absolute right-0 top-0 bottom-0 w-full sm:w-72 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 shadow-xl p-4 overflow-y-auto"
+          class="absolute right-0 top-0 bottom-0 w-full sm:w-72 bg-white border-l border-ga-gray-300 shadow-xl p-4 overflow-y-auto"
         >
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-semibold" :style="{ color: selectedEntityData.color }">
@@ -300,7 +300,7 @@ onMounted(() => {
 
           <div class="space-y-4 text-sm">
             <div>
-              <h4 class="font-medium text-gray-500 dark:text-gray-400 mb-1">Domain</h4>
+              <h4 class="font-medium text-ga-gray-600 mb-1">Domain</h4>
               <span
                 class="px-2 py-0.5 rounded-full text-xs text-white"
                 :style="{ backgroundColor: selectedEntityData.color }"
@@ -310,7 +310,7 @@ onMounted(() => {
             </div>
 
             <div>
-              <h4 class="font-medium text-gray-500 dark:text-gray-400 mb-1">Attributes</h4>
+              <h4 class="font-medium text-ga-gray-600 mb-1">Attributes</h4>
               <ul class="space-y-0.5">
                 <li
                   v-for="attr in selectedEntityData.attributes"
@@ -323,16 +323,16 @@ onMounted(() => {
             </div>
 
             <div v-if="selectedEntityData.relationships.length > 0">
-              <h4 class="font-medium text-gray-500 dark:text-gray-400 mb-1">Relationships</h4>
+              <h4 class="font-medium text-ga-gray-600 mb-1">Relationships</h4>
               <ul class="space-y-1">
                 <li
                   v-for="rel in selectedEntityData.relationships"
                   :key="rel.target"
                   class="flex items-center gap-2 text-xs"
                 >
-                  <span class="text-gray-400">→</span>
+                  <span class="text-ga-gray-500">→</span>
                   <span class="font-medium">{{ rel.target }}</span>
-                  <span class="text-gray-400">({{ rel.type }})</span>
+                  <span class="text-ga-gray-500">({{ rel.type }})</span>
                 </li>
               </ul>
             </div>
@@ -352,7 +352,7 @@ onMounted(() => {
           class="w-3 h-3 rounded"
           :style="{ backgroundColor: domain.color }"
         />
-        <span class="text-gray-600 dark:text-gray-400">{{ domain.label }}</span>
+        <span class="text-ga-gray-700">{{ domain.label }}</span>
       </div>
     </div>
   </div>

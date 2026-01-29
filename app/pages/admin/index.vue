@@ -45,7 +45,7 @@ const sections = computed(() => allSections.map(section => ({
   <div class="space-y-8">
     <div>
       <h1 class="text-3xl font-bold">Admin</h1>
-      <p class="text-gray-500 mt-1">
+      <p class="text-ga-gray-600 mt-1">
         Configure your CPQ system settings and catalog
       </p>
     </div>
@@ -55,13 +55,13 @@ const sections = computed(() => allSections.map(section => ({
         <div class="flex flex-col">
           <div class="flex items-center gap-4 mb-4">
             <div
-              class="w-12 h-12 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0"
+              class="w-12 h-12 rounded-lg bg-ga-navy-100 flex items-center justify-center flex-shrink-0"
             >
-              <UIcon :name="section.icon" class="w-6 h-6 text-primary-600" />
+              <UIcon :name="section.icon" class="w-6 h-6 text-ga-navy-600" />
             </div>
             <div>
               <h2 class="font-semibold text-lg">{{ section.title }}</h2>
-              <p class="text-sm text-gray-500">{{ section.description }}</p>
+              <p class="text-sm text-ga-gray-600">{{ section.description }}</p>
             </div>
           </div>
           <div class="flex flex-wrap gap-2 mb-4">

@@ -118,14 +118,14 @@ function isSelected(categoryId: string): boolean {
 
           <!-- Category list -->
           <div class="max-h-64 overflow-y-auto space-y-0.5">
-            <div v-if="filteredCategories.length === 0" class="text-sm text-gray-500 py-2 text-center">
+            <div v-if="filteredCategories.length === 0" class="text-sm text-ga-gray-600 py-2 text-center">
               No categories found
             </div>
 
             <div
               v-for="category in filteredCategories"
               :key="category.id"
-              class="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+              class="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-ga-gray-200"
               :style="{ paddingLeft: `${(category.depth * 16) + 8}px` }"
               @click="toggleCategory(category.id)"
             >
@@ -136,7 +136,7 @@ function isSelected(categoryId: string): boolean {
               />
               <div class="flex-1 min-w-0">
                 <div class="text-sm font-medium truncate">{{ category.name }}</div>
-                <div v-if="category.depth > 0" class="text-xs text-gray-500 truncate">
+                <div v-if="category.depth > 0" class="text-xs text-ga-gray-600 truncate">
                   {{ getCategoryPath(category) }}
                 </div>
               </div>
@@ -152,7 +152,7 @@ function isSelected(categoryId: string): boolean {
           </div>
 
           <!-- Actions -->
-          <div class="mt-2 pt-2 border-t dark:border-gray-700 flex justify-between">
+          <div class="mt-2 pt-2 border-t border-ga-gray-300 flex justify-between">
             <UButton
               v-if="modelValue.length > 0"
               variant="ghost"

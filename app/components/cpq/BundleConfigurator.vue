@@ -108,7 +108,7 @@ function handleConfigure() {
     <div v-for="feature in product.features" :key="feature.id" class="space-y-3">
       <div class="flex items-center justify-between">
         <h4 class="font-medium">{{ feature.name }}</h4>
-        <span class="text-xs text-gray-400">
+        <span class="text-xs text-ga-gray-500">
           Select {{ feature.minOptions === feature.maxOptions
             ? feature.minOptions
             : `${feature.minOptions}-${feature.maxOptions}`
@@ -123,8 +123,8 @@ function handleConfigure() {
           :class="[
             'p-3 border rounded-lg cursor-pointer transition-all',
             isSelected(feature.id, option.id)
-              ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+              ? 'border-ga-navy-500 bg-ga-navy-50'
+              : 'border-ga-gray-300 hover:border-ga-gray-400'
           ]"
           @click="toggleOption(feature.id, option.id, feature.maxOptions)"
         >
@@ -135,8 +135,8 @@ function handleConfigure() {
                   'w-5 h-5 rounded flex items-center justify-center',
                   feature.maxOptions === 1 ? 'rounded-full' : 'rounded',
                   isSelected(feature.id, option.id)
-                    ? 'bg-primary-500 text-white'
-                    : 'border-2 border-gray-300'
+                    ? 'bg-ga-navy-500 text-white'
+                    : 'border-2 border-ga-gray-400'
                 ]"
               >
                 <UIcon
@@ -147,10 +147,10 @@ function handleConfigure() {
               </div>
               <div>
                 <p class="font-medium text-sm">{{ option.product?.name || 'Unknown' }}</p>
-                <p class="text-xs text-gray-500">{{ option.product?.sku }}</p>
+                <p class="text-xs text-ga-gray-600">{{ option.product?.sku }}</p>
               </div>
             </div>
-            <span class="text-sm font-medium text-primary-600">
+            <span class="text-sm font-medium text-ga-navy-500">
               {{ getOptionPrice(option) }}
             </span>
           </div>
@@ -159,7 +159,7 @@ function handleConfigure() {
 
       <p
         v-if="!getValidationStatus(feature).valid"
-        class="text-xs text-red-500"
+        class="text-xs text-ga-red-500"
       >
         {{ getValidationStatus(feature).message }}
       </p>
@@ -169,7 +169,7 @@ function handleConfigure() {
 
     <div class="flex items-center justify-between">
       <div>
-        <p class="text-sm text-gray-500">Additional options:</p>
+        <p class="text-sm text-ga-gray-600">Additional options:</p>
         <p class="text-lg font-semibold">{{ formatPrice(totalAdditionalPrice) }}</p>
       </div>
       <UButton

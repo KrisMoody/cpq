@@ -74,7 +74,7 @@ const tips = [
       <UIcon :name="tip.icon" :class="['w-5 h-5 flex-shrink-0 mt-0.5', tip.iconColor]" />
       <div>
         <p class="font-medium">{{ tip.title }}</p>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
+        <p class="text-sm text-ga-gray-600">
           {{ tip.description }}
         </p>
       </div>

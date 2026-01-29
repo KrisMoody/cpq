@@ -195,7 +195,7 @@ async function handleDelete() {
   <div class="max-w-2xl mx-auto">
     <!-- Loading -->
     <div v-if="loading" class="flex justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-ga-navy-500" />
     </div>
 
     <!-- Not Found -->
@@ -211,7 +211,7 @@ async function handleDelete() {
           <div class="flex items-center justify-between">
             <div>
               <h1 class="text-xl font-semibold">{{ attribute.name }}</h1>
-              <p class="text-sm text-gray-500">{{ attribute.code }}</p>
+              <p class="text-sm text-ga-gray-600">{{ attribute.code }}</p>
             </div>
             <div class="flex gap-2">
               <UButton variant="soft" icon="i-heroicons-pencil" @click="isEditing = true">
@@ -233,29 +233,29 @@ async function handleDelete() {
         <div class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="text-sm text-gray-500">Type</label>
+              <label class="text-sm text-ga-gray-600">Type</label>
               <p class="font-medium">{{ getTypeLabel(attribute.type) }}</p>
             </div>
             <div>
-              <label class="text-sm text-gray-500">Group</label>
+              <label class="text-sm text-ga-gray-600">Group</label>
               <p class="font-medium">{{ attribute.group?.name || 'Ungrouped' }}</p>
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="text-sm text-gray-500">Required</label>
+              <label class="text-sm text-ga-gray-600">Required</label>
               <p class="font-medium">{{ attribute.isRequired ? 'Yes' : 'No' }}</p>
             </div>
             <div>
-              <label class="text-sm text-gray-500">Usage</label>
+              <label class="text-sm text-ga-gray-600">Usage</label>
               <p class="font-medium">{{ attribute._count?.productAttributes || 0 }} products</p>
             </div>
           </div>
 
           <!-- SELECT Options -->
           <div v-if="attribute.type === 'SELECT' && attribute.options">
-            <label class="text-sm text-gray-500">Options</label>
+            <label class="text-sm text-ga-gray-600">Options</label>
             <div class="mt-1 flex flex-wrap gap-2">
               <UBadge
                 v-for="opt in (attribute.options as Array<{ label: string; value: string }>)"
@@ -270,11 +270,11 @@ async function handleDelete() {
           <!-- NUMBER Constraints -->
           <div v-if="attribute.type === 'NUMBER' && numberConstraints" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div v-if="numberConstraints.min !== undefined">
-              <label class="text-sm text-gray-500">Minimum</label>
+              <label class="text-sm text-ga-gray-600">Minimum</label>
               <p class="font-medium">{{ numberConstraints.min }}</p>
             </div>
             <div v-if="numberConstraints.max !== undefined">
-              <label class="text-sm text-gray-500">Maximum</label>
+              <label class="text-sm text-ga-gray-600">Maximum</label>
               <p class="font-medium">{{ numberConstraints.max }}</p>
             </div>
           </div>
@@ -282,11 +282,11 @@ async function handleDelete() {
           <!-- TEXT Constraints -->
           <div v-if="attribute.type === 'TEXT' && textConstraints" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div v-if="textConstraints.minLength !== undefined">
-              <label class="text-sm text-gray-500">Min Length</label>
+              <label class="text-sm text-ga-gray-600">Min Length</label>
               <p class="font-medium">{{ textConstraints.minLength }}</p>
             </div>
             <div v-if="textConstraints.maxLength !== undefined">
-              <label class="text-sm text-gray-500">Max Length</label>
+              <label class="text-sm text-ga-gray-600">Max Length</label>
               <p class="font-medium">{{ textConstraints.maxLength }}</p>
             </div>
           </div>

@@ -53,17 +53,17 @@ function parseMarkdown(content: string): ParsedContent {
   // Simple markdown parsing
   // Headers
   processedContent = processedContent.replace(/^### (.*$)/gm, '<h3 class="text-lg font-semibold mt-6 mb-3">$1</h3>')
-  processedContent = processedContent.replace(/^## (.*$)/gm, '<h2 class="text-xl font-bold mt-8 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">$1</h2>')
+  processedContent = processedContent.replace(/^## (.*$)/gm, '<h2 class="text-xl font-bold mt-8 mb-4 pb-2 border-b border-ga-gray-300">$1</h2>')
   processedContent = processedContent.replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold mb-6">$1</h1>')
 
   // Horizontal rules
-  processedContent = processedContent.replace(/^---$/gm, '<hr class="my-8 border-gray-200 dark:border-gray-700" />')
+  processedContent = processedContent.replace(/^---$/gm, '<hr class="my-8 border-ga-gray-300" />')
 
   // Code blocks (non-mermaid) - MUST be processed before inline code
   // Handle various whitespace patterns: optional space after backticks, optional trailing whitespace after language, CRLF or LF
   processedContent = processedContent.replace(/``` *(\w+)?[ \t]*\r?\n([\s\S]*?)```/g, (_, lang, code) => {
     const language = lang || 'text'
-    return `<pre class="p-4 bg-gray-900 text-gray-100 rounded-lg overflow-x-auto my-4"><code class="language-${language} text-sm">${escapeHtml(code.trim())}</code></pre>`
+    return `<pre class="p-4 bg-ga-gray-900 text-ga-gray-100 rounded-lg overflow-x-auto my-4"><code class="language-${language} text-sm">${escapeHtml(code.trim())}</code></pre>`
   })
 
   // Bold and italic
@@ -72,7 +72,7 @@ function parseMarkdown(content: string): ParsedContent {
   processedContent = processedContent.replace(/\*(.*?)\*/g, '<em>$1</em>')
 
   // Inline code - processed after code blocks to avoid matching inside fenced blocks
-  processedContent = processedContent.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm font-mono">$1</code>')
+  processedContent = processedContent.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-ga-gray-200 rounded text-sm font-mono">$1</code>')
 
   // Tables
   processedContent = processedContent.replace(/^\|(.+)\|$/gm, (match) => {
@@ -83,8 +83,8 @@ function parseMarkdown(content: string): ParsedContent {
     const isHeader = match.includes('---')
     const cellTag = isHeader ? 'th' : 'td'
     const cellClass = isHeader
-      ? 'px-4 py-2 text-left font-semibold bg-gray-50 dark:bg-gray-800'
-      : 'px-4 py-2 border-t border-gray-200 dark:border-gray-700'
+      ? 'px-4 py-2 text-left font-semibold bg-ga-gray-100'
+      : 'px-4 py-2 border-t border-ga-gray-300'
     return `<tr>${cells.map(c => `<${cellTag} class="${cellClass}">${c.trim()}</${cellTag}>`).join('')}</tr>`
   })
 
@@ -95,7 +95,7 @@ function parseMarkdown(content: string): ParsedContent {
       // Remove separator rows and wrap in table
       const cleanedMatch = match.replace(/<tr class="table-separator"><\/tr>/g, '')
       if (cleanedMatch.trim()) {
-        return `<div class="overflow-x-auto my-4"><table class="min-w-full border border-gray-200 dark:border-gray-700 rounded-lg">${cleanedMatch}</table></div>`
+        return `<div class="overflow-x-auto my-4"><table class="min-w-full border border-ga-gray-300 rounded-lg">${cleanedMatch}</table></div>`
       }
       return ''
     },
@@ -124,9 +124,9 @@ function parseMarkdown(content: string): ParsedContent {
   // Details/Summary (checkpoint questions)
   processedContent = processedContent.replace(
     /<details>\s*<summary>(.*?)<\/summary>\s*([\s\S]*?)<\/details>/g,
-    `<details class="my-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+    `<details class="my-2 p-3 bg-ga-gray-100 rounded-lg">
       <summary class="cursor-pointer font-medium text-primary hover:text-primary/80">$1</summary>
-      <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400">$2</div>
+      <div class="mt-2 pt-2 border-t border-ga-gray-300 text-ga-gray-700">$2</div>
     </details>`,
   )
 
@@ -209,29 +209,29 @@ const parsedContent = computed(() => {
     </div>
 
     <!-- Module Header -->
-    <div class="pb-4 border-b border-gray-200 dark:border-gray-700">
+    <div class="pb-4 border-b border-ga-gray-300">
       <div class="flex items-center gap-2 mb-2">
-        <span class="text-sm font-mono text-gray-500">Module {{ module.number }}</span>
+        <span class="text-sm font-mono text-ga-gray-600">Module {{ module.number }}</span>
         <UBadge variant="subtle" size="xs">
           {{ module.level }}
         </UBadge>
       </div>
       <h1 class="text-2xl font-bold">{{ module.title }}</h1>
-      <p class="text-gray-500 dark:text-gray-400">{{ module.focus }}</p>
+      <p class="text-ga-gray-600">{{ module.focus }}</p>
     </div>
 
     <!-- Loading State -->
     <div v-if="pending" class="flex items-center justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-gray-400" />
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-ga-gray-500" />
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg text-red-600 dark:text-red-400">
+    <div v-else-if="error" class="p-4 bg-red-50 rounded-lg text-red-600">
       Failed to load module content. Please try again.
     </div>
 
     <!-- Content -->
-    <div v-else-if="parsedContent" class="prose dark:prose-invert max-w-none">
+    <div v-else-if="parsedContent" class="prose max-w-none">
       <!-- Render parsed HTML -->
       <div v-html="parsedContent.html" />
 
@@ -244,7 +244,7 @@ const parsedContent = computed(() => {
     </div>
 
     <!-- Navigation Footer -->
-    <div class="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+    <div class="flex items-center justify-between pt-6 border-t border-ga-gray-300">
       <UButton
         v-if="previousModule"
         variant="ghost"

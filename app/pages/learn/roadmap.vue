@@ -157,13 +157,13 @@ useHead({
       <div class="flex items-center gap-2 mb-2">
         <NuxtLink
           to="/learn"
-          class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+          class="text-ga-gray-600 hover:text-ga-gray-800"
         >
           <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" />
         </NuxtLink>
         <h1 class="text-2xl font-bold">Release Roadmap</h1>
       </div>
-      <p class="text-gray-500 dark:text-gray-400">
+      <p class="text-ga-gray-600">
         CPQ implementation phases for incremental development into GetAccept
       </p>
     </div>
@@ -173,7 +173,7 @@ useHead({
       <!-- Phase Cards -->
       <div class="lg:col-span-2 space-y-4">
         <h2 class="text-lg font-semibold">Release Phases</h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
+        <p class="text-sm text-ga-gray-600">
           Click a phase to filter diagrams below. Expand cards for details.
         </p>
 
@@ -225,7 +225,7 @@ useHead({
         <div
           v-for="entity in entitiesForPhase(selectedPhase)"
           :key="entity.entity"
-          class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800"
+          class="p-3 rounded-lg bg-ga-gray-100"
         >
           <div class="flex items-center justify-between mb-1">
             <NuxtLink
@@ -245,19 +245,19 @@ useHead({
               {{ entity.relationship }}
             </UBadge>
           </div>
-          <p v-if="entity.gaEntity" class="text-xs text-gray-500">
+          <p v-if="entity.gaEntity" class="text-xs text-ga-gray-600">
             GA: {{ entity.gaEntity }}
           </p>
           <p
             v-if="entity.extensibilityNotes"
-            class="text-xs text-gray-400 mt-1"
+            class="text-xs text-ga-gray-500 mt-1"
           >
             {{ entity.extensibilityNotes }}
           </p>
           <!-- Strategy-specific notes -->
           <p
             v-if="strategyEntityNotes[entity.entity]"
-            class="text-xs text-primary-600 dark:text-primary-400 mt-2 p-1.5 bg-primary-50 dark:bg-primary-900/30 rounded"
+            class="text-xs text-ga-navy-600 mt-2 p-1.5 bg-ga-navy-50 rounded"
           >
             <strong>{{ selectedStrategy }} strategy:</strong>
             {{ strategyEntityNotes[entity.entity] }}
@@ -272,7 +272,7 @@ useHead({
         <div class="flex items-center justify-between">
           <h3 class="font-semibold">Entity Relationship Diagrams</h3>
           <div v-if="selectedPhase" class="flex items-center gap-2">
-            <span class="text-sm text-gray-500">Showing:</span>
+            <span class="text-sm text-ga-gray-600">Showing:</span>
             <PhaseBadge :phase="selectedPhase" size="sm" />
           </div>
         </div>
@@ -289,7 +289,7 @@ useHead({
       />
 
       <div
-        class="border rounded-lg dark:border-gray-700 bg-white dark:bg-gray-900"
+        class="border rounded-lg border-ga-gray-300 bg-white"
       >
         <RoadmapMermaidDiagram
           :id="`diagram-${activeDiagramTab}-${selectedPhase || 'all'}`"
@@ -297,7 +297,7 @@ useHead({
         />
       </div>
 
-      <p class="text-xs text-gray-500 mt-3">
+      <p class="text-xs text-ga-gray-600 mt-3">
         <template v-if="activeDiagramTab === 'dataModel'">
           Entity relationships from the Prisma schema. Shows foreign keys and
           cardinality.
@@ -319,38 +319,38 @@ useHead({
       </template>
 
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <table class="min-w-full divide-y divide-ga-gray-300">
           <thead>
             <tr>
               <th
-                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-2 text-left text-xs font-medium text-ga-gray-600 uppercase"
               >
                 CPQ Entity
               </th>
               <th
-                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-2 text-left text-xs font-medium text-ga-gray-600 uppercase"
               >
                 GA Entity
               </th>
               <th
-                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-2 text-left text-xs font-medium text-ga-gray-600 uppercase"
               >
                 Relationship
               </th>
               <th
-                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase"
+                class="px-4 py-2 text-left text-xs font-medium text-ga-gray-600 uppercase"
               >
                 Phase
               </th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody class="divide-y divide-ga-gray-300">
             <tr v-for="mapping in gaEntityMappings" :key="mapping.cpqEntity">
               <td class="px-4 py-2 font-medium">{{ mapping.cpqEntity }}</td>
-              <td class="px-4 py-2 text-gray-600 dark:text-gray-400">
+              <td class="px-4 py-2 text-ga-gray-700">
                 {{ mapping.gaEntity }}
               </td>
-              <td class="px-4 py-2 text-sm text-gray-500">
+              <td class="px-4 py-2 text-sm text-ga-gray-600">
                 {{ mapping.relationship }}
               </td>
               <td class="px-4 py-2">
@@ -388,7 +388,7 @@ useHead({
         </div>
       </template>
 
-      <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+      <p class="text-sm text-ga-gray-600 mb-4">
         How GetAccept entities would be extended or referenced under the
         <strong>{{ selectedStrategy }}</strong> strategy. Click to expand schema
         details.
@@ -398,16 +398,16 @@ useHead({
         <div
           v-for="ext in strategyEntityExtensions"
           :key="ext.gaEntity"
-          class="border rounded-lg dark:border-gray-700 overflow-hidden"
+          class="border rounded-lg border-ga-gray-300 overflow-hidden"
         >
           <!-- Header (clickable) -->
           <button
-            class="w-full p-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            class="w-full p-4 text-left flex items-center justify-between hover:bg-ga-gray-200 transition-colors"
             @click="toggleExtension(ext.gaEntity)"
           >
             <div>
               <h4 class="font-medium">{{ ext.gaEntity }}</h4>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
+              <p class="text-sm text-ga-gray-600">
                 {{ ext.description }}
               </p>
             </div>
@@ -417,26 +417,26 @@ useHead({
                   ? 'i-heroicons-chevron-up'
                   : 'i-heroicons-chevron-down'
               "
-              class="w-5 h-5 text-gray-400"
+              class="w-5 h-5 text-ga-gray-500"
             />
           </button>
 
           <!-- Expanded content -->
           <div
             v-if="expandedExtension === ext.gaEntity"
-            class="border-t dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800/50"
+            class="border-t border-ga-gray-300 p-4 bg-ga-gray-100"
           >
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
               <!-- Current Schema -->
               <div>
                 <h5
-                  class="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-1"
+                  class="text-xs font-semibold text-ga-gray-600 uppercase mb-2 flex items-center gap-1"
                 >
                   <UIcon name="i-heroicons-document" class="w-3 h-3" />
                   Current GA Schema
                 </h5>
                 <pre
-                  class="text-xs bg-white dark:bg-gray-900 p-3 rounded border dark:border-gray-700 overflow-x-auto"
+                  class="text-xs bg-white p-3 rounded border border-ga-gray-300 overflow-x-auto"
                   >{{ ext.currentSchema }}</pre
                 >
               </div>
@@ -444,13 +444,13 @@ useHead({
               <!-- Extended Schema -->
               <div>
                 <h5
-                  class="text-xs font-semibold text-primary-600 dark:text-primary-400 uppercase mb-2 flex items-center gap-1"
+                  class="text-xs font-semibold text-ga-navy-600 uppercase mb-2 flex items-center gap-1"
                 >
                   <UIcon name="i-heroicons-plus-circle" class="w-3 h-3" />
                   With {{ selectedStrategy }} Strategy
                 </h5>
                 <pre
-                  class="text-xs bg-white dark:bg-gray-900 p-3 rounded border-2 border-primary-200 dark:border-primary-800 overflow-x-auto"
+                  class="text-xs bg-white p-3 rounded border-2 border-ga-navy-200 overflow-x-auto"
                   >{{ ext.extendedSchema }}</pre
                 >
               </div>
@@ -459,7 +459,7 @@ useHead({
             <!-- Implications -->
             <div>
               <h5
-                class="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-1"
+                class="text-xs font-semibold text-ga-gray-600 uppercase mb-2 flex items-center gap-1"
               >
                 <UIcon
                   name="i-heroicons-exclamation-triangle"
@@ -467,7 +467,7 @@ useHead({
                 />
                 Implications
               </h5>
-              <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+              <ul class="text-sm text-ga-gray-700 space-y-1">
                 <li
                   v-for="implication in ext.implications"
                   :key="implication"
@@ -475,7 +475,7 @@ useHead({
                 >
                   <UIcon
                     name="i-heroicons-arrow-right"
-                    class="w-4 h-4 mt-0.5 text-gray-400 shrink-0"
+                    class="w-4 h-4 mt-0.5 text-ga-gray-500 shrink-0"
                   />
                   {{ implication }}
                 </li>
@@ -498,7 +498,7 @@ useHead({
         <!-- Positive -->
         <div>
           <h4
-            class="text-sm font-semibold text-green-600 dark:text-green-400 mb-3 flex items-center gap-1"
+            class="text-sm font-semibold text-green-600 mb-3 flex items-center gap-1"
           >
             <UIcon name="i-heroicons-check-circle" class="w-4 h-4" />
             Benefits
@@ -507,7 +507,7 @@ useHead({
             <li
               v-for="item in strategyImplications.positive"
               :key="item"
-              class="text-sm text-gray-600 dark:text-gray-400 flex items-start gap-2"
+              class="text-sm text-ga-gray-700 flex items-start gap-2"
             >
               <span class="text-green-500">+</span>
               {{ item }}
@@ -518,7 +518,7 @@ useHead({
         <!-- Negative -->
         <div>
           <h4
-            class="text-sm font-semibold text-red-600 dark:text-red-400 mb-3 flex items-center gap-1"
+            class="text-sm font-semibold text-red-600 mb-3 flex items-center gap-1"
           >
             <UIcon name="i-heroicons-x-circle" class="w-4 h-4" />
             Drawbacks
@@ -527,7 +527,7 @@ useHead({
             <li
               v-for="item in strategyImplications.negative"
               :key="item"
-              class="text-sm text-gray-600 dark:text-gray-400 flex items-start gap-2"
+              class="text-sm text-ga-gray-700 flex items-start gap-2"
             >
               <span class="text-red-500">-</span>
               {{ item }}
@@ -538,7 +538,7 @@ useHead({
         <!-- Considerations -->
         <div>
           <h4
-            class="text-sm font-semibold text-amber-600 dark:text-amber-400 mb-3 flex items-center gap-1"
+            class="text-sm font-semibold text-amber-600 mb-3 flex items-center gap-1"
           >
             <UIcon name="i-heroicons-light-bulb" class="w-4 h-4" />
             Key Considerations
@@ -547,7 +547,7 @@ useHead({
             <li
               v-for="item in strategyImplications.considerations"
               :key="item"
-              class="text-sm text-gray-600 dark:text-gray-400 flex items-start gap-2"
+              class="text-sm text-ga-gray-700 flex items-start gap-2"
             >
               <span class="text-amber-500">!</span>
               {{ item }}
@@ -568,7 +568,7 @@ useHead({
         </div>
       </template>
 
-      <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+      <p class="text-sm text-ga-gray-600 mb-4">
         <template v-if="selectedStrategy">
           Patterns specific to the
           <strong>{{ selectedStrategy }}</strong> integration strategy.
@@ -586,11 +586,11 @@ useHead({
           class="border-l-4 border-primary-500 pl-4"
         >
           <h4 class="font-medium">{{ pattern.name }}</h4>
-          <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+          <p class="text-sm text-ga-gray-700 mb-2">
             {{ pattern.description }}
           </p>
           <pre
-            class="text-xs bg-gray-50 dark:bg-gray-900 p-2 rounded overflow-x-auto"
+            class="text-xs bg-ga-gray-100 p-2 rounded overflow-x-auto"
             >{{ pattern.example }}</pre
           >
         </div>
@@ -614,7 +614,7 @@ useHead({
             {{ group.title }}
             <PhaseBadge :phase="group.phase" size="sm" />
           </h4>
-          <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+          <ul class="text-sm text-ga-gray-700 space-y-1">
             <li v-for="decision in group.decisions" :key="decision">
               {{ decision }}
             </li>

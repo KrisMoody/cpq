@@ -120,7 +120,7 @@ async function handleSubmit() {
       <UButton to="/affinities" variant="ghost" icon="i-heroicons-arrow-left" />
       <div>
         <h1 class="text-2xl font-bold">New Product Affinity</h1>
-        <p class="text-gray-500">Create a recommendation rule between products</p>
+        <p class="text-ga-gray-600">Create a recommendation rule between products</p>
       </div>
     </div>
 

@@ -17,7 +17,7 @@ function getPhaseIndicator(path?: string): {
 
   const colors: Record<number, string> = {
     1: "text-emerald-500",
-    2: "text-blue-500",
+    2: "text-ga-blue-500",
     3: "text-purple-500",
     4: "text-orange-500",
     5: "text-pink-500",
@@ -25,7 +25,7 @@ function getPhaseIndicator(path?: string): {
 
   return {
     number: phase.number,
-    color: colors[phase.number] || "text-gray-400",
+    color: colors[phase.number] || "text-ga-gray-600",
   };
 }
 
@@ -342,15 +342,15 @@ const parentRoute = computed(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-950">
+  <div class="min-h-screen bg-ga-gray-50">
     <!-- Mobile Header -->
     <header
-      class="lg:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
+      class="lg:hidden sticky top-0 z-50 bg-white border-b border-ga-gray-400"
     >
       <div class="flex items-center justify-between h-14 px-4">
         <button
           type="button"
-          class="p-2 -ml-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+          class="p-2 -ml-2 rounded-lg text-ga-gray-700 hover:bg-ga-gray-200"
           @click="mobileMenuOpen = true"
         >
           <UIcon name="i-heroicons-bars-3" class="w-6 h-6" />
@@ -358,12 +358,11 @@ const parentRoute = computed(() => {
         <NuxtLink to="/" class="flex items-center gap-2">
           <UIcon
             name="i-heroicons-squares-2x2"
-            class="w-6 h-6 text-primary-500"
+            class="w-6 h-6 text-ga-gray-950"
           />
-          <span class="font-semibold">CPQ Learning</span>
+          <span class="font-semibold text-ga-gray-950">CPQ Learning</span>
         </NuxtLink>
         <div class="flex items-center gap-1">
-          <UColorModeButton variant="ghost" size="sm" />
           <AuthUserMenu />
         </div>
       </div>
@@ -372,16 +371,16 @@ const parentRoute = computed(() => {
     <div class="flex">
       <!-- Desktop Sidebar -->
       <aside
-        class="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800"
+        class="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-white border-r border-ga-gray-400"
       >
         <!-- Sidebar Header -->
-        <div class="px-4 py-4 border-b border-gray-200 dark:border-gray-800 space-y-3">
+        <div class="px-4 py-4 border-b border-ga-gray-400 space-y-3">
           <NuxtLink to="/" class="flex items-center gap-3">
             <UIcon
               name="i-heroicons-squares-2x2"
-              class="w-8 h-8 text-primary-500"
+              class="w-8 h-8 text-ga-gray-950"
             />
-            <span class="font-bold text-lg">CPQ Learning</span>
+            <span class="font-bold text-lg text-ga-gray-950">CPQ Learning</span>
           </NuxtLink>
           <PhaseSelector />
         </div>
@@ -394,11 +393,11 @@ const parentRoute = computed(() => {
               <li v-if="item.type === 'section'" class="pt-4 first:pt-0">
                 <div class="flex items-center gap-2 px-3 pb-2">
                   <span
-                    class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500"
+                    class="text-xs font-semibold uppercase tracking-wider text-ga-gray-600"
                   >
                     {{ item.label }}
                   </span>
-                  <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                  <div class="flex-1 h-px bg-ga-gray-400" />
                 </div>
               </li>
 
@@ -409,8 +408,8 @@ const parentRoute = computed(() => {
                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                   :class="
                     isActive(item.to!)
-                      ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      ? 'bg-ga-gray-200 text-ga-gray-950'
+                      : 'text-ga-gray-800 hover:bg-ga-gray-200'
                   "
                 >
                   <UIcon :name="item.icon!" class="w-5 h-5 flex-shrink-0" />
@@ -436,8 +435,8 @@ const parentRoute = computed(() => {
                   class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                   :class="
                     isGroupActive(item)
-                      ? 'text-primary-700 dark:text-primary-300'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      ? 'text-ga-gray-950'
+                      : 'text-ga-gray-800 hover:bg-ga-gray-200'
                   "
                   @click="toggleGroup(item.id)"
                 >
@@ -457,7 +456,7 @@ const parentRoute = computed(() => {
                 <!-- Children -->
                 <ul
                   v-show="expandedGroups.includes(item.id)"
-                  class="mt-1 ml-4 pl-4 border-l border-gray-200 dark:border-gray-700 space-y-1"
+                  class="mt-1 ml-4 pl-4 border-l border-ga-gray-400 space-y-1"
                 >
                   <li v-for="child in item.children" :key="child.id">
                     <NuxtLink
@@ -465,8 +464,8 @@ const parentRoute = computed(() => {
                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors"
                       :class="
                         isActive(child.to!)
-                          ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium'
-                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                          ? 'bg-ga-gray-200 text-ga-gray-950 font-medium'
+                          : 'text-ga-gray-700 hover:bg-ga-gray-200'
                       "
                     >
                       <UIcon
@@ -501,9 +500,9 @@ const parentRoute = computed(() => {
         :ui="{ content: 'max-w-xs' }"
       >
         <template #content>
-          <div class="flex flex-col h-full bg-white dark:bg-gray-900">
+          <div class="flex flex-col h-full bg-white">
             <!-- Mobile Sidebar Header -->
-            <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-800 space-y-3">
+            <div class="px-4 py-3 border-b border-ga-gray-400 space-y-3">
               <div class="flex items-center justify-between">
                 <NuxtLink
                   to="/"
@@ -512,13 +511,13 @@ const parentRoute = computed(() => {
                 >
                   <UIcon
                     name="i-heroicons-squares-2x2"
-                    class="w-6 h-6 text-primary-500"
+                    class="w-6 h-6 text-ga-gray-950"
                   />
-                  <span class="font-semibold">CPQ Learning</span>
+                  <span class="font-semibold text-ga-gray-950">CPQ Learning</span>
                 </NuxtLink>
                 <button
                   type="button"
-                  class="p-2 -mr-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  class="p-2 -mr-2 rounded-lg text-ga-gray-700 hover:bg-ga-gray-200"
                   @click="mobileMenuOpen = false"
                 >
                   <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
@@ -535,11 +534,11 @@ const parentRoute = computed(() => {
                   <li v-if="item.type === 'section'" class="pt-4 first:pt-0">
                     <div class="flex items-center gap-2 px-3 pb-2">
                       <span
-                        class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500"
+                        class="text-xs font-semibold uppercase tracking-wider text-ga-gray-600"
                       >
                         {{ item.label }}
                       </span>
-                      <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                      <div class="flex-1 h-px bg-ga-gray-400" />
                     </div>
                   </li>
 
@@ -550,8 +549,8 @@ const parentRoute = computed(() => {
                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors"
                       :class="
                         isActive(item.to!)
-                          ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                          ? 'bg-ga-gray-200 text-ga-gray-950'
+                          : 'text-ga-gray-800 hover:bg-ga-gray-200'
                       "
                     >
                       <UIcon :name="item.icon!" class="w-5 h-5 flex-shrink-0" />
@@ -577,8 +576,8 @@ const parentRoute = computed(() => {
                       class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors"
                       :class="
                         isGroupActive(item)
-                          ? 'text-primary-700 dark:text-primary-300'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                          ? 'text-ga-gray-950'
+                          : 'text-ga-gray-800 hover:bg-ga-gray-200'
                       "
                       @click="toggleGroup(item.id)"
                     >
@@ -600,7 +599,7 @@ const parentRoute = computed(() => {
 
                     <ul
                       v-show="expandedGroups.includes(item.id)"
-                      class="mt-1 ml-4 pl-4 border-l border-gray-200 dark:border-gray-700 space-y-1"
+                      class="mt-1 ml-4 pl-4 border-l border-ga-gray-400 space-y-1"
                     >
                       <li v-for="child in item.children" :key="child.id">
                         <NuxtLink
@@ -608,8 +607,8 @@ const parentRoute = computed(() => {
                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors"
                           :class="
                             isActive(child.to!)
-                              ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium'
-                              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                              ? 'bg-ga-gray-200 text-ga-gray-950 font-medium'
+                              : 'text-ga-gray-700 hover:bg-ga-gray-200'
                           "
                         >
                           <UIcon
@@ -643,9 +642,8 @@ const parentRoute = computed(() => {
       <div class="flex-1 lg:pl-64">
         <!-- Desktop Top Navigation -->
         <header
-          class="hidden lg:flex sticky top-0 z-40 h-16 items-center justify-end gap-2 px-6 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
+          class="hidden lg:flex sticky top-0 z-40 h-16 items-center justify-end gap-2 px-6 bg-white border-b border-ga-gray-400"
         >
-          <UColorModeButton variant="ghost" size="sm" />
           <AuthUserMenu />
         </header>
 
@@ -657,7 +655,7 @@ const parentRoute = computed(() => {
             class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-0"
           >
             <ol
-              class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 overflow-x-auto"
+              class="flex items-center gap-1 text-sm text-ga-gray-700 overflow-x-auto"
             >
               <li class="flex items-center">
                 <UButton
@@ -674,12 +672,12 @@ const parentRoute = computed(() => {
                   <UIcon
                     v-if="index > 0"
                     name="i-heroicons-chevron-right-20-solid"
-                    class="w-4 h-4 flex-shrink-0 text-gray-400 dark:text-gray-500"
+                    class="w-4 h-4 flex-shrink-0 text-ga-gray-600"
                   />
                   <NuxtLink
                     v-if="crumb.to"
                     :to="crumb.to"
-                    class="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                    class="hover:text-ga-gray-950 transition-colors"
                   >
                     {{ crumb.label }}
                   </NuxtLink>
@@ -687,7 +685,7 @@ const parentRoute = computed(() => {
                     v-else
                     :class="
                       index === breadcrumbs.length - 1
-                        ? 'text-gray-900 dark:text-gray-100 font-medium'
+                        ? 'text-ga-gray-950 font-medium'
                         : ''
                     "
                   >
@@ -704,10 +702,10 @@ const parentRoute = computed(() => {
         </main>
 
         <!-- Footer -->
-        <footer class="border-t border-gray-200 dark:border-gray-800">
+        <footer class="border-t border-ga-gray-400">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div
-              class="flex items-center justify-between text-sm text-gray-500"
+              class="flex items-center justify-between text-sm text-ga-gray-700"
             >
               <p>CPQ Learning Application</p>
               <p class="hidden sm:block">Built with Nuxt 4 + Prisma + Neon</p>

@@ -211,7 +211,7 @@ async function handleSubmit() {
 
         <!-- Basic Info -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Basic Information</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Basic Information</h3>
 
           <UFormField label="Name" required>
             <UInput
@@ -240,7 +240,7 @@ async function handleSubmit() {
 
         <!-- Product Type (Phase 2+ for Bundle option) -->
         <div v-if="phaseFeatures.bundles" class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Product Type</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Product Type</h3>
 
           <UFormField label="Type" hint="Bundles can have configurable features and options">
             <USelect
@@ -253,8 +253,8 @@ async function handleSubmit() {
 
         <!-- Bundle Features (Phase 2+) -->
         <div v-if="phaseFeatures.bundles && isBundle" class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Bundle Features</h3>
-          <p class="text-sm text-gray-500">
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Bundle Features</h3>
+          <p class="text-sm text-ga-gray-600">
             Define features and options for this configurable bundle.
           </p>
           <CpqBundleFeaturesEditor
@@ -265,8 +265,8 @@ async function handleSubmit() {
 
         <!-- Categories -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Categories</h3>
-          <p class="text-sm text-gray-500">
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Categories</h3>
+          <p class="text-sm text-ga-gray-600">
             Assign this product to one or more categories. Categories help organize products and can suggest relevant attributes.
           </p>
           <CpqCategorySelector
@@ -277,10 +277,10 @@ async function handleSubmit() {
 
         <!-- Attributes (Phase 4+) -->
         <div v-if="phaseFeatures.attributes && attributes.length > 0" class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Attributes</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Attributes</h3>
 
           <!-- Suggested Attributes (from selected categories) -->
-          <div v-if="loadingSuggestedAttributes" class="flex items-center gap-2 text-sm text-gray-500">
+          <div v-if="loadingSuggestedAttributes" class="flex items-center gap-2 text-sm text-ga-gray-600">
             <UIcon name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
             Loading suggested attributes...
           </div>
@@ -288,7 +288,7 @@ async function handleSubmit() {
           <div v-else-if="suggestedAttributes.length > 0" class="space-y-4">
             <div class="flex items-center gap-2">
               <UBadge color="primary" variant="subtle" size="xs">Suggested</UBadge>
-              <span class="text-sm text-gray-500">Based on selected categories</span>
+              <span class="text-sm text-ga-gray-600">Based on selected categories</span>
             </div>
 
             <div class="space-y-3">
@@ -310,7 +310,7 @@ async function handleSubmit() {
             </div>
           </div>
 
-          <div v-else-if="form.categoryIds.length === 0" class="text-sm text-gray-500 italic">
+          <div v-else-if="form.categoryIds.length === 0" class="text-sm text-ga-gray-600 italic">
             Select categories above to see suggested attributes.
           </div>
 
@@ -329,7 +329,7 @@ async function handleSubmit() {
               <div v-for="group in groups" :key="group.id">
                 <h4
                   v-if="otherAttributes.some(a => a.groupId === group.id)"
-                  class="text-sm font-medium text-gray-500 border-b pb-1 mb-3 dark:border-gray-700"
+                  class="text-sm font-medium text-ga-gray-600 border-b pb-1 mb-3 border-ga-gray-300"
                 >
                   {{ group.name }}
                 </h4>
@@ -353,7 +353,7 @@ async function handleSubmit() {
               <div v-if="otherAttributes.some(a => !a.groupId)">
                 <h4
                   v-if="groups.length > 0"
-                  class="text-sm font-medium text-gray-500 border-b pb-1 mb-3 dark:border-gray-700"
+                  class="text-sm font-medium text-ga-gray-600 border-b pb-1 mb-3 border-ga-gray-300"
                 >
                   Other
                 </h4>
@@ -378,7 +378,7 @@ async function handleSubmit() {
 
         <!-- Billing & Pricing -->
         <div class="space-y-4">
-          <h3 class="text-sm font-medium text-gray-500 uppercase">Billing & Pricing</h3>
+          <h3 class="text-sm font-medium text-ga-gray-600 uppercase">Billing & Pricing</h3>
 
           <UFormField v-if="phaseFeatures.subscriptions" label="Billing Frequency" hint="How often this product is billed">
             <USelect

@@ -26,27 +26,27 @@ const items = computed(() =>
 
 // Phase color mapping for the trigger button border/accent
 const phaseColors: Record<number, string> = {
-  1: 'border-emerald-400 dark:border-emerald-600',
-  2: 'border-blue-400 dark:border-blue-600',
-  3: 'border-purple-400 dark:border-purple-600',
-  4: 'border-orange-400 dark:border-orange-600',
-  5: 'border-pink-400 dark:border-pink-600'
+  1: 'border-emerald-400',
+  2: 'border-blue-400',
+  3: 'border-purple-400',
+  4: 'border-orange-400',
+  5: 'border-pink-400'
 }
 
 const phaseBgColors: Record<number, string> = {
-  1: 'bg-emerald-50 dark:bg-emerald-900/20',
-  2: 'bg-blue-50 dark:bg-blue-900/20',
-  3: 'bg-purple-50 dark:bg-purple-900/20',
-  4: 'bg-orange-50 dark:bg-orange-900/20',
-  5: 'bg-pink-50 dark:bg-pink-900/20'
+  1: 'bg-emerald-50',
+  2: 'bg-blue-50',
+  3: 'bg-purple-50',
+  4: 'bg-orange-50',
+  5: 'bg-pink-50'
 }
 
 const phaseTextColors: Record<number, string> = {
-  1: 'text-emerald-700 dark:text-emerald-400',
-  2: 'text-blue-700 dark:text-blue-400',
-  3: 'text-purple-700 dark:text-purple-400',
-  4: 'text-orange-700 dark:text-orange-400',
-  5: 'text-pink-700 dark:text-pink-400'
+  1: 'text-emerald-700',
+  2: 'text-blue-700',
+  3: 'text-purple-700',
+  4: 'text-orange-700',
+  5: 'text-pink-700'
 }
 
 const phaseDotColors: Record<number, string> = {
@@ -74,12 +74,12 @@ const phaseDotColors: Record<number, string> = {
           <span :class="phaseTextColors[currentPhase]" class="font-medium">
             Phase {{ currentPhase }}
           </span>
-          <span class="text-gray-500 dark:text-gray-400 ml-1 text-xs">
+          <span class="text-ga-gray-600 ml-1 text-xs">
             {{ currentPhaseDetails?.name }}
           </span>
         </span>
       </span>
-      <UIcon name="i-heroicons-chevron-up-down" class="w-4 h-4 text-gray-400" />
+      <UIcon name="i-heroicons-chevron-up-down" class="w-4 h-4 text-ga-gray-600" />
     </UButton>
 
     <template #item="{ item }">
@@ -96,7 +96,7 @@ const phaseDotColors: Record<number, string> = {
             >
               Phase {{ item.phaseNumber }}
             </span>
-            <span class="text-gray-900 dark:text-gray-100 text-sm">
+            <span class="text-ga-gray-950 text-sm">
               {{ phases.find(p => p.number === item.phaseNumber)?.name }}
             </span>
             <UIcon
@@ -106,7 +106,7 @@ const phaseDotColors: Record<number, string> = {
               :class="phaseTextColors[item.phaseNumber]"
             />
           </div>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">
+          <p class="text-xs text-ga-gray-600 mt-0.5 line-clamp-2">
             {{ item.description }}
           </p>
         </div>

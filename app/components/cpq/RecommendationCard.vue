@@ -66,7 +66,7 @@ const displayPrice = computed(() => {
 </script>
 
 <template>
-  <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+  <div class="p-3 bg-ga-gray-100 rounded-lg">
     <div class="flex items-start justify-between gap-2">
       <div class="min-w-0 flex-1">
         <div class="flex items-center gap-2 flex-wrap">
@@ -83,11 +83,11 @@ const displayPrice = computed(() => {
             {{ recommendation.billingFrequency }}
           </UBadge>
         </div>
-        <p class="text-xs text-gray-500 mt-1">{{ recommendation.reason }}</p>
+        <p class="text-xs text-ga-gray-600 mt-1">{{ recommendation.reason }}</p>
         <div v-if="displayPrice !== undefined" class="mt-1">
           <span
             v-if="recommendation.hasContractPricing && recommendation.price !== undefined"
-            class="text-xs line-through text-gray-400 mr-1"
+            class="text-xs line-through text-ga-gray-500 mr-1"
           >
             {{ formatPrice(recommendation.price) }}
           </span>

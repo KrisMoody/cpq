@@ -100,7 +100,7 @@ useHead({
   <div class="space-y-6">
     <div>
       <h1 class="text-2xl font-bold">Learn CPQ</h1>
-      <p class="text-gray-500 dark:text-gray-400">
+      <p class="text-ga-gray-600">
         Master Configure, Price, Quote concepts through interactive learning modules
       </p>
     </div>
@@ -108,7 +108,7 @@ useHead({
     <!-- Featured: Course -->
     <NuxtLink
       to="/learn/course"
-      class="block p-6 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl text-white hover:from-primary-600 hover:to-primary-700 transition-all"
+      class="block p-6 bg-gradient-to-r from-ga-navy-500 to-ga-navy-600 rounded-xl text-white hover:from-ga-navy-600 hover:to-ga-navy-700 transition-all"
     >
       <div class="flex items-start gap-4">
         <div class="p-3 bg-white/20 rounded-lg">
@@ -116,7 +116,7 @@ useHead({
         </div>
         <div>
           <h2 class="text-xl font-bold mb-1">Start the Interactive Course</h2>
-          <p class="text-primary-100">
+          <p class="text-ga-navy-100">
             Begin with structured learning modules that guide you through CPQ fundamentals step by step.
           </p>
         </div>
@@ -125,21 +125,21 @@ useHead({
 
     <!-- Other Sections Grid -->
     <div>
-      <h2 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Reference Materials</h2>
+      <h2 class="text-lg font-semibold mb-4 text-ga-gray-800">Reference Materials</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <NuxtLink
           v-for="section in sections.slice(1)"
           :key="section.id"
           :to="section.to"
-          class="block p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-md transition-all"
+          class="block p-4 bg-white rounded-lg border border-ga-gray-300 hover:border-ga-navy-300 hover:shadow-md transition-all"
         >
           <div class="flex items-start gap-3">
-            <div class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
-              <UIcon :name="section.icon" class="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <div class="p-2 bg-ga-gray-200 rounded-lg">
+              <UIcon :name="section.icon" class="w-5 h-5 text-ga-gray-700" />
             </div>
             <div>
-              <h3 class="font-medium text-gray-900 dark:text-gray-100">{{ section.title }}</h3>
-              <p class="text-sm text-gray-500 dark:text-gray-400">{{ section.description }}</p>
+              <h3 class="font-medium">{{ section.title }}</h3>
+              <p class="text-sm text-ga-gray-600">{{ section.description }}</p>
             </div>
           </div>
         </NuxtLink>
