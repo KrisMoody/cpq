@@ -32,9 +32,9 @@ async function initMermaid() {
   });
 }
 
-// Render diagram
+// Render diagram (client-side only)
 async function renderDiagram() {
-  if (!props.diagram) {
+  if (!import.meta.client || !props.diagram) {
     svgContent.value = "";
     return;
   }
@@ -50,12 +50,13 @@ async function renderDiagram() {
   }
 }
 
-// Watch for diagram changes
-watch(() => props.diagram, renderDiagram, { immediate: true });
+// Watch for diagram changes (only after mounted)
+watch(() => props.diagram, renderDiagram);
 
 // Re-render on color mode change
 watch(() => colorMode.value, renderDiagram);
 
+// Initial render on mount (client-side)
 onMounted(renderDiagram);
 </script>
 
