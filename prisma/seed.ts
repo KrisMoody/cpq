@@ -493,6 +493,7 @@ async function main() {
       country: 'USA',
       state: 'CA',
       isActive: true,
+      introducedInPhase: 3, // Tax rates are Phase 3
     },
   })
 
@@ -1369,6 +1370,7 @@ async function main() {
       description: 'High-performance laptop configured for software development',
       sku: 'LAPTOP-DEV-PRO',
       type: ProductType.BUNDLE,
+      introducedInPhase: 2, // Bundle products are Phase 2
       features: {
         create: [
           {
@@ -1440,6 +1442,7 @@ async function main() {
       description: 'Complete home office setup with essential peripherals for productive remote work',
       sku: 'BUNDLE-REMOTE-KIT',
       type: ProductType.BUNDLE,
+      introducedInPhase: 2, // Bundle products are Phase 2
       features: {
         create: [
           {
@@ -1514,6 +1517,7 @@ async function main() {
       description: 'Essential security bundle with software platform, hardware keys, and support',
       sku: 'BUNDLE-SEC-STARTER',
       type: ProductType.BUNDLE,
+      introducedInPhase: 2, // Bundle products are Phase 2
       features: {
         create: [
           {
@@ -1569,6 +1573,7 @@ async function main() {
       description: 'Complete enterprise software platform with DevTools, Analytics, Security, and Support',
       sku: 'BUNDLE-ENT-PLATFORM',
       type: ProductType.BUNDLE,
+      introducedInPhase: 2, // Bundle products are Phase 2
       features: {
         create: [
           {
@@ -1977,6 +1982,7 @@ async function main() {
         message: '64GB RAM requires Intel Core i7 or i9 processor for optimal performance',
       },
       isActive: true,
+      introducedInPhase: 4, // Rules are Phase 4
     },
   })
 
@@ -2110,6 +2116,7 @@ async function main() {
       isActive: true,
       stackable: false,
       priority: 10,
+      introducedInPhase: 2, // Discounts are Phase 2
       tiers: {
         create: [
           { tierNumber: 1, minQuantity: 5, maxQuantity: 9, value: 5.00 },
@@ -3543,6 +3550,7 @@ async function main() {
       sourceBillingFrequency: BillingFrequency.MONTHLY,
       targetBillingFrequency: BillingFrequency.MONTHLY,
       isActive: true,
+      introducedInPhase: 5, // Affinities are Phase 5
     },
   })
 
@@ -3745,6 +3753,7 @@ async function main() {
       name: 'Developer Tools Finder',
       description: 'Help find the right developer tools package based on team size and requirements',
       isActive: true,
+      introducedInPhase: 5, // Questionnaires are Phase 5
     },
   })
 
@@ -3941,6 +3950,7 @@ async function main() {
       entityId: 'default',
       description: 'A clean, simple layout with basic columns',
       isTemplate: true,
+      introducedInPhase: 5, // Quote layouts are Phase 5
       sections: [
         {
           id: 'main',

@@ -11,6 +11,7 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
+const { features } = usePhaseContext()
 const {
   fetchQuote,
   updateQuote,
@@ -592,9 +593,9 @@ async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Line Items -->
         <div class="lg:col-span-2 space-y-4">
-          <!-- Contract Pricing Banner -->
+          <!-- Contract Pricing Banner (Phase 3+) -->
           <UAlert
-            v-if="evaluation?.contractPricing"
+            v-if="features.contracts && evaluation?.contractPricing"
             color="info"
             icon="i-heroicons-document-check"
           >
@@ -646,8 +647,8 @@ async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
             </div>
           </UCard>
 
-          <!-- Rules Panel -->
-          <CpqQuoteRulesPanel :evaluation="evaluation" />
+          <!-- Rules Panel (Phase 4+) -->
+          <CpqQuoteRulesPanel v-if="features.rules" :evaluation="evaluation" />
         </div>
 
         <!-- Right Column -->
@@ -660,8 +661,9 @@ async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
             @change-customer="showCustomerSelector = true"
           />
 
-          <!-- Discounts Card -->
+          <!-- Discounts Card (Phase 2+) -->
           <CpqQuoteDiscountsCard
+            v-if="features.discounts"
             :applied-discounts="quote.appliedDiscounts || []"
             :editable="isEditable"
             @apply-discount="openDiscountModal()"
@@ -709,9 +711,9 @@ async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
             @refresh="loadQuote"
           />
 
-          <!-- Recommendations Panel -->
+          <!-- Recommendations Panel (Phase 5+) -->
           <CpqRecommendations
-            v-if="isEditable"
+            v-if="features.affinities && isEditable"
             ref="recommendationsRef"
             :quote-id="quote.id"
             @add-product="handleAddRecommendedProduct"

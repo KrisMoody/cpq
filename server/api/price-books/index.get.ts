@@ -1,9 +1,14 @@
 import { usePrisma } from '../../utils/prisma'
+import { getPhase, phaseWhere } from '../../utils/phase'
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
+  const phase = getPhase(event)
   const priceBooks = await prisma.priceBook.findMany({
-    where: { isActive: true },
+    where: {
+      ...phaseWhere(phase),
+      isActive: true,
+    },
     orderBy: [{ isDefault: 'desc' }, { name: 'asc' }],
     select: {
       id: true,

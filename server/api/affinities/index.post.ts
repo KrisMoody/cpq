@@ -1,7 +1,9 @@
 import { usePrisma } from '../../utils/prisma'
+import { getPhase } from '../../utils/phase'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
+  const phase = getPhase(event)
   const body = await readBody(event)
 
   const validTypes = ['CROSS_SELL', 'UPSELL', 'ACCESSORY', 'REQUIRED', 'FREQUENTLY_BOUGHT', 'SUBSCRIPTION_ADDON']
@@ -56,6 +58,7 @@ export default defineEventHandler(async (event) => {
       sourceBillingFrequency: body.sourceBillingFrequency || null,
       targetBillingFrequency: body.targetBillingFrequency || null,
       isActive: body.isActive ?? true,
+      introducedInPhase: phase,
     },
     include: {
       sourceProduct: { select: { id: true, name: true, sku: true } },

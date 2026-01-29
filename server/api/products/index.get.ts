@@ -1,16 +1,20 @@
 import { usePrisma } from '../../utils/prisma'
+import { getPhase, phaseWhere } from '../../utils/phase'
 import type { Prisma } from '../../../app/generated/prisma/client'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
+  const phase = getPhase(event)
   const query = getQuery(event)
   const includeInactive = query.includeInactive === 'true'
   const includeAttributes = query.includeAttributes === 'true'
   const categoryId = typeof query.categoryId === 'string' ? query.categoryId : undefined
   const attributeFilter = typeof query.attributeFilter === 'string' ? query.attributeFilter : undefined
 
-  // Build where clause
-  const where: Prisma.ProductWhereInput = {}
+  // Build where clause with phase filtering
+  const where: Prisma.ProductWhereInput = {
+    ...phaseWhere(phase)
+  }
   if (!includeInactive) {
     where.isActive = true
   }

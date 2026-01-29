@@ -1,8 +1,10 @@
 import { usePrisma } from '../../utils/prisma'
+import { getPhase } from '../../utils/phase'
 import type { AttributeType } from '../../../app/generated/prisma/client'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
+  const phase = getPhase(event)
   const body = await readBody(event)
 
   if (!body.name?.trim()) {
@@ -74,6 +76,7 @@ export default defineEventHandler(async (event) => {
       constraints: body.constraints || null,
       isRequired: body.isRequired ?? false,
       sortOrder: body.sortOrder ?? 0,
+      introducedInPhase: phase,
     },
     include: {
       group: {

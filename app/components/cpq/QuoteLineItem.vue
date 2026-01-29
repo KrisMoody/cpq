@@ -2,6 +2,8 @@
 import type { QuoteLineItem, ContractPriceInfo } from '~/composables/useQuotes'
 import type { AttributeValue } from '~/types/domain'
 
+const { features } = usePhaseContext()
+
 interface ProductAttributeDisplay {
   id: string
   name: string
@@ -237,16 +239,16 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
                 </UBadge>
               </UTooltip>
               <UBadge
-                v-if="lineItem.product.isTaxable === false"
+                v-if="features.taxes && lineItem.product.isTaxable === false"
                 color="info"
                 variant="subtle"
                 size="xs"
               >
                 Non-Taxable
               </UBadge>
-              <!-- Billing Frequency Badge -->
+              <!-- Billing Frequency Badge (Phase 3+) -->
               <UBadge
-                v-if="isRecurring(lineItem.product.billingFrequency)"
+                v-if="features.subscriptions && isRecurring(lineItem.product.billingFrequency)"
                 color="info"
                 variant="subtle"
                 size="xs"
@@ -255,8 +257,8 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
               </UBadge>
             </div>
             <p class="text-xs text-gray-500">{{ lineItem.product.sku }}</p>
-            <!-- Key Attributes -->
-            <div v-if="keyAttributes.length > 0" class="mt-1 flex flex-wrap gap-1">
+            <!-- Key Attributes (Phase 4+) -->
+            <div v-if="features.attributes && keyAttributes.length > 0" class="mt-1 flex flex-wrap gap-1">
               <UBadge
                 v-for="attr in keyAttributes"
                 :key="attr.id"
@@ -293,7 +295,7 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
             @click="startEditing"
           >
             {{ lineItem.quantity }}
-            <span v-if="lineItem.product.unitOfMeasure" class="text-gray-500 font-normal">
+            <span v-if="features.unitsOfMeasure && lineItem.product.unitOfMeasure" class="text-gray-500 font-normal">
               {{ lineItem.product.unitOfMeasure.abbreviation }}
             </span>
             <UIcon
@@ -304,8 +306,8 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
           </button>
         </div>
 
-        <!-- Term (for recurring products) -->
-        <div v-if="isRecurring(lineItem.product.billingFrequency)" class="text-right w-16">
+        <!-- Term (for recurring products) - Phase 3+ -->
+        <div v-if="features.subscriptions && isRecurring(lineItem.product.billingFrequency)" class="text-right w-16">
           <p class="text-xs text-gray-500">Term</p>
           <p class="font-medium text-gray-600">
             {{ formatTerm(getEffectiveTerm(lineItem.termMonths, lineItem.product.defaultTermMonths)) }}
@@ -320,19 +322,19 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
               {{ formatPrice(contractInfo.originalPrice) }}
             </p>
             <p class="font-medium" :class="{ 'text-info-600 dark:text-info-400': contractInfo }">
-              {{ formatPrice(lineItem.listPrice) }}<span class="text-gray-400 font-normal text-xs">{{ getBillingSuffix(lineItem.product.billingFrequency, lineItem.product.customBillingMonths) }}</span><span v-if="lineItem.product.unitOfMeasure" class="text-gray-500 font-normal text-xs">/{{ lineItem.product.unitOfMeasure.abbreviation }}</span>
+              {{ formatPrice(lineItem.listPrice) }}<span class="text-gray-400 font-normal text-xs">{{ getBillingSuffix(lineItem.product.billingFrequency, lineItem.product.customBillingMonths) }}</span><span v-if="features.unitsOfMeasure && lineItem.product.unitOfMeasure" class="text-gray-500 font-normal text-xs">/{{ lineItem.product.unitOfMeasure.abbreviation }}</span>
             </p>
           </div>
         </div>
 
-        <!-- Line Total (before discounts) -->
-        <div v-if="discountAmount > 0" class="text-right w-24">
+        <!-- Line Total (before discounts) - Phase 2+ -->
+        <div v-if="features.discounts && discountAmount > 0" class="text-right w-24">
           <p class="text-xs text-gray-500">Line Total</p>
           <p class="font-medium text-gray-400 line-through">{{ formatPrice(lineTotal) }}</p>
         </div>
 
-        <!-- Discount -->
-        <div v-if="discountAmount > 0" class="text-right w-24">
+        <!-- Discount - Phase 2+ -->
+        <div v-if="features.discounts && discountAmount > 0" class="text-right w-24">
           <p class="text-xs text-gray-500">Discount</p>
           <p class="font-medium text-red-500">-{{ formatPrice(discountAmount) }}</p>
         </div>
@@ -347,6 +349,7 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
         <!-- Actions -->
         <div v-if="editable" class="flex items-center gap-1">
           <UButton
+            v-if="features.discounts"
             variant="ghost"
             size="xs"
             icon="i-heroicons-tag"
@@ -365,8 +368,8 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
       </div>
     </div>
 
-    <!-- Contract Pricing Indicator -->
-    <div v-if="contractInfo" class="mt-2 flex flex-wrap items-center gap-2">
+    <!-- Contract Pricing Indicator (Phase 3+) -->
+    <div v-if="features.contracts && contractInfo" class="mt-2 flex flex-wrap items-center gap-2">
       <NuxtLink :to="`/contracts/${contractInfo.contractId}`" class="hover:opacity-80 transition-opacity">
         <UBadge variant="subtle" color="info" size="xs">
           <UIcon name="i-heroicons-document-check" class="w-3 h-3 mr-1" />
@@ -377,8 +380,8 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
       <span class="text-xs text-gray-500">(was {{ formatPrice(contractInfo.originalPrice) }})</span>
     </div>
 
-      <!-- Applied Discounts -->
-      <div v-if="hasDiscounts" class="mt-2 space-y-1">
+      <!-- Applied Discounts (Phase 2+) -->
+      <div v-if="features.discounts && hasDiscounts" class="mt-2 space-y-1">
         <div
           v-for="discount in lineItem.appliedDiscounts"
           :key="discount.id"

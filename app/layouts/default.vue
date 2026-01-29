@@ -1,295 +1,352 @@
 <script setup lang="ts">
-const route = useRoute()
+const route = useRoute();
+const { phaseForPath } = usePhase();
+const { isNavPathVisible } = usePhaseContext();
 
 // Mobile sidebar state
-const mobileMenuOpen = ref(false)
+const mobileMenuOpen = ref(false);
+
+// Get phase indicator for a navigation path
+function getPhaseIndicator(path?: string): {
+  number: number;
+  color: string;
+} | null {
+  if (!path) return null;
+  const phase = phaseForPath(path);
+  if (!phase) return null;
+
+  const colors: Record<number, string> = {
+    1: "text-emerald-500",
+    2: "text-blue-500",
+    3: "text-purple-500",
+    4: "text-orange-500",
+    5: "text-pink-500",
+  };
+
+  return {
+    number: phase.number,
+    color: colors[phase.number] || "text-gray-400",
+  };
+}
 
 // Track which groups are expanded (for auto-expand on active route)
-const expandedGroups = ref<string[]>(['catalog', 'configuration', 'learn'])
+const expandedGroups = ref<string[]>(["catalog", "configuration", "learn"]);
 
 // Navigation item types
 type NavItem = {
-  id: string
-  type?: 'section' | 'link' | 'group'
-  label: string
-  icon?: string
-  to?: string
-  children?: NavItem[]
+  id: string;
+  type?: "section" | "link" | "group";
+  label: string;
+  icon?: string;
+  to?: string;
+  children?: NavItem[];
+};
+
+// Check if a nav item should be visible based on current phase
+function isItemVisible(item: NavItem): boolean {
+  if (!item.to) return true;
+  return isNavPathVisible(item.to);
+}
+
+// Filter navigation items based on current phase
+function filterNavigation(items: NavItem[]): NavItem[] {
+  return items
+    .map((item) => {
+      // For groups, filter children first
+      if (item.children) {
+        const visibleChildren = item.children.filter(isItemVisible);
+        // Hide group if no children are visible
+        if (visibleChildren.length === 0) return null;
+        return { ...item, children: visibleChildren };
+      }
+      // For standalone items, check visibility
+      if (item.type !== "section" && !isItemVisible(item)) return null;
+      return item;
+    })
+    .filter((item): item is NavItem => item !== null);
 }
 
 // Navigation structure with section headers
 const navigation: NavItem[] = [
   {
-    id: 'dashboard',
-    label: 'Dashboard',
-    icon: 'i-heroicons-home',
-    to: '/',
+    id: "dashboard",
+    label: "Dashboard",
+    icon: "i-heroicons-home",
+    to: "/",
   },
   {
-    id: 'sales-section',
-    type: 'section',
-    label: 'Sales',
-    to: '/sales',
+    id: "sales-section",
+    type: "section",
+    label: "Sales",
+    to: "/sales",
   },
   {
-    id: 'quotes',
-    label: 'Quotes',
-    icon: 'i-heroicons-document-text',
-    to: '/quotes',
+    id: "quotes",
+    label: "Quotes",
+    icon: "i-heroicons-document-text",
+    to: "/quotes",
   },
   {
-    id: 'customers',
-    label: 'Customers',
-    icon: 'i-heroicons-users',
-    to: '/customers',
+    id: "customers",
+    label: "Customers",
+    icon: "i-heroicons-users",
+    to: "/customers",
   },
   {
-    id: 'contracts',
-    label: 'Contracts',
-    icon: 'i-heroicons-document-check',
-    to: '/contracts',
+    id: "contracts",
+    label: "Contracts",
+    icon: "i-heroicons-document-check",
+    to: "/contracts",
   },
   {
-    id: 'admin-section',
-    type: 'section',
-    label: 'Admin',
-    to: '/admin',
+    id: "admin-section",
+    type: "section",
+    label: "Admin",
+    to: "/admin",
   },
   {
-    id: 'catalog',
-    type: 'group',
-    label: 'Catalog',
-    icon: 'i-heroicons-squares-2x2',
-    to: '/admin/catalog',
+    id: "catalog",
+    type: "group",
+    label: "Catalog",
+    icon: "i-heroicons-squares-2x2",
+    to: "/admin/catalog",
     children: [
       {
-        id: 'products',
-        label: 'Products',
-        icon: 'i-heroicons-cube',
-        to: '/products',
+        id: "products",
+        label: "Products",
+        icon: "i-heroicons-cube",
+        to: "/products",
       },
       {
-        id: 'categories',
-        label: 'Categories',
-        icon: 'i-heroicons-folder',
-        to: '/categories',
+        id: "categories",
+        label: "Categories",
+        icon: "i-heroicons-folder",
+        to: "/categories",
       },
       {
-        id: 'price-books',
-        label: 'Price Books',
-        icon: 'i-heroicons-book-open',
-        to: '/price-books',
+        id: "price-books",
+        label: "Price Books",
+        icon: "i-heroicons-book-open",
+        to: "/price-books",
       },
       {
-        id: 'attributes',
-        label: 'Attributes',
-        icon: 'i-heroicons-tag',
-        to: '/attributes',
+        id: "attributes",
+        label: "Attributes",
+        icon: "i-heroicons-tag",
+        to: "/attributes",
       },
       {
-        id: 'units',
-        label: 'Units',
-        icon: 'i-heroicons-scale',
-        to: '/units',
+        id: "units",
+        label: "Units",
+        icon: "i-heroicons-scale",
+        to: "/units",
       },
     ],
   },
   {
-    id: 'configuration',
-    type: 'group',
-    label: 'Configuration',
-    icon: 'i-heroicons-cog-6-tooth',
-    to: '/admin/configuration',
+    id: "configuration",
+    type: "group",
+    label: "Configuration",
+    icon: "i-heroicons-cog-6-tooth",
+    to: "/admin/configuration",
     children: [
       {
-        id: 'rules',
-        label: 'Rules',
-        icon: 'i-heroicons-adjustments-horizontal',
-        to: '/rules',
+        id: "rules",
+        label: "Rules",
+        icon: "i-heroicons-adjustments-horizontal",
+        to: "/rules",
       },
       {
-        id: 'discounts',
-        label: 'Discounts',
-        icon: 'i-heroicons-tag',
-        to: '/discounts',
+        id: "discounts",
+        label: "Discounts",
+        icon: "i-heroicons-tag",
+        to: "/discounts",
       },
       {
-        id: 'tax-rates',
-        label: 'Tax Rates',
-        icon: 'i-heroicons-receipt-percent',
-        to: '/tax-rates',
+        id: "tax-rates",
+        label: "Tax Rates",
+        icon: "i-heroicons-receipt-percent",
+        to: "/tax-rates",
       },
       {
-        id: 'currencies',
-        label: 'Currencies',
-        icon: 'i-heroicons-currency-dollar',
-        to: '/currencies',
+        id: "currencies",
+        label: "Currencies",
+        icon: "i-heroicons-currency-dollar",
+        to: "/currencies",
       },
       {
-        id: 'affinities',
-        label: 'Affinities',
-        icon: 'i-heroicons-link',
-        to: '/affinities',
+        id: "affinities",
+        label: "Affinities",
+        icon: "i-heroicons-link",
+        to: "/affinities",
       },
       {
-        id: 'questionnaires',
-        label: 'Questionnaires',
-        icon: 'i-heroicons-clipboard-document-list',
-        to: '/questionnaires',
+        id: "questionnaires",
+        label: "Questionnaires",
+        icon: "i-heroicons-clipboard-document-list",
+        to: "/questionnaires",
       },
       {
-        id: 'quote-layouts',
-        label: 'Quote Layouts',
-        icon: 'i-heroicons-squares-2x2',
-        to: '/quote-layouts',
+        id: "quote-layouts",
+        label: "Quote Layouts",
+        icon: "i-heroicons-squares-2x2",
+        to: "/quote-layouts",
       },
     ],
   },
   {
-    id: 'resources-section',
-    type: 'section',
-    label: 'Resources',
+    id: "resources-section",
+    type: "section",
+    label: "Resources",
   },
   {
-    id: 'learn',
-    type: 'group',
-    label: 'Learn',
-    icon: 'i-heroicons-academic-cap',
-    to: '/learn',
+    id: "learn",
+    type: "group",
+    label: "Learn",
+    icon: "i-heroicons-academic-cap",
+    to: "/learn",
     children: [
       {
-        id: 'course',
-        label: 'Course',
-        icon: 'i-heroicons-book-open',
-        to: '/learn/course',
+        id: "course",
+        label: "Course",
+        icon: "i-heroicons-book-open",
+        to: "/learn/course",
       },
       {
-        id: 'workflow',
-        label: 'Workflow',
-        icon: 'i-heroicons-arrow-path',
-        to: '/learn/workflow',
+        id: "workflow",
+        label: "Workflow",
+        icon: "i-heroicons-arrow-path",
+        to: "/learn/workflow",
       },
       {
-        id: 'data-model',
-        label: 'Data Model',
-        icon: 'i-heroicons-circle-stack',
-        to: '/learn/data-model',
+        id: "data-model",
+        label: "Data Model",
+        icon: "i-heroicons-circle-stack",
+        to: "/learn/data-model",
       },
       {
-        id: 'business-logic',
-        label: 'Business Logic',
-        icon: 'i-heroicons-cog-6-tooth',
-        to: '/learn/business-logic',
+        id: "business-logic",
+        label: "Business Logic",
+        icon: "i-heroicons-cog-6-tooth",
+        to: "/learn/business-logic",
       },
       {
-        id: 'formulas',
-        label: 'Formulas',
-        icon: 'i-heroicons-calculator',
-        to: '/learn/formulas',
+        id: "formulas",
+        label: "Formulas",
+        icon: "i-heroicons-calculator",
+        to: "/learn/formulas",
       },
       {
-        id: 'example',
-        label: 'Example',
-        icon: 'i-heroicons-play-circle',
-        to: '/learn/example',
+        id: "example",
+        label: "Example",
+        icon: "i-heroicons-play-circle",
+        to: "/learn/example",
       },
       {
-        id: 'glossary',
-        label: 'Glossary',
-        icon: 'i-heroicons-book-open',
-        to: '/learn/glossary',
+        id: "glossary",
+        label: "Glossary",
+        icon: "i-heroicons-book-open",
+        to: "/learn/glossary",
       },
       {
-        id: 'enums',
-        label: 'Enums',
-        icon: 'i-heroicons-list-bullet',
-        to: '/learn/enums',
+        id: "enums",
+        label: "Enums",
+        icon: "i-heroicons-list-bullet",
+        to: "/learn/enums",
       },
       {
-        id: 'relationships',
-        label: 'Relationships',
-        icon: 'i-heroicons-arrows-right-left',
-        to: '/learn/relationships',
+        id: "relationships",
+        label: "Relationships",
+        icon: "i-heroicons-arrows-right-left",
+        to: "/learn/relationships",
       },
       {
-        id: 'quiz',
-        label: 'Quiz',
-        icon: 'i-heroicons-academic-cap',
-        to: '/learn/quiz',
+        id: "quiz",
+        label: "Quiz",
+        icon: "i-heroicons-academic-cap",
+        to: "/learn/quiz",
       },
       {
-        id: 'tips',
-        label: 'Tips',
-        icon: 'i-heroicons-light-bulb',
-        to: '/learn/tips',
+        id: "tips",
+        label: "Tips",
+        icon: "i-heroicons-light-bulb",
+        to: "/learn/tips",
       },
     ],
   },
-]
+];
+
+// Computed filtered navigation based on current phase
+const filteredNavigation = computed(() => filterNavigation(navigation));
 
 // Check if a route is active (exact match or starts with path)
 function isActive(path: string): boolean {
-  if (path === '/') {
-    return route.path === '/'
+  if (path === "/") {
+    return route.path === "/";
   }
-  return route.path === path || route.path.startsWith(path + '/')
+  return route.path === path || route.path.startsWith(path + "/");
 }
 
 // Check if any child in a group is active
 function isGroupActive(group: NavItem): boolean {
-  if (!group.children) return false
-  return group.children.some(child => child.to && isActive(child.to))
+  if (!group.children) return false;
+  return group.children.some((child) => child.to && isActive(child.to));
 }
 
 // Toggle group expansion
 function toggleGroup(groupId: string) {
-  const index = expandedGroups.value.indexOf(groupId)
+  const index = expandedGroups.value.indexOf(groupId);
   if (index === -1) {
-    expandedGroups.value.push(groupId)
+    expandedGroups.value.push(groupId);
   } else {
-    expandedGroups.value.splice(index, 1)
+    expandedGroups.value.splice(index, 1);
   }
 }
 
 // Auto-expand groups containing active routes on mount and route change
 function autoExpandActiveGroup() {
-  navigation.forEach(item => {
+  navigation.forEach((item) => {
     if (item.children && isGroupActive(item)) {
       if (!expandedGroups.value.includes(item.id)) {
-        expandedGroups.value.push(item.id)
+        expandedGroups.value.push(item.id);
       }
     }
-  })
+  });
 }
 
 // Watch for route changes to auto-expand
-watch(() => route.path, autoExpandActiveGroup, { immediate: true })
+watch(() => route.path, autoExpandActiveGroup, { immediate: true });
 
 // Close mobile menu on navigation
-watch(() => route.path, () => {
-  mobileMenuOpen.value = false
-})
+watch(
+  () => route.path,
+  () => {
+    mobileMenuOpen.value = false;
+  },
+);
 
 // Breadcrumbs
-const breadcrumbs = useBreadcrumbs(navigation)
+const breadcrumbs = useBreadcrumbs(navigation);
 
 // Parent route for back navigation (last breadcrumb with a `to` value)
 const parentRoute = computed(() => {
-  const crumbs = breadcrumbs.value
+  const crumbs = breadcrumbs.value;
   for (let i = crumbs.length - 1; i >= 0; i--) {
-    const crumb = crumbs[i]
+    const crumb = crumbs[i];
     if (crumb?.to) {
-      return crumb.to
+      return crumb.to;
     }
   }
-  return '/'
-})
+  return "/";
+});
 </script>
 
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-950">
     <!-- Mobile Header -->
-    <header class="lg:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+    <header
+      class="lg:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
+    >
       <div class="flex items-center justify-between h-14 px-4">
         <button
           type="button"
@@ -299,7 +356,10 @@ const parentRoute = computed(() => {
           <UIcon name="i-heroicons-bars-3" class="w-6 h-6" />
         </button>
         <NuxtLink to="/" class="flex items-center gap-2">
-          <UIcon name="i-heroicons-squares-2x2" class="w-6 h-6 text-primary-500" />
+          <UIcon
+            name="i-heroicons-squares-2x2"
+            class="w-6 h-6 text-primary-500"
+          />
           <span class="font-semibold">CPQ Learning</span>
         </NuxtLink>
         <div class="flex items-center gap-1">
@@ -311,23 +371,31 @@ const parentRoute = computed(() => {
 
     <div class="flex">
       <!-- Desktop Sidebar -->
-      <aside class="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800">
+      <aside
+        class="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800"
+      >
         <!-- Sidebar Header -->
-        <div class="flex items-center gap-3 h-16 px-4 border-b border-gray-200 dark:border-gray-800">
+        <div class="px-4 py-4 border-b border-gray-200 dark:border-gray-800 space-y-3">
           <NuxtLink to="/" class="flex items-center gap-3">
-            <UIcon name="i-heroicons-squares-2x2" class="w-8 h-8 text-primary-500" />
+            <UIcon
+              name="i-heroicons-squares-2x2"
+              class="w-8 h-8 text-primary-500"
+            />
             <span class="font-bold text-lg">CPQ Learning</span>
           </NuxtLink>
+          <PhaseSelector />
         </div>
 
         <!-- Navigation -->
         <nav class="flex-1 overflow-y-auto py-4 px-3">
           <ul class="space-y-1">
-            <template v-for="item in navigation" :key="item.id">
+            <template v-for="item in filteredNavigation" :key="item.id">
               <!-- Section header -->
               <li v-if="item.type === 'section'" class="pt-4 first:pt-0">
                 <div class="flex items-center gap-2 px-3 pb-2">
-                  <span class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                  <span
+                    class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500"
+                  >
                     {{ item.label }}
                   </span>
                   <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
@@ -339,12 +407,25 @@ const parentRoute = computed(() => {
                 <NuxtLink
                   :to="item.to!"
                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-                  :class="isActive(item.to!)
-                    ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
+                  :class="
+                    isActive(item.to!)
+                      ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  "
                 >
                   <UIcon :name="item.icon!" class="w-5 h-5 flex-shrink-0" />
-                  {{ item.label }}
+                  <span class="flex items-center gap-1">
+                    {{ item.label }}
+                    <sup
+                      v-if="getPhaseIndicator(item.to)"
+                      :class="[
+                        'text-[10px] font-bold -ml-0.5',
+                        getPhaseIndicator(item.to)!.color,
+                      ]"
+                    >
+                      {{ getPhaseIndicator(item.to)!.number }}
+                    </sup>
+                  </span>
                 </NuxtLink>
               </li>
 
@@ -353,9 +434,11 @@ const parentRoute = computed(() => {
                 <button
                   type="button"
                   class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-                  :class="isGroupActive(item)
-                    ? 'text-primary-700 dark:text-primary-300'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
+                  :class="
+                    isGroupActive(item)
+                      ? 'text-primary-700 dark:text-primary-300'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  "
                   @click="toggleGroup(item.id)"
                 >
                   <span class="flex items-center gap-3">
@@ -365,7 +448,9 @@ const parentRoute = computed(() => {
                   <UIcon
                     name="i-heroicons-chevron-down"
                     class="w-4 h-4 transition-transform duration-200"
-                    :class="expandedGroups.includes(item.id) ? 'rotate-180' : ''"
+                    :class="
+                      expandedGroups.includes(item.id) ? 'rotate-180' : ''
+                    "
                   />
                 </button>
 
@@ -378,12 +463,28 @@ const parentRoute = computed(() => {
                     <NuxtLink
                       :to="child.to!"
                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors"
-                      :class="isActive(child.to!)
-                        ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium'
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'"
+                      :class="
+                        isActive(child.to!)
+                          ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium'
+                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      "
                     >
-                      <UIcon :name="child.icon!" class="w-4 h-4 flex-shrink-0" />
-                      {{ child.label }}
+                      <UIcon
+                        :name="child.icon!"
+                        class="w-4 h-4 flex-shrink-0"
+                      />
+                      <span class="flex items-center gap-1">
+                        {{ child.label }}
+                        <sup
+                          v-if="getPhaseIndicator(child.to)"
+                          :class="[
+                            'text-[10px] font-bold -ml-0.5',
+                            getPhaseIndicator(child.to)!.color,
+                          ]"
+                        >
+                          {{ getPhaseIndicator(child.to)!.number }}
+                        </sup>
+                      </span>
                     </NuxtLink>
                   </li>
                 </ul>
@@ -391,36 +492,51 @@ const parentRoute = computed(() => {
             </template>
           </ul>
         </nav>
-
       </aside>
 
       <!-- Mobile Sidebar (Slideover) -->
-      <USlideover v-model:open="mobileMenuOpen" side="left" :ui="{ content: 'max-w-xs' }">
+      <USlideover
+        v-model:open="mobileMenuOpen"
+        side="left"
+        :ui="{ content: 'max-w-xs' }"
+      >
         <template #content>
           <div class="flex flex-col h-full bg-white dark:bg-gray-900">
             <!-- Mobile Sidebar Header -->
-            <div class="flex items-center justify-between h-14 px-4 border-b border-gray-200 dark:border-gray-800">
-              <NuxtLink to="/" class="flex items-center gap-2" @click="mobileMenuOpen = false">
-                <UIcon name="i-heroicons-squares-2x2" class="w-6 h-6 text-primary-500" />
-                <span class="font-semibold">CPQ Learning</span>
-              </NuxtLink>
-              <button
-                type="button"
-                class="p-2 -mr-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                @click="mobileMenuOpen = false"
-              >
-                <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
-              </button>
+            <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <NuxtLink
+                  to="/"
+                  class="flex items-center gap-2"
+                  @click="mobileMenuOpen = false"
+                >
+                  <UIcon
+                    name="i-heroicons-squares-2x2"
+                    class="w-6 h-6 text-primary-500"
+                  />
+                  <span class="font-semibold">CPQ Learning</span>
+                </NuxtLink>
+                <button
+                  type="button"
+                  class="p-2 -mr-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  @click="mobileMenuOpen = false"
+                >
+                  <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
+                </button>
+              </div>
+              <PhaseSelector @change="mobileMenuOpen = false" />
             </div>
 
             <!-- Mobile Navigation -->
             <nav class="flex-1 overflow-y-auto py-4 px-3">
               <ul class="space-y-1">
-                <template v-for="item in navigation" :key="item.id">
+                <template v-for="item in filteredNavigation" :key="item.id">
                   <!-- Section header -->
                   <li v-if="item.type === 'section'" class="pt-4 first:pt-0">
                     <div class="flex items-center gap-2 px-3 pb-2">
-                      <span class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                      <span
+                        class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500"
+                      >
                         {{ item.label }}
                       </span>
                       <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
@@ -432,12 +548,25 @@ const parentRoute = computed(() => {
                     <NuxtLink
                       :to="item.to!"
                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors"
-                      :class="isActive(item.to!)
-                        ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
+                      :class="
+                        isActive(item.to!)
+                          ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      "
                     >
                       <UIcon :name="item.icon!" class="w-5 h-5 flex-shrink-0" />
-                      {{ item.label }}
+                      <span class="flex items-center gap-1">
+                        {{ item.label }}
+                        <sup
+                          v-if="getPhaseIndicator(item.to)"
+                          :class="[
+                            'text-[10px] font-bold -ml-0.5',
+                            getPhaseIndicator(item.to)!.color,
+                          ]"
+                        >
+                          {{ getPhaseIndicator(item.to)!.number }}
+                        </sup>
+                      </span>
                     </NuxtLink>
                   </li>
 
@@ -446,19 +575,26 @@ const parentRoute = computed(() => {
                     <button
                       type="button"
                       class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors"
-                      :class="isGroupActive(item)
-                        ? 'text-primary-700 dark:text-primary-300'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
+                      :class="
+                        isGroupActive(item)
+                          ? 'text-primary-700 dark:text-primary-300'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      "
                       @click="toggleGroup(item.id)"
                     >
                       <span class="flex items-center gap-3">
-                        <UIcon :name="item.icon!" class="w-5 h-5 flex-shrink-0" />
+                        <UIcon
+                          :name="item.icon!"
+                          class="w-5 h-5 flex-shrink-0"
+                        />
                         {{ item.label }}
                       </span>
                       <UIcon
                         name="i-heroicons-chevron-down"
                         class="w-4 h-4 transition-transform duration-200"
-                        :class="expandedGroups.includes(item.id) ? 'rotate-180' : ''"
+                        :class="
+                          expandedGroups.includes(item.id) ? 'rotate-180' : ''
+                        "
                       />
                     </button>
 
@@ -470,12 +606,28 @@ const parentRoute = computed(() => {
                         <NuxtLink
                           :to="child.to!"
                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors"
-                          :class="isActive(child.to!)
-                            ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium'
-                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'"
+                          :class="
+                            isActive(child.to!)
+                              ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium'
+                              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                          "
                         >
-                          <UIcon :name="child.icon!" class="w-4 h-4 flex-shrink-0" />
-                          {{ child.label }}
+                          <UIcon
+                            :name="child.icon!"
+                            class="w-4 h-4 flex-shrink-0"
+                          />
+                          <span class="flex items-center gap-1">
+                            {{ child.label }}
+                            <sup
+                              v-if="getPhaseIndicator(child.to)"
+                              :class="[
+                                'text-[10px] font-bold -ml-0.5',
+                                getPhaseIndicator(child.to)!.color,
+                              ]"
+                            >
+                              {{ getPhaseIndicator(child.to)!.number }}
+                            </sup>
+                          </span>
                         </NuxtLink>
                       </li>
                     </ul>
@@ -483,7 +635,6 @@ const parentRoute = computed(() => {
                 </template>
               </ul>
             </nav>
-
           </div>
         </template>
       </USlideover>
@@ -491,7 +642,9 @@ const parentRoute = computed(() => {
       <!-- Main Content Area -->
       <div class="flex-1 lg:pl-64">
         <!-- Desktop Top Navigation -->
-        <header class="hidden lg:flex sticky top-0 z-40 h-16 items-center justify-end gap-2 px-6 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+        <header
+          class="hidden lg:flex sticky top-0 z-40 h-16 items-center justify-end gap-2 px-6 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
+        >
           <UColorModeButton variant="ghost" size="sm" />
           <AuthUserMenu />
         </header>
@@ -503,7 +656,9 @@ const parentRoute = computed(() => {
             aria-label="Breadcrumb"
             class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-0"
           >
-            <ol class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 overflow-x-auto">
+            <ol
+              class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 overflow-x-auto"
+            >
               <li class="flex items-center">
                 <UButton
                   :to="parentRoute"
@@ -530,7 +685,11 @@ const parentRoute = computed(() => {
                   </NuxtLink>
                   <span
                     v-else
-                    :class="index === breadcrumbs.length - 1 ? 'text-gray-900 dark:text-gray-100 font-medium' : ''"
+                    :class="
+                      index === breadcrumbs.length - 1
+                        ? 'text-gray-900 dark:text-gray-100 font-medium'
+                        : ''
+                    "
                   >
                     {{ crumb.label }}
                   </span>
@@ -547,7 +706,9 @@ const parentRoute = computed(() => {
         <!-- Footer -->
         <footer class="border-t border-gray-200 dark:border-gray-800">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex items-center justify-between text-sm text-gray-500">
+            <div
+              class="flex items-center justify-between text-sm text-gray-500"
+            >
               <p>CPQ Learning Application</p>
               <p class="hidden sm:block">Built with Nuxt 4 + Prisma + Neon</p>
             </div>

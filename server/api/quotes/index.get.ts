@@ -1,12 +1,17 @@
 import { usePrisma } from '../../utils/prisma'
+import { getPhase, phaseWhere } from '../../utils/phase'
 
 export default defineEventHandler(async (event) => {
   const prisma = usePrisma()
+  const phase = getPhase(event)
   const query = getQuery(event)
   const includeCancelled = query.includeCancelled === 'true'
 
   const quotes = await prisma.quote.findMany({
-    where: includeCancelled ? {} : { status: { not: 'CANCELLED' } },
+    where: {
+      ...phaseWhere(phase),
+      ...(includeCancelled ? {} : { status: { not: 'CANCELLED' } }),
+    },
     orderBy: { createdAt: 'desc' },
     select: {
       id: true,

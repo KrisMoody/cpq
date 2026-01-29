@@ -5,6 +5,8 @@ import type { ProductType, BillingFrequency } from '~/generated/prisma/client'
 import type { Attribute } from '~/composables/useAttributes'
 import type { CategoryAttributeWithSuggestion } from '~/composables/useCategories'
 
+const { features: phaseFeatures } = usePhaseContext()
+
 const _route = useRoute()
 const router = useRouter()
 const toast = useToast()
@@ -542,10 +544,13 @@ function handleOptionDragEnd() {
   dragOverOptionId.value = null
 }
 
-const productTypes = [
-  { label: 'Standalone', value: 'STANDALONE' },
-  { label: 'Bundle', value: 'BUNDLE' },
-]
+const productTypes = computed(() => {
+  const types = [{ label: 'Standalone', value: 'STANDALONE' }]
+  if (phaseFeatures.value.bundles) {
+    types.push({ label: 'Bundle', value: 'BUNDLE' })
+  }
+  return types
+})
 
 const billingFrequencies = [
   { label: 'One-Time', value: 'ONE_TIME' },
@@ -747,7 +752,7 @@ function isAttributeSuggested(attributeId: string): boolean {
           </div>
           <p class="text-gray-500 mt-1">
             SKU: {{ product.sku }}
-            <span v-if="product.unitOfMeasure" class="ml-3">
+            <span v-if="phaseFeatures.unitsOfMeasure && product.unitOfMeasure" class="ml-3">
               Unit: {{ product.unitOfMeasure.name }} ({{ product.unitOfMeasure.abbreviation }})
             </span>
             <span v-if="product.billingFrequency && product.billingFrequency !== 'ONE_TIME'" class="ml-3">
@@ -761,7 +766,7 @@ function isAttributeSuggested(attributeId: string): boolean {
           </p>
         </div>
         <div class="flex items-center gap-2">
-          <UBadge v-if="!product.isTaxable" color="info" variant="subtle">
+          <UBadge v-if="phaseFeatures.taxes && !product.isTaxable" color="info" variant="subtle">
             Non-Taxable
           </UBadge>
           <UBadge v-if="!product.isActive" color="warning" variant="subtle">
@@ -814,11 +819,11 @@ function isAttributeSuggested(attributeId: string): boolean {
             <USelect v-model="form.type" :items="productTypes" value-key="value" />
           </UFormField>
 
-          <UFormField label="Billing Frequency" hint="How often this product is billed">
+          <UFormField v-if="phaseFeatures.subscriptions" label="Billing Frequency" hint="How often this product is billed">
             <USelect v-model="form.billingFrequency" :items="billingFrequencies" value-key="value" />
           </UFormField>
 
-          <UFormField v-if="isCustomFrequency" label="Custom Billing Period (months)" required>
+          <UFormField v-if="phaseFeatures.subscriptions && isCustomFrequency" label="Custom Billing Period (months)" required>
             <UInput
               v-model.number="form.customBillingMonths"
               type="number"
@@ -827,7 +832,7 @@ function isAttributeSuggested(attributeId: string): boolean {
             />
           </UFormField>
 
-          <UFormField v-if="isRecurring" label="Default Contract Term (months)" hint="Default subscription term for quotes">
+          <UFormField v-if="phaseFeatures.subscriptions && isRecurring" label="Default Contract Term (months)" hint="Default subscription term for quotes">
             <UInput
               v-model.number="form.defaultTermMonths"
               type="number"
@@ -836,11 +841,12 @@ function isAttributeSuggested(attributeId: string): boolean {
             />
           </UFormField>
 
-          <UFormField label="Unit of Measure" hint="How this product is measured and priced">
+          <UFormField v-if="phaseFeatures.unitsOfMeasure" label="Unit of Measure" hint="How this product is measured and priced">
             <USelect v-model="form.unitOfMeasureId" :items="unitOptions" value-key="value" />
           </UFormField>
 
           <UCheckbox
+            v-if="phaseFeatures.taxes"
             v-model="form.isTaxable"
             label="Taxable"
             hint="Uncheck for products exempt from sales tax (e.g., some services, digital goods)"
@@ -891,8 +897,8 @@ function isAttributeSuggested(attributeId: string): boolean {
         </div>
       </UCard>
 
-      <!-- Product Attributes (View Mode) -->
-      <UCard v-if="!isEditing && productAttributes.length > 0">
+      <!-- Product Attributes (View Mode) - Phase 4+ -->
+      <UCard v-if="phaseFeatures.attributes && !isEditing && productAttributes.length > 0">
         <template #header>
           <div class="flex items-center justify-between">
             <h2 class="font-semibold">Attributes</h2>
@@ -917,15 +923,15 @@ function isAttributeSuggested(attributeId: string): boolean {
         </div>
       </UCard>
 
-      <!-- Add Attributes Button (when no attributes yet) -->
-      <div v-if="!isEditing && productAttributes.length === 0 && attributes.length > 0" class="text-center py-4">
+      <!-- Add Attributes Button (when no attributes yet) - Phase 4+ -->
+      <div v-if="phaseFeatures.attributes && !isEditing && productAttributes.length === 0 && attributes.length > 0" class="text-center py-4">
         <UButton variant="soft" icon="i-heroicons-tag" @click="openAttributesModal">
           Add Attributes
         </UButton>
       </div>
 
-      <!-- Bundle Features Management (Edit Mode) -->
-      <UCard v-if="isBundle && isEditing">
+      <!-- Bundle Features Management (Edit Mode) - Phase 2+ -->
+      <UCard v-if="phaseFeatures.bundles && isBundle && isEditing">
         <template #header>
           <div class="flex items-center justify-between">
             <h2 class="font-semibold">Bundle Features</h2>
@@ -1104,8 +1110,8 @@ function isAttributeSuggested(attributeId: string): boolean {
         </div>
       </UCard>
 
-      <!-- Bundle Configuration (View Mode) -->
-      <template v-if="isBundle && !isEditing && product.features?.length">
+      <!-- Bundle Configuration (View Mode) - Phase 2+ -->
+      <template v-if="phaseFeatures.bundles && isBundle && !isEditing && product.features?.length">
         <UCard>
           <template #header>
             <h2 class="font-semibold">Configure Bundle</h2>
