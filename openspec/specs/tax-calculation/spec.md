@@ -21,12 +21,25 @@ The system SHALL support defining tax rates for different jurisdictions and cate
 - **THEN** multiple tax rates can be configured and stacked
 
 ### Requirement: Tax Jurisdiction Resolution
-The system SHALL determine applicable tax rates based on customer location.
+The system SHALL determine applicable tax rates based on customer location and price book tax profile.
 
 #### Scenario: Resolve by customer address
 - **WHEN** calculating tax for a quote
-- **THEN** customer's shipping/billing address determines jurisdiction
+- **AND** customer has a complete address
+- **THEN** customer's address determines jurisdiction
 - **AND** matching tax rates are applied
+
+#### Scenario: Resolve by price book tax profile
+- **WHEN** calculating tax for a quote
+- **AND** customer address is incomplete or missing
+- **AND** price book has a tax profile assigned
+- **THEN** tax profile rates are applied as fallback
+
+#### Scenario: No tax when no jurisdiction
+- **WHEN** customer has no address
+- **AND** price book has no tax profile
+- **THEN** no tax is calculated
+- **AND** a warning is displayed to the user
 
 #### Scenario: Country-level tax
 - **WHEN** tax rate is defined for a country only

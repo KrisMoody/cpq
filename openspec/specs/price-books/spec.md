@@ -7,6 +7,8 @@ TBD - created by archiving change add-cpq-foundation. Update Purpose after archi
 The system SHALL store price books with the following attributes:
 - Unique identifier (CUID)
 - Name (required)
+- Currency reference (optional, for multi-currency support)
+- Tax profile reference (optional, for regional tax defaults)
 - Default flag (boolean, only one price book can be default)
 - Active status (boolean, default true)
 - Valid from date (optional)
@@ -21,13 +23,20 @@ The system SHALL store price books with the following attributes:
 - **WHEN** a price book has validFrom and validTo dates set
 - **THEN** the price book is only available for quotes within that date range
 
+#### Scenario: Price book with tax profile
+- **WHEN** a price book has a tax profile assigned
+- **THEN** quotes using this price book inherit the tax profile
+- **AND** the tax profile is used when customer address is incomplete
+
 ### Requirement: Price Book Entry Entity
 The system SHALL store price book entries linking products to prices:
 - Unique identifier (CUID)
 - Reference to PriceBook (required)
 - Reference to Product (required)
-- List price (decimal, required)
+- List price (decimal, required) - default price in price book currency
 - Cost (decimal, optional)
+- Minimum margin (decimal, optional) - for approval rules
+- Currency-specific prices (optional) - native prices in other currencies
 - Unique constraint on (priceBookId, productId) combination
 
 #### Scenario: Create price entry
@@ -37,6 +46,11 @@ The system SHALL store price book entries linking products to prices:
 #### Scenario: Prevent duplicate entries
 - **WHEN** attempting to create a price entry for a product already in the price book
 - **THEN** the system rejects the duplicate entry
+
+#### Scenario: Entry with currency-specific prices
+- **WHEN** a price book entry has currency-specific prices
+- **THEN** those prices are used for quotes in those currencies
+- **AND** the default list price is used for unlisted currencies (via conversion)
 
 ### Requirement: Price Books API
 The system SHALL provide REST API endpoints for price book management:
