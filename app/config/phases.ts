@@ -299,6 +299,13 @@ export const entityMappings: EntityMapping[] = [
     extensibilityNotes: "Region-based; may integrate external tax service",
   },
   {
+    entity: "TaxProfile",
+    phase: 3,
+    gaEntity: undefined,
+    relationship: "new",
+    extensibilityNotes: "Groups tax rates for price book fallback; used when customer address incomplete",
+  },
+  {
     entity: "ExchangeRate",
     phase: 3,
     gaEntity: undefined,
@@ -405,6 +412,7 @@ export const navMappings: NavItemMapping[] = [
   // Phase 3
   { path: "/contracts", phase: 3 },
   { path: "/tax-rates", phase: 3 },
+  { path: "/tax-profiles", phase: 3 },
 
   // Phase 4
   { path: "/attributes", phase: 4 },

@@ -5,11 +5,17 @@ export interface PriceBook {
   id: string
   name: string
   currencyId: string | null
+  taxProfileId: string | null
   isDefault: boolean
   isActive: boolean
   validFrom: string | null
   validTo: string | null
   currency?: Currency | null
+  taxProfile?: {
+    id: string
+    name: string
+    country: string
+  } | null
   _count: {
     entries: number
   }
@@ -47,6 +53,7 @@ export interface PriceBookWithEntries extends PriceBook {
 export interface CreatePriceBookInput {
   name: string
   currencyId?: string | null
+  taxProfileId?: string | null
   isDefault?: boolean
   isActive?: boolean
   validFrom?: string | null
@@ -56,6 +63,7 @@ export interface CreatePriceBookInput {
 export interface UpdatePriceBookInput {
   name?: string
   currencyId?: string | null
+  taxProfileId?: string | null
   isDefault?: boolean
   isActive?: boolean
   validFrom?: string | null

@@ -3,10 +3,12 @@ import { getErrorMessage } from '~/utils/errors'
 const router = useRouter()
 const { createPriceBook } = usePricing()
 const { currencies, fetchCurrencies } = useCurrencies()
+const { taxProfiles, fetchTaxProfiles } = useTaxProfiles()
 
 const initialFormState = {
   name: '',
   currencyId: undefined as string | undefined,
+  taxProfileId: undefined as string | undefined,
   isDefault: false,
   isActive: true,
   validFrom: '',
@@ -15,6 +17,7 @@ const initialFormState = {
 
 onMounted(() => {
   fetchCurrencies()
+  fetchTaxProfiles()
 })
 
 const form = ref({ ...initialFormState })
@@ -44,6 +47,7 @@ async function handleSubmit() {
     const priceBook = await createPriceBook({
       name: form.value.name.trim(),
       currencyId: form.value.currencyId || null,
+      taxProfileId: form.value.taxProfileId || null,
       isDefault: form.value.isDefault,
       isActive: form.value.isActive,
       validFrom: form.value.validFrom || null,
@@ -86,6 +90,15 @@ async function handleSubmit() {
             v-model="form.currencyId"
             :items="currencies.filter(c => c.isActive).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))"
             placeholder="Select currency"
+            value-key="value"
+          />
+        </UFormField>
+
+        <UFormField label="Tax Profile" hint="Default tax rates for quotes using this price book">
+          <USelect
+            v-model="form.taxProfileId"
+            :items="taxProfiles.filter(p => p.isActive).map(p => ({ label: `${p.name} (${p.country})`, value: p.id }))"
+            placeholder="No tax profile"
             value-key="value"
           />
         </UFormField>
