@@ -102,9 +102,9 @@ describe('Bundle Pricing Strategy', () => {
       const componentLines = lineItems.filter((l) => l.parentLineId !== null)
 
       expect(componentLines).toHaveLength(3)
-      expect(componentLines[0].netPrice).toBe(300) // Monitor
-      expect(componentLines[1].netPrice).toBe(80) // Keyboard
-      expect(componentLines[2].netPrice).toBe(30) // Mouse
+      expect(componentLines.at(0)?.netPrice).toBe(300) // Monitor
+      expect(componentLines.at(1)?.netPrice).toBe(80) // Keyboard
+      expect(componentLines.at(2)?.netPrice).toBe(30) // Mouse
     })
 
     it('quote subtotal should include $410 for the bundle (sum of components)', () => {
@@ -142,8 +142,8 @@ describe('Bundle Pricing Strategy', () => {
       const lineItems = calculateBundleLineItems(bundleProduct, components)
 
       expect(lineItems).toHaveLength(1)
-      expect(lineItems[0].productType).toBe('BUNDLE')
-      expect(lineItems[0].netPrice).toBe(0)
+      expect(lineItems.at(0)?.productType).toBe('BUNDLE')
+      expect(lineItems.at(0)?.netPrice).toBe(0)
     })
   })
 

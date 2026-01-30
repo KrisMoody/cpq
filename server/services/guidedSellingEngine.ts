@@ -41,8 +41,8 @@ export function getNextQuestion(
   const sortedQuestions = [...questionnaire.questions].sort((a, b) => a.sortOrder - b.sortOrder)
 
   // Check for branch logic from the last answer
-  if (answers.length > 0) {
-    const lastAnswer = answers[answers.length - 1]
+  const lastAnswer = answers.at(-1)
+  if (lastAnswer) {
     const lastQuestion = questionnaire.questions.find((q) => q.id === lastAnswer.questionId)
 
     if (lastQuestion?.branchLogic) {
@@ -50,7 +50,7 @@ export function getNextQuestion(
       const answerValue = Array.isArray(lastAnswer.value) ? lastAnswer.value[0] : lastAnswer.value
 
       // Type guard for branch logic object
-      if (typeof branchLogic !== 'object' || branchLogic === null) {
+      if (typeof branchLogic !== 'object' || branchLogic === null || answerValue === undefined) {
         return sortedQuestions.find((q) => !answeredIds.has(q.id)) || null
       }
       const nextQuestionId = (branchLogic as Record<string, unknown>)[answerValue]
