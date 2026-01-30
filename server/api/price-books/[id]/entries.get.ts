@@ -26,6 +26,23 @@ export default defineEventHandler(async (event) => {
           isActive: true,
         },
       },
+      currencyPrices: {
+        select: {
+          id: true,
+          currencyId: true,
+          listPrice: true,
+          cost: true,
+          currency: {
+            select: {
+              id: true,
+              code: true,
+              name: true,
+              symbol: true,
+            },
+          },
+        },
+        orderBy: { currency: { code: 'asc' } },
+      },
     },
   })
 

@@ -56,6 +56,17 @@ const editingTiersEntryId = ref<string | null>(null)
 const editingTiers = ref<Array<{ minQuantity: number; maxQuantity: number | null; tierPrice: number; tierType: string; discountPercent: number | null }>>([])
 const editingTierType = ref<string>('UNIT_PRICE')
 
+// Currency price management
+const showCurrencyPriceModal = ref(false)
+const currencyPriceEntryId = ref<string | null>(null)
+const currencyPriceForm = ref({
+  currencyId: '',
+  listPrice: 0,
+  cost: null as number | null,
+})
+const editingCurrencyId = ref<string | null>(null)
+const savingCurrencyPrice = ref(false)
+
 const tierTypeOptions = [
   { label: 'Unit Price', value: 'UNIT_PRICE' },
   { label: 'Flat Price', value: 'FLAT_PRICE' },
@@ -414,6 +425,117 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
     default: return 'neutral'
   }
 }
+
+// Currency price management functions
+interface CurrencyPrice {
+  id: string
+  currencyId: string
+  listPrice: string
+  cost: string | null
+  currency: {
+    id: string
+    code: string
+    name: string
+    symbol: string
+  }
+}
+
+function getEntryCurrencyPrices(entry: PriceBookEntry): CurrencyPrice[] {
+  return (entry as PriceBookEntry & { currencyPrices?: CurrencyPrice[] }).currencyPrices || []
+}
+
+// Get available currencies for adding (exclude price book's default currency and already added currencies)
+function getAvailableCurrenciesForEntry(entry: PriceBookEntry) {
+  const existingCurrencyIds = new Set(getEntryCurrencyPrices(entry).map(cp => cp.currencyId))
+  return currencies.value.filter(c =>
+    c.isActive &&
+    c.id !== priceBook.value?.currencyId &&
+    !existingCurrencyIds.has(c.id)
+  )
+}
+
+function openAddCurrencyPrice(entry: PriceBookEntry) {
+  currencyPriceEntryId.value = entry.id
+  editingCurrencyId.value = null
+  currencyPriceForm.value = {
+    currencyId: '',
+    listPrice: 0,
+    cost: null,
+  }
+  showCurrencyPriceModal.value = true
+}
+
+function openEditCurrencyPrice(entry: PriceBookEntry, currencyPrice: CurrencyPrice) {
+  currencyPriceEntryId.value = entry.id
+  editingCurrencyId.value = currencyPrice.currencyId
+  currencyPriceForm.value = {
+    currencyId: currencyPrice.currencyId,
+    listPrice: parseFloat(currencyPrice.listPrice),
+    cost: currencyPrice.cost ? parseFloat(currencyPrice.cost) : null,
+  }
+  showCurrencyPriceModal.value = true
+}
+
+async function saveCurrencyPrice() {
+  if (!currencyPriceEntryId.value) return
+
+  if (!editingCurrencyId.value && !currencyPriceForm.value.currencyId) {
+    error.value = 'Please select a currency'
+    return
+  }
+
+  savingCurrencyPrice.value = true
+  error.value = null
+
+  try {
+    if (editingCurrencyId.value) {
+      // Update existing
+      await $fetch(`/api/price-books/${priceBookId}/entries/${currencyPriceEntryId.value}/currencies/${editingCurrencyId.value}`, {
+        method: 'PUT',
+        body: {
+          listPrice: currencyPriceForm.value.listPrice,
+          cost: currencyPriceForm.value.cost,
+        },
+      })
+    } else {
+      // Create new
+      await $fetch(`/api/price-books/${priceBookId}/entries/${currencyPriceEntryId.value}/currencies`, {
+        method: 'POST',
+        body: {
+          currencyId: currencyPriceForm.value.currencyId,
+          listPrice: currencyPriceForm.value.listPrice,
+          cost: currencyPriceForm.value.cost,
+        },
+      })
+    }
+
+    // Reload entries to get updated currency prices
+    const pbWithEntries = await fetchPriceBookPrices(priceBookId)
+    entries.value = pbWithEntries?.entries || []
+    showCurrencyPriceModal.value = false
+  } catch (e) {
+    error.value = getErrorMessage(e, 'Failed to save currency price')
+  } finally {
+    savingCurrencyPrice.value = false
+  }
+}
+
+async function deleteCurrencyPrice(entry: PriceBookEntry, currencyPrice: CurrencyPrice) {
+  if (!confirm(`Remove ${currencyPrice.currency.code} price from this entry?`)) return
+
+  error.value = null
+  try {
+    await $fetch(`/api/price-books/${priceBookId}/entries/${entry.id}/currencies/${currencyPrice.currencyId}`, {
+      method: 'DELETE',
+    })
+
+    // Reload entries
+    const pbWithEntries = await fetchPriceBookPrices(priceBookId)
+    entries.value = pbWithEntries?.entries || []
+  } catch (e) {
+    error.value = getErrorMessage(e, 'Failed to delete currency price')
+  }
+}
 </script>
 
 <template>
@@ -618,6 +740,9 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
                       <UBadge v-if="getEntryTiers(entry).length > 0" size="xs" variant="subtle" color="info">
                         {{ getEntryTiers(entry).length }} tier{{ getEntryTiers(entry).length !== 1 ? 's' : '' }}
                       </UBadge>
+                      <UBadge v-if="getEntryCurrencyPrices(entry).length > 0" size="xs" variant="subtle" color="success">
+                        {{ getEntryCurrencyPrices(entry).length }} currency{{ getEntryCurrencyPrices(entry).length !== 1 ? ' prices' : ' price' }}
+                      </UBadge>
                     </div>
                   </td>
                   <td class="px-4 py-3 text-sm text-ga-gray-600">{{ entry.product.sku }}</td>
@@ -796,6 +921,65 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
                           </table>
                         </template>
                       </div>
+
+                      <!-- Currency Prices Section -->
+                      <div class="mt-6 pt-4 border-t border-ga-gray-300">
+                        <div class="flex items-center justify-between mb-3">
+                          <h4 class="text-sm font-medium text-ga-gray-800">Currency-Specific Prices</h4>
+                          <UButton
+                            v-if="getAvailableCurrenciesForEntry(entry).length > 0"
+                            size="xs"
+                            variant="soft"
+                            icon="i-heroicons-plus"
+                            @click="openAddCurrencyPrice(entry)"
+                          >
+                            Add Currency
+                          </UButton>
+                        </div>
+
+                        <div v-if="getEntryCurrencyPrices(entry).length === 0" class="text-sm text-ga-gray-600 py-2">
+                          No currency-specific prices. Prices will be converted using exchange rates.
+                        </div>
+                        <table v-else class="min-w-full text-sm">
+                          <thead>
+                            <tr class="text-left text-xs text-ga-gray-600 uppercase">
+                              <th class="pr-4 py-1">Currency</th>
+                              <th class="pr-4 py-1 text-right">List Price</th>
+                              <th class="pr-4 py-1 text-right">Cost</th>
+                              <th class="pr-4 py-1" />
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="cp in getEntryCurrencyPrices(entry)" :key="cp.id">
+                              <td class="pr-4 py-1">
+                                <span class="font-medium">{{ cp.currency.code }}</span>
+                                <span class="text-ga-gray-500 text-xs ml-1">({{ cp.currency.symbol }})</span>
+                              </td>
+                              <td class="pr-4 py-1 text-right">{{ formatPrice(cp.listPrice) }}</td>
+                              <td class="pr-4 py-1 text-right text-ga-gray-600">
+                                {{ cp.cost ? formatPrice(cp.cost) : '—' }}
+                              </td>
+                              <td class="pr-4 py-1 text-right">
+                                <div class="flex justify-end gap-1">
+                                  <UButton
+                                    size="xs"
+                                    variant="ghost"
+                                    icon="i-heroicons-pencil"
+                                    @click="openEditCurrencyPrice(entry, cp)"
+                                  />
+                                  <UButton
+                                    size="xs"
+                                    variant="ghost"
+                                    color="error"
+                                    icon="i-heroicons-trash"
+                                    @click="deleteCurrencyPrice(entry, cp)"
+                                  />
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -869,6 +1053,65 @@ function getTierTypeColor(tierType: string): 'primary' | 'info' | 'success' | 'w
             <div class="flex justify-end gap-3">
               <UButton variant="ghost" @click="showAddEntry = false">Cancel</UButton>
               <UButton @click="handleAddEntry">Add Entry</UButton>
+            </div>
+          </template>
+        </UCard>
+      </template>
+    </UModal>
+
+    <!-- Currency Price Modal -->
+    <UModal v-model:open="showCurrencyPriceModal" :title="editingCurrencyId ? 'Edit Currency Price' : 'Add Currency Price'">
+      <template #content>
+        <UCard>
+          <template #header>
+            <h3 class="font-semibold">{{ editingCurrencyId ? 'Edit Currency Price' : 'Add Currency Price' }}</h3>
+          </template>
+
+          <div class="space-y-4">
+            <UFormField v-if="!editingCurrencyId" label="Currency" required>
+              <USelect
+                v-model="currencyPriceForm.currencyId"
+                :items="currencies.filter(c => c.isActive && c.id !== priceBook?.currencyId).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))"
+                placeholder="Select a currency"
+                value-key="value"
+              />
+            </UFormField>
+
+            <div v-else class="text-sm">
+              <span class="text-ga-gray-600">Currency:</span>
+              <span class="font-medium ml-2">
+                {{ currencies.find(c => c.id === editingCurrencyId)?.code }}
+              </span>
+            </div>
+
+            <UFormField label="List Price" required>
+              <UInput
+                v-model.number="currencyPriceForm.listPrice"
+                type="number"
+                step="0.01"
+                min="0"
+                class="w-40"
+              />
+            </UFormField>
+
+            <UFormField label="Cost">
+              <UInput
+                v-model.number="currencyPriceForm.cost"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="Optional"
+                class="w-40"
+              />
+            </UFormField>
+          </div>
+
+          <template #footer>
+            <div class="flex justify-end gap-3">
+              <UButton variant="ghost" @click="showCurrencyPriceModal = false">Cancel</UButton>
+              <UButton :loading="savingCurrencyPrice" @click="saveCurrencyPrice">
+                {{ editingCurrencyId ? 'Update' : 'Add' }}
+              </UButton>
             </div>
           </template>
         </UCard>
