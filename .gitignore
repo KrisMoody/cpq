@@ -31,6 +31,9 @@ yarn-error.log*
 
 # Prisma
 /app/generated/prisma
+
+# Generated files
+/server/utils/prismaSchema.ts
 *.db
 *.db-journal
 
