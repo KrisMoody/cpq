@@ -336,16 +336,18 @@ model PriceBook {
   id                String    @id @default(cuid())
   introducedInPhase Int       @default(1)
   name              String
-  currencyId String?   // Currency for this price book
-  isDefault  Boolean   @default(false)
-  isActive   Boolean   @default(true)
-  validFrom  DateTime?
-  validTo    DateTime?
+  currencyId   String?   // Currency for this price book
+  taxProfileId String?   // Tax profile for regional tax defaults
+  isDefault    Boolean   @default(false)
+  isActive     Boolean   @default(true)
+  validFrom    DateTime?
+  validTo      DateTime?
 
-  currency  Currency?        @relation(fields: [currencyId], references: [id])
-  entries   PriceBookEntry[]
-  quotes    Quote[]
-  customers Customer[]
+  currency   Currency?        @relation(fields: [currencyId], references: [id])
+  taxProfile TaxProfile?      @relation(fields: [taxProfileId], references: [id])
+  entries    PriceBookEntry[]
+  quotes     Quote[]
+  customers  Customer[]
 
   @@index([introducedInPhase])
 }
@@ -600,11 +602,39 @@ model TaxRate {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
-  category Category? @relation(fields: [categoryId], references: [id])
+  category        Category?        @relation(fields: [categoryId], references: [id])
+  taxProfileRates TaxProfileRate[]
 
   @@index([country, state])
   @@index([isActive])
   @@index([introducedInPhase])
+}
+
+model TaxProfile {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  country     String   // Default jurisdiction (ISO country code)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  rates      TaxProfileRate[]
+  priceBooks PriceBook[]
+
+  @@index([isActive])
+}
+
+model TaxProfileRate {
+  id           String @id @default(cuid())
+  taxProfileId String
+  taxRateId    String
+
+  taxProfile TaxProfile @relation(fields: [taxProfileId], references: [id], onDelete: Cascade)
+  taxRate    TaxRate    @relation(fields: [taxRateId], references: [id], onDelete: Cascade)
+
+  @@unique([taxProfileId, taxRateId])
+  @@index([taxRateId])
 }
 
 // ============================================================================

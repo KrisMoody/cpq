@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
       id: true,
       name: true,
       currencyId: true,
+      taxProfileId: true,
       isDefault: true,
       isActive: true,
       validFrom: true,
@@ -27,6 +28,13 @@ export default defineEventHandler(async (event) => {
           code: true,
           name: true,
           symbol: true,
+        },
+      },
+      taxProfile: {
+        select: {
+          id: true,
+          name: true,
+          country: true,
         },
       },
       _count: {

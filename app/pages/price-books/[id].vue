@@ -17,6 +17,7 @@ const {
 } = usePricing()
 const { products, fetchProducts } = useProducts()
 const { currencies, fetchCurrencies } = useCurrencies()
+const { taxProfiles, fetchTaxProfiles } = useTaxProfiles()
 
 const priceBookId = useRequiredParam('id')
 const priceBook = ref<PriceBook | null>(null)
@@ -29,6 +30,7 @@ const isEditing = ref(false)
 const form = ref({
   name: '',
   currencyId: '',
+  taxProfileId: '',
   isDefault: false,
   isActive: true,
   validFrom: '',
@@ -75,7 +77,7 @@ const tierTypeOptions = [
 ]
 
 onMounted(async () => {
-  await Promise.all([loadPriceBook(), fetchProducts(), fetchCurrencies()])
+  await Promise.all([loadPriceBook(), fetchProducts(), fetchCurrencies(), fetchTaxProfiles()])
 })
 
 async function loadPriceBook() {
@@ -92,6 +94,7 @@ async function loadPriceBook() {
       form.value = {
         name: pb.name,
         currencyId: pb.currencyId ?? '',
+        taxProfileId: pb.taxProfileId ?? '',
         isDefault: pb.isDefault,
         isActive: pb.isActive,
         validFrom: pb.validFrom ? pb.validFrom.split('T')[0] ?? '' : '',
@@ -118,6 +121,7 @@ async function handleSave() {
     const updated = await updatePriceBook(priceBookId, {
       name: form.value.name.trim(),
       currencyId: form.value.currencyId || null,
+      taxProfileId: form.value.taxProfileId || null,
       isDefault: form.value.isDefault,
       isActive: form.value.isActive,
       validFrom: form.value.validFrom || null,
@@ -152,6 +156,7 @@ function cancelEdit() {
     form.value = {
       name: priceBook.value.name,
       currencyId: priceBook.value.currencyId ?? '',
+      taxProfileId: priceBook.value.taxProfileId ?? '',
       isDefault: priceBook.value.isDefault,
       isActive: priceBook.value.isActive,
       validFrom: priceBook.value.validFrom ? priceBook.value.validFrom.split('T')[0] ?? '' : '',
@@ -616,6 +621,15 @@ async function deleteCurrencyPrice(entry: PriceBookEntry, currencyPrice: Currenc
             />
           </UFormField>
 
+          <UFormField label="Tax Profile" hint="Default tax rates when customer address is incomplete">
+            <USelect
+              v-model="form.taxProfileId"
+              placeholder="No tax profile"
+              :items="taxProfiles.filter(p => p.isActive).map(p => ({ label: `${p.name} (${p.country})`, value: p.id }))"
+              value-key="value"
+            />
+          </UFormField>
+
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Valid From">
               <UInput v-model="form.validFrom" type="date" />
@@ -640,6 +654,19 @@ async function deleteCurrencyPrice(entry: PriceBookEntry, currencyPrice: Currenc
           <div>
             <dt class="text-sm text-ga-gray-600">Currency</dt>
             <dd>{{ priceBook.currency ? `${priceBook.currency.code} (${priceBook.currency.symbol})` : 'Default' }}</dd>
+          </div>
+          <div>
+            <dt class="text-sm text-ga-gray-600">Tax Profile</dt>
+            <dd>
+              <NuxtLink
+                v-if="priceBook.taxProfile"
+                :to="`/tax-profiles/${priceBook.taxProfile.id}`"
+                class="text-ga-navy-600 hover:underline"
+              >
+                {{ priceBook.taxProfile.name }} ({{ priceBook.taxProfile.country }})
+              </NuxtLink>
+              <span v-else class="text-ga-gray-500">None</span>
+            </dd>
           </div>
           <div>
             <dt class="text-sm text-ga-gray-600">Products</dt>

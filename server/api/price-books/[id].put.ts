@@ -36,6 +36,7 @@ export default defineEventHandler(async (event) => {
     data: {
       name: body.name ?? existing.name,
       currencyId: body.currencyId !== undefined ? (body.currencyId || null) : existing.currencyId,
+      taxProfileId: body.taxProfileId !== undefined ? (body.taxProfileId || null) : existing.taxProfileId,
       isDefault: body.isDefault !== undefined ? body.isDefault : existing.isDefault,
       isActive: body.isActive !== undefined ? body.isActive : existing.isActive,
       validFrom: body.validFrom !== undefined
@@ -49,6 +50,7 @@ export default defineEventHandler(async (event) => {
       id: true,
       name: true,
       currencyId: true,
+      taxProfileId: true,
       isDefault: true,
       isActive: true,
       validFrom: true,
@@ -59,6 +61,13 @@ export default defineEventHandler(async (event) => {
           code: true,
           name: true,
           symbol: true,
+        },
+      },
+      taxProfile: {
+        select: {
+          id: true,
+          name: true,
+          country: true,
         },
       },
       _count: {

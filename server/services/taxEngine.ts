@@ -11,6 +11,7 @@ export interface TaxCalculationResult {
   taxBreakdown: TaxBreakdownItem[]
   isTaxExempt: boolean
   exemptionExpired: boolean
+  noTaxJurisdiction?: boolean // True when no customer address and no price book tax profile
 }
 
 /**
@@ -64,6 +65,43 @@ export async function getApplicableTaxRates(
   })
 
   return taxRates
+}
+
+/**
+ * Get tax rates from a tax profile
+ */
+export async function getTaxProfileRates(
+  taxProfileId: string,
+  date: Date = new Date()
+) {
+  const prisma = usePrisma()
+
+  const profile = await prisma.taxProfile.findUnique({
+    where: { id: taxProfileId, isActive: true },
+    include: {
+      rates: {
+        include: {
+          taxRate: true,
+        },
+      },
+    },
+  })
+
+  if (!profile) {
+    return []
+  }
+
+  // Filter rates by validity dates
+  const validRates = profile.rates
+    .map((r) => r.taxRate)
+    .filter((rate) => {
+      if (!rate.isActive) return false
+      if (rate.validFrom && rate.validFrom > date) return false
+      if (rate.validTo && rate.validTo < date) return false
+      return true
+    })
+
+  return validRates
 }
 
 /**
@@ -142,7 +180,8 @@ export async function checkTaxExemption(customerId: string | null): Promise<{
 }
 
 /**
- * Calculate tax for a quote, considering customer exemption and product taxability
+ * Calculate tax for a quote, considering customer exemption, product taxability,
+ * and price book tax profile fallback
  */
 export async function calculateQuoteTax(
   quoteId: string,
@@ -154,6 +193,12 @@ export async function calculateQuoteTax(
     where: { id: quoteId },
     select: {
       customerId: true,
+      priceBookId: true,
+      priceBook: {
+        select: {
+          taxProfileId: true,
+        },
+      },
       lineItems: {
         include: {
           product: {
@@ -193,15 +238,22 @@ export async function calculateQuoteTax(
     return sum
   }, 0)
 
-  // Get applicable tax rates
-  const taxRates = await getApplicableTaxRates(quote.customerId)
+  // Get applicable tax rates - try customer address first
+  let taxRates = await getApplicableTaxRates(quote.customerId)
 
+  // If no rates from customer address and price book has tax profile, use profile rates
+  if (taxRates.length === 0 && quote.priceBook?.taxProfileId) {
+    taxRates = await getTaxProfileRates(quote.priceBook.taxProfileId)
+  }
+
+  // No tax jurisdiction found (no customer address and no price book tax profile)
   if (taxRates.length === 0) {
     return {
       taxAmount: 0,
       taxBreakdown: [],
       isTaxExempt: false,
       exemptionExpired: exemptionStatus.exemptionExpired,
+      noTaxJurisdiction: true,
     }
   }
 
