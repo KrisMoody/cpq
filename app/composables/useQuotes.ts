@@ -78,6 +78,7 @@ export interface Quote {
   priceBook: {
     id: string
     name: string
+    currencyId?: string | null
   }
   currency?: Currency | null
   _count?: {

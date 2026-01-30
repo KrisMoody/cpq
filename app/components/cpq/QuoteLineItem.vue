@@ -35,6 +35,7 @@ const props = defineProps<{
   editable?: boolean
   contractInfo?: ContractPriceInfo
   isExpanded?: boolean
+  isConvertedPrice?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -316,7 +317,12 @@ function formatAttrValue(attr: ProductAttributeDisplay): string {
 
         <!-- Unit Price -->
         <div class="text-right w-28">
-          <p class="text-xs text-ga-gray-600">Unit Price</p>
+          <div class="flex items-center justify-end gap-1">
+            <p class="text-xs text-ga-gray-600">Unit Price</p>
+            <UTooltip v-if="isConvertedPrice" text="Price converted using exchange rate">
+              <UIcon name="i-heroicons-arrows-right-left" class="w-3 h-3 text-ga-amber-500" />
+            </UTooltip>
+          </div>
           <div class="flex items-center justify-end gap-1">
             <p v-if="contractInfo" class="text-xs text-ga-gray-500 line-through">
               {{ formatPrice(contractInfo.originalPrice) }}

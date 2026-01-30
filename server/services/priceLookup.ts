@@ -1,4 +1,4 @@
-import type { PriceBookEntry, PriceTier, TierType, Contract, ContractPriceEntry } from '../../app/generated/prisma/client'
+import type { PriceBookEntry, PriceTier, TierType, Contract, ContractPriceEntry, PriceBookEntryCurrency, Currency } from '../../app/generated/prisma/client'
 
 export interface TierInput {
   minQuantity: number
@@ -116,6 +116,14 @@ export interface PriceBookEntryWithTiers extends PriceBookEntry {
   priceTiers: PriceTier[]
 }
 
+export interface CurrencyPriceWithCurrency extends PriceBookEntryCurrency {
+  currency: Pick<Currency, 'id' | 'code' | 'name' | 'symbol'>
+}
+
+export interface PriceBookEntryWithCurrencyPrices extends PriceBookEntryWithTiers {
+  currencyPrices: CurrencyPriceWithCurrency[]
+}
+
 export interface ContractWithPrices extends Contract {
   priceEntries: ContractPriceEntry[]
 }
@@ -136,6 +144,14 @@ export interface GraduatedBreakdown {
   subtotal: number
 }
 
+export interface CurrencyPriceInfo {
+  currencyId: string
+  currencyCode: string
+  isNative: boolean
+  exchangeRate?: number
+  rateEffectiveDate?: Date
+}
+
 export interface PriceLookupResult {
   unitPrice: number
   tierApplied: boolean
@@ -151,6 +167,7 @@ export interface PriceLookupResult {
   margin?: number
   contractApplied?: boolean
   contractInfo?: ContractPriceInfo
+  currencyInfo?: CurrencyPriceInfo
 }
 
 /**
@@ -388,4 +405,87 @@ export function lookupPriceWithContract(
   }
 
   return result
+}
+
+export interface CurrencyLookupOptions {
+  targetCurrencyId: string
+  targetCurrencyCode: string
+  priceBookCurrencyId?: string | null
+  exchangeRate?: number
+  rateEffectiveDate?: Date
+}
+
+/**
+ * Look up price with currency-specific pricing support
+ * Checks for native currency price first, falls back to conversion
+ */
+export function lookupPriceWithCurrency(
+  entry: PriceBookEntryWithCurrencyPrices,
+  quantity: number,
+  currencyOptions: CurrencyLookupOptions
+): PriceLookupResult {
+  const { targetCurrencyId, targetCurrencyCode, priceBookCurrencyId, exchangeRate, rateEffectiveDate } = currencyOptions
+
+  // Check if we're looking up in the price book's default currency
+  if (priceBookCurrencyId && targetCurrencyId === priceBookCurrencyId) {
+    // Use standard lookup - no conversion needed
+    const result = lookupPrice(entry, quantity)
+    result.currencyInfo = {
+      currencyId: targetCurrencyId,
+      currencyCode: targetCurrencyCode,
+      isNative: true,
+    }
+    return result
+  }
+
+  // Check for native currency price
+  const currencyPrice = entry.currencyPrices?.find(cp => cp.currencyId === targetCurrencyId)
+
+  if (currencyPrice) {
+    // Use native currency price
+    const nativeListPrice = Number(currencyPrice.listPrice)
+    const nativeCost = currencyPrice.cost ? Number(currencyPrice.cost) : undefined
+
+    const result: PriceLookupResult = {
+      unitPrice: nativeListPrice,
+      tierApplied: false,
+      cost: nativeCost,
+      currencyInfo: {
+        currencyId: targetCurrencyId,
+        currencyCode: currencyPrice.currency.code,
+        isNative: true,
+      },
+    }
+
+    // Note: Tiers are applied in the entry's default currency, not the native currency price
+    // For now, native currency prices bypass tier pricing (as per design: "tier calculations happen after currency selection")
+
+    // Calculate margin if cost is available
+    if (result.cost && result.cost > 0) {
+      result.margin = ((result.unitPrice - result.cost) / result.unitPrice) * 100
+    }
+
+    return result
+  }
+
+  // No native price - fall back to conversion
+  const baseResult = lookupPrice(entry, quantity)
+
+  // Apply exchange rate conversion if provided
+  if (exchangeRate && exchangeRate !== 1) {
+    baseResult.unitPrice = Math.round(baseResult.unitPrice * exchangeRate * 100) / 100
+    if (baseResult.cost) {
+      baseResult.cost = Math.round(baseResult.cost * exchangeRate * 100) / 100
+    }
+  }
+
+  baseResult.currencyInfo = {
+    currencyId: targetCurrencyId,
+    currencyCode: targetCurrencyCode,
+    isNative: false,
+    exchangeRate,
+    rateEffectiveDate,
+  }
+
+  return baseResult
 }

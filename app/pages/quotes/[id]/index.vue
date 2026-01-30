@@ -38,6 +38,16 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 const calculating = ref(false)
 
+// Currency conversion detection
+const isUsingConvertedPrices = computed(() => {
+  if (!quote.value) return false
+  // If quote has a currency and it differs from the price book's currency, prices may be converted
+  const quoteCurrencyId = quote.value.currencyId
+  const priceBookCurrencyId = quote.value.priceBook?.currencyId
+  if (!quoteCurrencyId || !priceBookCurrencyId) return false
+  return quoteCurrencyId !== priceBookCurrencyId
+})
+
 // Add product modal
 const showAddProduct = ref(false)
 const selectedProductId = ref('')
@@ -639,6 +649,7 @@ async function handleCreateQuoteFromAI(data: GenerateQuoteResponse) {
                 :editable="isEditable"
                 :contract-info="evaluation?.contractPricing?.lineItems?.[line.id]"
                 :is-expanded="expandedBundles.has(line.id)"
+                :is-converted-price="isUsingConvertedPrices"
                 @remove="handleRemoveLine"
                 @update-quantity="handleUpdateQuantity"
                 @apply-discount="openDiscountModal"

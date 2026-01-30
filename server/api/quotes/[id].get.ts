@@ -28,7 +28,11 @@ export default defineEventHandler(async (event) => {
         },
       },
       priceBook: {
-        select: { id: true, name: true },
+        select: {
+          id: true,
+          name: true,
+          currencyId: true,
+        },
       },
       currency: {
         select: { id: true, code: true, name: true, symbol: true },
